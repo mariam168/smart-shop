@@ -26,10 +26,10 @@ const connectDB = async () => {
         console.log('✅ MongoDB connected successfully.');
     } catch (error) {
         console.error('❌ MongoDB connection error:', error);
-        process.exit(1);
+        process.exit(1); 
     }
 };
-connectDB();
+connectDB(); 
 
 app.use(cors({
     origin: process.env.CLIENT_URL || 'http://localhost:3000',
@@ -41,23 +41,23 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-const apiRouter = express.Router();
-
-apiRouter.use('/', languageMiddleware); 
-apiRouter.use('/products', productRoutes);
-apiRouter.use('/categories', categoryRoutes);
-apiRouter.use('/advertisements', advertisementRoutes);
-apiRouter.use('/discounts', discountRoutes);
-apiRouter.use('/auth', authRoutes);
-apiRouter.use('/wishlist', wishlistRoutes);
-apiRouter.use('/cart', cartRoutes);
-apiRouter.use('/orders', orderRoutes);
-apiRouter.use('/contact', contactRoutes);
-apiRouter.use('/dashboard', dashboardRoutes);
-
-app.use('/api', apiRouter);
+app.use('/api', languageMiddleware);
+app.use('/api/products', productRoutes);
+app.use('/api/categories', categoryRoutes);
+app.use('/api/advertisements', advertisementRoutes);
+app.use('/api/discounts', discountRoutes);
+app.use('/api/auth', authRoutes);
+app.use('/api/wishlist', wishlistRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/contact', contactRoutes);
+app.use('/api/dashboard', dashboardRoutes);
 
 app.get('/', (req, res) => {
+    res.send('API Root is running...');
+});
+
+app.get('/api', (req, res) => {
     res.send('API is running...');
 });
 
