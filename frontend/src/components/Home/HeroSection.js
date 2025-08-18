@@ -168,7 +168,7 @@ const AllOffersCard = ({ t, isRTL }) => (
     </Link>
 );
 
-const HeroSection = ({ serverUrl = 'http://localhost:5000' }) => {
+const HeroSection = ({ serverUrl = 'https://smart-shop-backend-ivory.vercel.app' }) => {
     const { t, language } = useLanguage();
     const formatCurrencyForDisplay = useCurrencyFormatter();
     const [slidesData, setSlidesData] = useState([]);

@@ -12,7 +12,7 @@ const CheckoutPage = () => {
     const { showToast } = useToast();
     const navigate = useNavigate();
     const { cartItems, loadingCart, clearCart, cartTotal } = useCart();
-    const { isAuthenticated, token, API_BASE_URL = 'http://localhost:5000' } = useAuth();
+    const { isAuthenticated, token, API_BASE_URL = 'https://smart-shop-backend-ivory.vercel.app' } = useAuth();
 
     const [shippingAddress, setShippingAddress] = useState({
         address: '123 Main St', city: 'Cairo', postalCode: '11511', country: 'Egypt', phone: ''
