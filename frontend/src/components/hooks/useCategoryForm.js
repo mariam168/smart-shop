@@ -9,7 +9,6 @@ export const useCategoryForm = (categoryToEdit) => {
 
     useEffect(() => {
         if (categoryToEdit) {
-            const serverUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
             setCategory({
                 name: categoryToEdit.name || { en: '', ar: '' },
                 description: categoryToEdit.description || { en: '', ar: '' },
@@ -17,9 +16,9 @@ export const useCategoryForm = (categoryToEdit) => {
             setSubCategories((categoryToEdit.subCategories || []).map(sub => ({
                 ...sub,
                 tempId: sub._id || new mongoose.Types.ObjectId().toString(),
-                preview: sub.imageUrl ? (sub.imageUrl.startsWith('http') ? sub.imageUrl : `${serverUrl}${sub.imageUrl}`) : '',
+                preview: sub.imageUrl || '',
             })));
-            setMainImage({ file: null, preview: categoryToEdit.imageUrl ? (categoryToEdit.imageUrl.startsWith('http') ? categoryToEdit.imageUrl : `${serverUrl}${categoryToEdit.imageUrl}`) : '', clear: false });
+            setMainImage({ file: null, preview: categoryToEdit.imageUrl || '', clear: false });
             setSubCategoryFiles({});
         } else {
             setCategory({ name: { en: '', ar: '' }, description: { en: '', ar: '' } });
@@ -90,6 +89,7 @@ export const useCategoryForm = (categoryToEdit) => {
             _id: sub._id,
             name: sub.name,
             description: sub.description,
+            imageUrl: sub.imageUrl, 
             hasNewImage: !!subCategoryFiles[sub.tempId]
         }));
         formData.append('subCategories', JSON.stringify(subCategoryPayload));
