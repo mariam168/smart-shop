@@ -1,12 +1,10 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "index.js",
+   "main": "app.js",
   "scripts": {
-   "start": "node app.js",
-  "server": "nodemon app.js",
-  "client": "npm start --prefix frontend",
-  "dev": "concurrently \"npm run server\" \"npm run client\""
+    "start": "node app.js",
+    "server": "nodemon app.js"
   },
   "keywords": [],
   "author": "",
