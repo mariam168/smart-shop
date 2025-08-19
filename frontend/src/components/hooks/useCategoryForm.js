@@ -89,7 +89,7 @@ export const useCategoryForm = (categoryToEdit) => {
             _id: sub._id,
             name: sub.name,
             description: sub.description,
-            imageUrl: sub.imageUrl, 
+            imageUrl: sub.imageUrl,
             hasNewImage: !!subCategoryFiles[sub.tempId]
         }));
         formData.append('subCategories', JSON.stringify(subCategoryPayload));

@@ -39,7 +39,7 @@ const createCategory = async (req, res, next) => {
                 description: sub.description,
             };
             if (sub.hasNewImage && subCategoryImages[imageCounter]) {
-                newSub.imageUrl = subCategoryImages[imageCounter].path; 
+                newSub.imageUrl = subCategoryImages[imageCounter].path;
                 imageCounter++;
             }
             return newSub;
@@ -52,7 +52,7 @@ const createCategory = async (req, res, next) => {
         };
         
         if (mainImageFile) {
-            newCategoryData.imageUrl = mainImageFile.path; 
+            newCategoryData.imageUrl = mainImageFile.path;
         }
 
         const newCategory = new Category(newCategoryData);
@@ -87,9 +87,12 @@ const updateCategory = async (req, res, next) => {
             };
 
             if (sub.hasNewImage && newSubCategoryImages[imageCounter]) {
-                subData.imageUrl = newSubCategoryImages[imageCounter].path; 
+                subData.imageUrl = newSubCategoryImages[imageCounter].path;
                 imageCounter++;
+            } else if (sub.imageUrl === '') {
+                subData.imageUrl = '';
             }
+
             return subData;
         });
 
@@ -98,7 +101,7 @@ const updateCategory = async (req, res, next) => {
         categoryToUpdate.subCategories = finalSubCategories;
 
         if (mainImageFile) {
-            categoryToUpdate.imageUrl = mainImageFile.path; 
+            categoryToUpdate.imageUrl = mainImageFile.path;
         } else if (clearMainImage === 'true') {
             categoryToUpdate.imageUrl = '';
         }
@@ -112,9 +115,14 @@ const updateCategory = async (req, res, next) => {
 
 const deleteCategory = async (req, res, next) => {
     try {
+        const productCount = await Product.countDocuments({ category: req.params.id });
+        if (productCount > 0) {
+            return res.status(400).json({ message: `Cannot delete. Category is used by ${productCount} products.` });
+        }
+
         const categoryToDelete = await Category.findByIdAndDelete(req.params.id);
         if (!categoryToDelete) return res.status(404).json({ message: 'Category not found' });
-
+        
         res.json({ message: 'Category deleted successfully' });
     } catch (error) {
         next(error);
