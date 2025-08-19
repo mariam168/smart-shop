@@ -11,16 +11,16 @@ const rateLimit = require('express-rate-limit');
 // Middlewares & Routes
 const languageMiddleware = require('./middlewares/languageMiddleware');
 const { errorHandler, notFound } = require('./middlewares/errorMiddleware');
-const productRoutes = require('./api/productRoutes');
-const categoryRoutes = require('./api/categoryRoutes');
-const advertisementRoutes = require('./api/advertisementRoutes');
-const discountRoutes = require('./api/discountRoutes');
-const authRoutes = require('./api/authRoutes');
-const wishlistRoutes = require('./api/wishlistRoutes');
-const cartRoutes = require('./api/cartRoutes');
-const orderRoutes = require('./api/orderRoutes');
-const contactRoutes = require('./api/contactRoutes');
-const dashboardRoutes = require('./api/dashboardRoutes');
+const productRoutes = require('./routes/productRoutes');
+const categoryRoutes = require('./routes/categoryRoutes');
+const advertisementRoutes = require('./routes/advertisementRoutes');
+const discountRoutes = require('./routes/discountRoutes');
+const authRoutes = require('./routes/authRoutes');
+const wishlistRoutes = require('./routes/wishlistRoutes');
+const cartRoutes = require('./routes/cartRoutes');
+const orderRoutes = require('./routes/orderRoutes');
+const contactRoutes = require('./routes/contactRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
 
 const app = express();
 
