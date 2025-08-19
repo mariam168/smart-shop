@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useToast } from '../../../context/ToastContext';
 import { useLanguage } from '../../../context/LanguageContext';
-import { useCategoryForm } from '../../hooks/useCategoryForm';
+import { useCategoryForm } from '../../../hooks/useCategoryForm';
 import categoryService from '../../../services/categoryService'; 
 import SubCategoryInput from './SubCategoryInput';
 import { Plus, X, Loader2, CheckCircle, List, UploadCloud } from 'lucide-react';
