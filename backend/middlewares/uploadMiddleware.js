@@ -1,26 +1,24 @@
+const cloudinary = require('cloudinary').v2;
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 const createUploadMiddleware = (subfolder) => {
-    const destinationDir = path.join(__dirname, `../uploads/${subfolder}`);
-    if (!fs.existsSync(destinationDir)) {
-        fs.mkdirSync(destinationDir, { recursive: true });
-    }
-    const storage = multer.diskStorage({
-        destination: (req, file, cb) => {
-            cb(null, destinationDir);
-        },
-        filename: (req, file, cb) => {
-            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-            cb(null, `${file.fieldname}-${uniqueSuffix}${path.extname(file.originalname)}`);
+    const storage = new CloudinaryStorage({
+        cloudinary: cloudinary,
+        params: {
+            folder: `smart_shop/${subfolder}`,
+            allowed_formats: ['jpeg', 'png', 'jpg', 'webp'],
+            transformation: [{ width: 1024, height: 1024, crop: 'limit' }]
         },
     });
 
-    const upload = multer({ 
-        storage: storage,
-    });
-
-    return upload;
+    return multer({ storage: storage });
 };
 
 module.exports = createUploadMiddleware;

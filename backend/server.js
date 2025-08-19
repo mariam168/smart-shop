@@ -4,11 +4,9 @@ const path = require('path');
 const cors = require('cors');
 const mongoose = require('mongoose');
 
-// Import Middlewares
 const languageMiddleware = require('./middlewares/languageMiddleware');
 const { errorHandler, notFound } = require('./middlewares/errorMiddleware');
 
-// Import Routes
 const productRoutes = require('./routes/productRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const advertisementRoutes = require('./routes/advertisementRoutes');
@@ -33,14 +31,12 @@ const connectDB = async () => {
 };
 connectDB(); 
 
-// --- (التعديل الحاسم هنا) ---
-// For now, let's allow all origins to make sure everything else is working.
 app.use(cors({
-    origin: '*', // Allow all origins
+    origin: '*', 
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization', 'x-admin-request', 'accept-language']
 }));
-// --- نهاية التعديل ---
+
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
