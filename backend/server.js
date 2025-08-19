@@ -1,12 +1,13 @@
 require('dotenv').config();
 const express = require('express');
-const path = require('path');
-const cors = require('cors');
 const mongoose = require('mongoose');
+const cors = require('cors');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const compression = require('compression');
 
-const languageMiddleware = require('./middlewares/languageMiddleware');
-const { errorHandler, notFound } = require('./middlewares/errorMiddleware');
-
+// Import Routes
 const productRoutes = require('./routes/productRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const advertisementRoutes = require('./routes/advertisementRoutes');
@@ -17,33 +18,23 @@ const cartRoutes = require('./routes/cartRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
-
 const app = express();
 
-const connectDB = async () => {
-    try {
-        await mongoose.connect(process.env.MONGO_URI);
-        console.log('✅ MongoDB connected successfully.');
-    } catch (error) {
-        console.error('❌ MongoDB connection error:', error);
-        process.exit(1);
-    }
-};
-connectDB(); 
-
 app.use(cors({
-    origin: '*', 
+    origin: process.env.CLIENT_URL || '*',
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization', 'x-admin-request', 'accept-language']
 }));
 
-
+app.use(helmet());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(mongoSanitize());
+app.use(xss());
+app.use(compression());
 
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log('✅ MongoDB connected successfully.'))
+    .catch((error) => console.error('❌ MongoDB connection error:', error.message));
 
-app.use('/api', languageMiddleware);
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/advertisements', advertisementRoutes);
@@ -55,15 +46,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 
-app.get('/', (req, res) => {
-    res.send('API Root is running...');
-});
-
 app.get('/api', (req, res) => {
-    res.send('API is running...');
+    res.send('API is running!');
 });
-
-app.use(notFound);
-app.use(errorHandler);
-
 module.exports = app;
