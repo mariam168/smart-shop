@@ -25,13 +25,13 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const app = express();
 
 // Connect to MongoDB
+// Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('✅ MongoDB connected successfully.'))
     .catch((error) => {
         console.error('❌ MongoDB connection error:', error.message);
-        process.exit(1);
+        process.exit(1); // 👈 هذا السطر هو سبب الـ Crash
     });
-
 // CORS Configuration
 app.use(cors({
     origin: process.env.CLIENT_URL,
