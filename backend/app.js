@@ -7,6 +7,7 @@ const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const compression = require('compression');
 
+// Import Routes
 const productRoutes = require('./routes/productRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const advertisementRoutes = require('./routes/advertisementRoutes');
@@ -18,20 +19,26 @@ const orderRoutes = require('./routes/orderRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 
+// Initialize Express App
 const app = express();
 
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('✅ MongoDB connected successfully.'))
-    .catch((error) => console.error('❌ MongoDB connection error:', error.message));
+// CORS Configuration
+app.use(cors({
+    origin: process.env.CLIENT_URL || '*',
+    credentials: true,
+}));
 
-// Middlewares
-app.use(cors()); // Use basic cors here, vercel.json will handle the complex headers
+// Security & Body Parser Middlewares
 app.use(helmet());
 app.use(express.json());
 app.use(mongoSanitize());
 app.use(xss());
 app.use(compression());
+
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI)
+    .then(() => console.log('✅ MongoDB connected successfully.'))
+    .catch((error) => console.error('❌ MongoDB connection error:', error.message));
 
 // API Routes
 app.use('/api/products', productRoutes);
