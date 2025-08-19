@@ -42,7 +42,10 @@ app.use(cors({
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(mongoSanitize());
+// الكود الجديد
+app.use(mongoSanitize({
+    replaceWith: '_',
+}));
 app.use(xss());
 app.use(compression());
 
