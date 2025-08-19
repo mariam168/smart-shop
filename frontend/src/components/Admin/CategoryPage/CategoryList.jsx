@@ -93,7 +93,7 @@ const CategoryList = () => {
     }, [categories, searchTerm]);
 
     const getImageUrl = (path) => {
-        if (!path) return 'https://via.placeholder.com/150';
+        if (!path) return '';
         if (path.startsWith('http')) {
             return path;
         }

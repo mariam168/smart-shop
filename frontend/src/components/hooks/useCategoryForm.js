@@ -11,7 +11,7 @@ export const useCategoryForm = (categoryToEdit) => {
         if (categoryToEdit) {
             setCategory({
                 name: categoryToEdit.name || { en: '', ar: '' },
-                description: categoryToEdit.description || { en: '', ar: ' ' },
+                description: categoryToEdit.description || { en: '', ar: '' },
             });
             setSubCategories((categoryToEdit.subCategories || []).map(sub => ({
                 ...sub,
