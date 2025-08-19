@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import mongoose from 'mongoose';
 
 export const useCategoryForm = (categoryToEdit) => {
     const [category, setCategory] = useState({ name: { en: '', ar: '' }, description: { en: '', ar: '' } });
@@ -15,7 +14,7 @@ export const useCategoryForm = (categoryToEdit) => {
             });
             setSubCategories((categoryToEdit.subCategories || []).map(sub => ({
                 ...sub,
-                tempId: sub._id || new mongoose.Types.ObjectId().toString(),
+                tempId: sub._id || `temp_${Date.now() + Math.random()}`,
                 preview: sub.imageUrl || '',
             })));
             setMainImage({ file: null, preview: categoryToEdit.imageUrl || '', clear: false });
@@ -44,7 +43,7 @@ export const useCategoryForm = (categoryToEdit) => {
 
     const handleAddSubCategory = () => {
         const newSub = {
-            tempId: new mongoose.Types.ObjectId().toString(),
+            tempId: `temp_${Date.now() + Math.random()}`,
             name: { en: '', ar: '' },
             description: { en: '', ar: '' },
             imageUrl: '', preview: '', hasNewImage: false,
@@ -86,7 +85,7 @@ export const useCategoryForm = (categoryToEdit) => {
         if (mainImage.file) formData.append('mainImage', mainImage.file);
 
         const subCategoryPayload = subCategories.map(sub => ({
-            _id: sub._id,
+            _id: String(sub._id).startsWith('temp_') ? undefined : sub._id,
             name: sub.name,
             description: sub.description,
             imageUrl: sub.imageUrl,
