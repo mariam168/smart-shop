@@ -62,7 +62,6 @@ const CategoryList = () => {
     const handleConfirmDelete = async () => {
         if (!categoryToDelete) return;
         setIsDeleting(true);
-
         try {
             await categoryService.deleteCategory(categoryToDelete._id);
             showToast(t('general.deletedSuccess'), 'success');
@@ -92,10 +91,11 @@ const CategoryList = () => {
             )
         );
     }, [categories, searchTerm]);
+
     const getImageUrl = (path) => {
         if (!path) return 'https://via.placeholder.com/150';
         if (path.startsWith('http')) {
-            return path; 
+            return path;
         }
         const serverUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
         return `${serverUrl}${path}`;
