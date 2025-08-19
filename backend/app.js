@@ -57,7 +57,7 @@ const limiter = rateLimit({
 });
 app.use('/api', limiter);
 
-app.use('/api', languageMiddleware);
+//app.use('/api', languageMiddleware);
 
 // API Routes
 app.use('/api/products', productRoutes);
