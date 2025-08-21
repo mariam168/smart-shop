@@ -24,7 +24,7 @@ const ProductCard = ({ product }) => {
     const navigate = useNavigate();
     const { toggleFavorite, isFavorite } = useWishlist();
     const { showToast } = useToast();
-    const { isAuthenticated, API_BASE_URL } = useAuth();
+    const { isAuthenticated } = useAuth();
 
     if (!product || !product.name) {
         console.error("[ProductCard] Error: Received invalid product data", product);
@@ -61,7 +61,7 @@ const ProductCard = ({ product }) => {
     const productCategoryName = product.category?.name;
 
     const productIsFavorite = product._id ? isFavorite(product._id) : false;
-    const imageUrl = product.mainImage ? `${API_BASE_URL}${product.mainImage}` : 'https://via.placeholder.com/400?text=No+Image';
+    const imageUrl = product.mainImage || 'https://via.placeholder.com/400?text=No+Image';
     const isAdvertised = !!adData && adData.discountPercentage > 0;
     const discountPercentage = isAdvertised ? adData.discountPercentage : 0;
 
