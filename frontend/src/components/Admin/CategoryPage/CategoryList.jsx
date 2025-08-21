@@ -92,15 +92,6 @@ const CategoryList = () => {
         );
     }, [categories, searchTerm]);
 
-    const getImageUrl = (path) => {
-        if (!path) return '';
-        if (path.startsWith('http')) {
-            return path;
-        }
-        const serverUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
-        return `${serverUrl}${path}`;
-    };
-
     if (loading) { return (<div className="flex min-h-[60vh] w-full items-center justify-center"><Loader2 size={32} className="animate-spin text-primary" /></div>); }
     if (error) { return (<div className="flex min-h-[60vh] w-full items-center justify-center p-4"><div className="text-center p-8 bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-red-200 dark:border-red-800"><Info size={40} className="mx-auto mb-4 text-red-500" /><h3 className="text-xl font-bold mb-2">Error</h3><p className="text-red-600">{error}</p><button onClick={fetchCategories} className="mt-6 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white">Try Again</button></div></div>); }
     
@@ -156,7 +147,7 @@ const CategoryList = () => {
                                     </td>
                                     <td className="p-4 flex items-center gap-4 min-w-[250px]">
                                         {cat.imageUrl ? 
-                                          <img src={getImageUrl(cat.imageUrl)} alt={cat.name?.[language]} className="h-12 w-12 rounded-lg object-cover flex-shrink-0 shadow-md ring-1 ring-gray-200 dark:ring-zinc-700" /> :
+                                          <img src={cat.imageUrl} alt={cat.name?.[language]} className="h-12 w-12 rounded-lg object-cover flex-shrink-0 shadow-md ring-1 ring-gray-200 dark:ring-zinc-700" /> :
                                           <div className="h-12 w-12 rounded-lg bg-gray-100 dark:bg-zinc-800 flex items-center justify-center flex-shrink-0"><ImageIcon className="h-6 w-6 text-gray-400"/></div>
                                         }
                                         <span className="font-semibold text-gray-800 dark:text-white" dir={language === 'ar' ? 'rtl' : 'ltr'}>{cat.name?.[language] || cat.name?.en}</span>
@@ -183,7 +174,7 @@ const CategoryList = () => {
                                                     {cat.subCategories.map(sub => (
                                                         <li key={sub._id} className="flex items-center gap-3 text-sm">
                                                              {sub.imageUrl ? 
-                                                                <img src={getImageUrl(sub.imageUrl)} alt={sub.name?.[language]} className="h-6 w-6 rounded-md object-cover"/>
+                                                                <img src={sub.imageUrl} alt={sub.name?.[language]} className="h-6 w-6 rounded-md object-cover"/>
                                                                 : <span className="flex h-6 w-6 items-center justify-center rounded-md bg-gray-200 dark:bg-zinc-700"><ImageIcon size={12} className="text-gray-400 dark:text-zinc-500"/></span>
                                                             }
                                                             <span className="text-gray-700 dark:text-gray-300" dir={language === 'ar' ? 'rtl' : 'ltr'}>{sub.name?.[language] || sub.name?.en}</span>

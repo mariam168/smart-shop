@@ -4,12 +4,11 @@ import categoryService from '../../services/categoryService';
 import { useLanguage } from '../../context/LanguageContext';
 import CategoryForm from '../../components/Admin/CategoryPage/CategoryForm';
 import ConfirmationModal from '../../components/common/ConfirmationModal';
-import { Plus, Edit, Trash2, Loader2, Info, ChevronDown, ChevronRight, ListTree, Search, XCircle, Image as ImageIcon } from 'lucide-react';
+import { Plus, Edit, Trash2, Loader2, Info, ChevronRight, Search, Image as ImageIcon } from 'lucide-react';
 
 const AdminCategoriesPage = () => {
     const { t, language } = useLanguage();
     const { showToast } = useToast();
-    const serverUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -20,6 +19,7 @@ const AdminCategoriesPage = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [categoryToDelete, setCategoryToDelete] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
+
     const fetchCategories = useCallback(async () => {
         setLoading(true);
         setError(null);
@@ -36,6 +36,7 @@ const AdminCategoriesPage = () => {
     useEffect(() => {
         fetchCategories();
     }, [fetchCategories]);
+
     const handleOpenAddForm = () => {
         setCategoryToEdit(null);
         setIsFormOpen(true);
@@ -78,6 +79,7 @@ const AdminCategoriesPage = () => {
     const toggleExpand = (categoryId) => {
         setExpandedCategories(prev => ({ ...prev, [categoryId]: !prev[categoryId] }));
     };
+
     const filteredCategories = categories.filter(category => {
         if (!searchTerm) return true;
         const term = searchTerm.toLowerCase();
@@ -89,6 +91,7 @@ const AdminCategoriesPage = () => {
             )
         );
     });
+
     if (loading) {
         return (
             <div className="flex min-h-[80vh] w-full items-center justify-center">
@@ -147,7 +150,7 @@ const AdminCategoriesPage = () => {
                                 <button onClick={() => toggleExpand(cat._id)} className={`p-2 rounded-full transition-colors ${cat.subCategories?.length > 0 ? 'hover:bg-gray-100 dark:hover:bg-zinc-700' : 'opacity-0 cursor-default'}`} disabled={!cat.subCategories?.length}>
                                     <ChevronRight size={20} className={`transition-transform duration-300 text-gray-400 dark:text-zinc-500 ${expandedCategories[cat._id] ? 'rotate-90' : 'rotate-0'}`} />
                                 </button>
-                                <img src={cat.imageUrl ? `${serverUrl}${cat.imageUrl}` : 'https://via.placeholder.com/150'} alt={cat.name?.[language] || 'Category'} className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg object-cover mx-3" />
+                                <img src={cat.imageUrl || 'https://via.placeholder.com/150'} alt={cat.name?.[language] || 'Category'} className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg object-cover mx-3" />
                                 <div className="flex-grow">
                                     <p className="font-semibold text-base text-gray-800 dark:text-white" dir={language === 'ar' ? 'rtl' : 'ltr'}>{cat.name?.[language] || cat.name?.en}</p>
                                     <p className="text-xs text-gray-400 dark:text-zinc-400">{t('categoryList.subcategories')}: {cat.subCategories?.length || 0}</p>
@@ -169,7 +172,7 @@ const AdminCategoriesPage = () => {
                                             {cat.subCategories.map(sub => (
                                                 <li key={sub._id} className="flex items-center gap-3">
                                                     {sub.imageUrl ? 
-                                                        <img src={`${serverUrl}${sub.imageUrl}`} alt={sub.name?.[language]} className="h-8 w-8 rounded-md object-cover"/>
+                                                        <img src={sub.imageUrl} alt={sub.name?.[language]} className="h-8 w-8 rounded-md object-cover"/>
                                                         : <span className="flex h-8 w-8 items-center justify-center rounded-md bg-gray-200 dark:bg-zinc-700"><ImageIcon size={16} className="text-gray-400 dark:text-zinc-500"/></span>
                                                     }
                                                     <p className="text-sm font-medium text-gray-700 dark:text-gray-300" dir={language === 'ar' ? 'rtl' : 'ltr'}>{sub.name?.[language] || sub.name?.en}</p>
