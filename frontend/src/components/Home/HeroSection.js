@@ -94,7 +94,8 @@ const DiscountCodeCard = ({ discount, t, isRTL, handleCopyCode, copiedCode }) =>
         </div>
     );
 };
-const SideOfferCard = ({ offer, t, serverUrl }) => {
+
+const SideOfferCard = ({ offer, t }) => {
     const formatCurrency = useCurrencyFormatter();
     const priceInfo = useMemo(() => {
         const product = offer.productRef;
@@ -114,12 +115,14 @@ const SideOfferCard = ({ offer, t, serverUrl }) => {
         };
     }, [offer]);
 
+    const imageUrl = offer.image || offer.productRef?.mainImage || '';
+
     return (
         <Link to={offer.link || (offer.productRef?._id ? `/shop/${offer.productRef._id}` : '#')} className="block group">
             <div className="h-full flex flex-col rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm transition-all duration-300 hover:border-primary/50 hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-900 dark:hover:border-primary/50">
                 <div className="flex items-center gap-4">
                     <img 
-                        src={offer.image ? `${serverUrl}${offer.image}` : (offer.productRef?.mainImage ? `${serverUrl}${offer.productRef.mainImage}` : '')} 
+                        src={imageUrl} 
                         alt={offer.title} 
                         className="h-20 w-20 flex-shrink-0 rounded-lg bg-zinc-100 object-contain p-1 transition-transform duration-300 group-hover:scale-105 dark:bg-zinc-800" 
                     />
@@ -147,7 +150,6 @@ const SideOfferCard = ({ offer, t, serverUrl }) => {
     );
 };
 
-
 const AllOffersCard = ({ t, isRTL }) => (
     <Link to="/all-offers" className="block group">
         <div className="h-full relative overflow-hidden rounded-2xl p-5 text-white bg-gradient-to-br from-primary to-primary-dark shadow-lg shadow-primary/20 transition-all duration-300 hover:shadow-primary/40">
@@ -168,7 +170,7 @@ const AllOffersCard = ({ t, isRTL }) => (
     </Link>
 );
 
-const HeroSection = ({ serverUrl = 'https://smart-shop-backend-ivory.vercel.app' }) => {
+const HeroSection = () => {
     const { t, language } = useLanguage();
     const formatCurrencyForDisplay = useCurrencyFormatter();
     const [slidesData, setSlidesData] = useState([]);
@@ -180,6 +182,7 @@ const HeroSection = ({ serverUrl = 'https://smart-shop-backend-ivory.vercel.app'
     const [current, setCurrent] = useState(0);
     const [copiedCode, setCopiedCode] = useState(null);
     const isRTL = language === 'ar';
+    const serverUrl = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
 
     const fetchHeroData = useCallback(async () => {
         setLoading(true);
@@ -230,6 +233,7 @@ const HeroSection = ({ serverUrl = 'https://smart-shop-backend-ivory.vercel.app'
         }
         return offers.slice(0, 2);
     }, [sideOffersData, weeklyOfferData]);
+    
     const currentSlidePriceInfo = useMemo(() => {
         const slide = slidesData[current];
         if (!slide?.productRef || slide.productRef.basePrice == null) {
@@ -261,7 +265,7 @@ const HeroSection = ({ serverUrl = 'https://smart-shop-backend-ivory.vercel.app'
                     <div className="group relative col-span-1 overflow-hidden rounded-3xl border border-zinc-200 bg-white p-6 shadow-lg dark:border-zinc-800 dark:bg-zinc-900 sm:p-8 md:p-12 lg:col-span-2">
                         <div className="relative z-10 flex h-full flex-col items-center gap-8 md:flex-row">
                             <div className={`relative flex-shrink-0 ${isRTL ? 'md:order-1' : 'md:order-2'}`}>
-                                <img src={`${serverUrl}${currentSlideContent.image}`} alt={currentSlideContent.title} className="relative z-10 h-40 w-40 object-contain transition-transform duration-500 group-hover:scale-105 sm:h-48 sm:w-48 md:h-64 md:w-64" />
+                                <img src={currentSlideContent.image} alt={currentSlideContent.title} className="relative z-10 h-40 w-40 object-contain transition-transform duration-500 group-hover:scale-105 sm:h-48 sm:w-48 md:h-64 md:w-64" />
                             </div>
                             <div className={`w-full flex-1 text-center md:text-left ${isRTL ? 'md:order-2 md:text-right' : 'md:order-1'}`}>
                                 <p className="text-sm font-semibold uppercase tracking-wider text-primary dark:text-primary-light">{currentSlideContent.productRef?.category?.name || t('heroSection.featuredProduct')}</p>
@@ -305,7 +309,7 @@ const HeroSection = ({ serverUrl = 'https://smart-shop-backend-ivory.vercel.app'
                 
                 <div className="col-span-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6">
                     {combinedProductOffers.map((offer) => (
-                        <SideOfferCard key={offer._id} offer={offer} t={t} serverUrl={serverUrl} />
+                        <SideOfferCard key={offer._id} offer={offer} t={t} />
                     ))}
                     {displayedDiscounts.map((discount) => (
                         <DiscountCodeCard key={discount._id} discount={discount} t={t} isRTL={isRTL} handleCopyCode={handleCopyCode} copiedCode={copiedCode} />
