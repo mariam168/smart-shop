@@ -19,8 +19,6 @@ const AdvertisementList = () => {
     const [adToDelete, setAdToDelete] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const SERVER_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
-
     const formatDate = (dateString) => {
         if (!dateString) return '—';
         return new Intl.DateTimeFormat(language === 'ar' ? 'ar-EG' : 'en-GB').format(new Date(dateString));
@@ -68,6 +66,7 @@ const AdvertisementList = () => {
             ad.productRef?.name?.ar?.toLowerCase().includes(term)
         );
     }, [advertisements, searchTerm]);
+
     const getTranslatedText = (item, field) => {
         if (!item || !item[field]) return '';
         if (typeof item[field] === 'object') {
@@ -76,9 +75,8 @@ const AdvertisementList = () => {
         return item[field];
     };
 
-
     if (loading) { return (<div className="flex min-h-[60vh] w-full items-center justify-center"><Loader2 size={32} className="animate-spin text-primary" /></div>); }
-    if (error) { return (<div className="flex min-h-[60vh] w-full items-center justify-center p-4">{/*...Error JSX...*/}</div>); }
+    if (error) { return (<div className="flex min-h-[60vh] w-full items-center justify-center p-4"></div>); }
 
     return (
         <div className="bg-white dark:bg-zinc-900 p-4 sm:p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-zinc-800">
@@ -115,7 +113,7 @@ const AdvertisementList = () => {
                             <tr key={ad._id} className="hover:bg-gray-50 dark:hover:bg-zinc-800/50">
                                 <td className="p-4 flex items-center gap-4 min-w-[300px]">
                                     {ad.image ? 
-                                      <img src={`${SERVER_URL}${ad.image}`} alt={getTranslatedText(ad, 'title')} className="h-12 w-16 rounded-md object-cover flex-shrink-0" /> :
+                                      <img src={ad.image} alt={getTranslatedText(ad, 'title')} className="h-12 w-16 rounded-md object-cover flex-shrink-0" /> :
                                       <div className="h-12 w-16 rounded-md bg-gray-100 dark:bg-zinc-800 flex items-center justify-center flex-shrink-0"><ImageIcon className="h-6 w-6 text-gray-400"/></div>
                                     }
                                     <div className="flex flex-col">
@@ -126,7 +124,7 @@ const AdvertisementList = () => {
                                 <td className="p-4 min-w-[200px]">
                                     {ad.productRef ? (
                                         <div className="flex items-center gap-2">
-                                            {ad.productRef.mainImage && <img src={`${SERVER_URL}${ad.productRef.mainImage}`} alt={getTranslatedText(ad.productRef, 'name')} className="h-9 w-9 rounded-md object-cover flex-shrink-0" />}
+                                            {ad.productRef.mainImage && <img src={ad.productRef.mainImage} alt={getTranslatedText(ad.productRef, 'name')} className="h-9 w-9 rounded-md object-cover flex-shrink-0" />}
                                             <span className="text-gray-600 dark:text-zinc-300" dir={language === 'ar' ? 'rtl' : 'ltr'}>{getTranslatedText(ad.productRef, 'name')}</span>
                                         </div>
                                     ) : (

@@ -38,11 +38,10 @@ const getAdvertisementRaw = async (req, res, next) => {
 
 const createAdvertisement = async (req, res, next) => {
     const { title_en, title_ar, description_en, description_ar, link, type, isActive, order, startDate, endDate, discountPercentage, productRef } = req.body;
-    // --- التعديل هنا: العودة لاستخدام req.file ---
-    const imagePath = req.file ? `/uploads/advertisements/${req.file.filename}` : null;
+    const imagePath = req.file ? req.file.path : null;
 
     if (!title_en?.trim() || !title_ar?.trim()) {
-        if (req.file) deleteFile(imagePath);
+        if (req.file) await deleteFile(imagePath);
         return res.status(400).json({ message: 'Title (English & Arabic) are required.' });
     }
 
@@ -63,7 +62,7 @@ const createAdvertisement = async (req, res, next) => {
         if (productRef && mongoose.Types.ObjectId.isValid(productRef)) {
             const productExists = await Product.findById(productRef);
             if (!productExists) {
-                if (req.file) deleteFile(imagePath);
+                if (req.file) await deleteFile(imagePath);
                 return res.status(400).json({ message: 'Invalid productRef: Product not found.' });
             }
             newAdData.productRef = productRef;
@@ -75,7 +74,7 @@ const createAdvertisement = async (req, res, next) => {
         await advertisement.save();
         res.status(201).json(advertisement);
     } catch (err) {
-        if (req.file) deleteFile(imagePath);
+        if (req.file) await deleteFile(imagePath);
         next(err);
     }
 };
@@ -91,7 +90,7 @@ const updateAdvertisement = async (req, res, next) => {
     try {
         const advertisement = await Advertisement.findById(id);
         if (!advertisement) {
-            if (req.file) deleteFile(`/uploads/advertisements/${req.file.filename}`);
+            if (req.file) await deleteFile(req.file.path);
             return res.status(404).json({ message: 'Advertisement not found' });
         }
 
@@ -115,6 +114,7 @@ const updateAdvertisement = async (req, res, next) => {
             if (productRef && mongoose.Types.ObjectId.isValid(productRef)) {
                 const productExists = await Product.findById(productRef);
                 if (!productExists) {
+                    if (req.file) await deleteFile(req.file.path);
                     return res.status(400).json({ message: 'Invalid productRef: Product not found.' });
                 }
                 updateData.productRef = productRef;
@@ -123,12 +123,15 @@ const updateAdvertisement = async (req, res, next) => {
             }
         }
 
-        // --- التعديل هنا: العودة لاستخدام req.file ---
         if (req.file) {
-            deleteFile(advertisement.image);
-            updateData.image = `/uploads/advertisements/${req.file.filename}`;
+            if (advertisement.image) {
+                await deleteFile(advertisement.image);
+            }
+            updateData.image = req.file.path;
         } else if (clearImage === 'true') {
-            deleteFile(advertisement.image);
+            if (advertisement.image) {
+                await deleteFile(advertisement.image);
+            }
             updateData.image = '';
         }
 
@@ -141,16 +144,21 @@ const updateAdvertisement = async (req, res, next) => {
         res.json(updatedAdvertisement);
 
     } catch (err) {
-        if (req.file) deleteFile(`/uploads/advertisements/${req.file.filename}`);
+        if (req.file) await deleteFile(req.file.path);
         next(err);
     }
 };
 
 const deleteAdvertisement = async (req, res, next) => {
     try {
-        const advertisement = await Advertisement.findByIdAndDelete(req.params.id);
+        const advertisement = await Advertisement.findById(req.params.id);
         if (!advertisement) return res.status(404).json({ message: 'Advertisement not found' });
-        deleteFile(advertisement.image);
+        
+        if (advertisement.image) {
+            await deleteFile(advertisement.image);
+        }
+        
+        await Advertisement.findByIdAndDelete(req.params.id);
         res.json({ message: 'Advertisement deleted successfully' });
     } catch (err) {
         next(err);

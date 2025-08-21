@@ -45,7 +45,7 @@ export const useAdvertisementForm = (advertisementToEdit) => {
                         productRef: rawAd.productRef?._id || '',
                     });
                     if (rawAd.image) {
-                        setImage({ file: null, preview: `${serverUrl}${rawAd.image}`, clear: false });
+                        setImage({ file: null, preview: rawAd.image, clear: false });
                     }
                     if (rawAd.productRef) {
                         setProductSearchTerm(rawAd.productRef.name?.en || rawAd.productRef.name || '');
