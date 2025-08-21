@@ -39,18 +39,18 @@ export const useProductForm = (productToEdit) => {
                     setVariations((fullProduct.variations || []).map(v => {
                         const newOptions = (v.options || []).map(o => ({
                             ...o,
-                            preview: o.image ? `${serverUrl}${o.image}` : null
+                            preview: o.image || null
                         }));
                         return {...v, options: newOptions};
                     }));
                     if (fullProduct.mainImage) {
-                        setMainImage({ file: null, preview: `${serverUrl}${fullProduct.mainImage}`, clear: false });
+                        setMainImage({ file: null, preview: fullProduct.mainImage, clear: false });
                     }
                 })
                 .catch(() => setError('Failed to load product data.'))
                 .finally(() => setIsLoading(false));
         }
-    }, [productToEdit, serverUrl, fetchCategories]);
+    }, [productToEdit, fetchCategories]);
 
     const handleProductChange = (e) => {
         const { name, value } = e.target;
@@ -101,6 +101,7 @@ export const useProductForm = (productToEdit) => {
                 });
                 const newOption = {...o, skus};
                 if (String(o._id).startsWith('temp_')) delete newOption._id;
+                delete newOption.preview;
                 return newOption;
             });
             const newVariation = {...v, options};

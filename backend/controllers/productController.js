@@ -3,6 +3,7 @@ const Product = require('../models/productModel');
 const Advertisement = require('../models/advertisementModel');
 const { deleteFile } = require('../utils/fileHandler');
 const { translateDoc } = require('../utils/translator');
+
 const getAdminProductList = async (req, res, next) => {
     try {
         const products = await Product.find({}).populate('category').sort({ createdAt: -1 }).lean();
@@ -72,9 +73,11 @@ const getProductById = async (req, res, next) => {
         next(error);
     }
 };
+
 const createProduct = async (req, res, next) => {
     try {
         const { name_en, name_ar, description_en, description_ar, basePrice, category, subCategory, attributes, variations } = req.body;
+        
         const newProductData = {
             name: { en: name_en, ar: name_ar },
             description: { en: description_en || '', ar: description_ar || '' },
@@ -82,25 +85,27 @@ const createProduct = async (req, res, next) => {
             attributes: attributes ? JSON.parse(attributes) : [],
             variations: variations ? JSON.parse(variations) : [],
         };
+        
         const mainImage = req.files.find(f => f.fieldname === 'mainImage');
-        if (mainImage) newProductData.mainImage = `/uploads/products/${mainImage.filename}`;
+        if (mainImage) newProductData.mainImage = mainImage.path;
 
         if (newProductData.variations) {
             newProductData.variations.forEach((v, vIndex) => {
                 if (v.options) v.options.forEach((o, oIndex) => {
                     const imageFile = req.files.find(f => f.fieldname === `variationImage_${vIndex}_${oIndex}`);
-                    if (imageFile) o.image = `/uploads/products/${imageFile.filename}`;
+                    if (imageFile) o.image = imageFile.path;
                 });
             });
         }
+        
         const product = new Product(newProductData);
         await product.save();
         res.status(201).json(product);
     } catch (error) {
-        if (req.files) req.files.forEach(f => deleteFile(`/uploads/products/${f.filename}`));
         next(error);
     }
 };
+
 const updateProduct = async (req, res, next) => {
     try {
         const productToUpdate = await Product.findById(req.params.id);
@@ -116,10 +121,12 @@ const updateProduct = async (req, res, next) => {
 
         const mainImageFile = req.files.find(f => f.fieldname === 'mainImage');
         if (mainImageFile) {
-            deleteFile(productToUpdate.mainImage);
-            productToUpdate.mainImage = `/uploads/products/${mainImageFile.filename}`;
-        } else if (clearMainImage === 'true') {
-            deleteFile(productToUpdate.mainImage);
+            if (productToUpdate.mainImage) {
+                await deleteFile(productToUpdate.mainImage);
+            }
+            productToUpdate.mainImage = mainImageFile.path;
+        } else if (clearMainImage === 'true' && productToUpdate.mainImage) {
+            await deleteFile(productToUpdate.mainImage);
             productToUpdate.mainImage = null;
         }
         
@@ -127,25 +134,32 @@ const updateProduct = async (req, res, next) => {
         const oldVariationOptionsImages = new Map();
         productToUpdate.variations.forEach(v => v.options.forEach(o => { if (o._id && o.image) oldVariationOptionsImages.set(o._id.toString(), o.image); }));
 
-        const updatedVariations = incomingVariations.map((iVar, vIndex) => {
-            const options = iVar.options.map((iOpt, oIndex) => {
+        const updatedVariationsPromises = incomingVariations.map(async (iVar, vIndex) => {
+            const optionsPromises = iVar.options.map(async (iOpt, oIndex) => {
                 const imageFile = req.files.find(f => f.fieldname === `variationImage_${vIndex}_${oIndex}`);
                 let imagePath = iOpt.image;
                 if (imageFile) {
                     if (iOpt._id && oldVariationOptionsImages.has(iOpt._id.toString())) {
-                        deleteFile(oldVariationOptionsImages.get(iOpt._id.toString()));
+                        await deleteFile(oldVariationOptionsImages.get(iOpt._id.toString()));
                     }
-                    imagePath = `/uploads/products/${imageFile.filename}`;
+                    imagePath = imageFile.path;
                 }
                 return { ...iOpt, _id: iOpt._id || new mongoose.Types.ObjectId(), image: imagePath, skus: iOpt.skus.map(s => ({...s, _id: s._id || new mongoose.Types.ObjectId()})) };
             });
+            const options = await Promise.all(optionsPromises);
             return { ...iVar, _id: iVar._id || new mongoose.Types.ObjectId(), options: options };
         });
         
+        const updatedVariations = await Promise.all(updatedVariationsPromises);
+        
         const newOptionIds = new Set(updatedVariations.flatMap(v => v.options.map(o => o._id.toString())));
+        const deletionPromises = [];
         for (const [optionId, imagePath] of oldVariationOptionsImages.entries()) {
-            if (!newOptionIds.has(optionId)) deleteFile(imagePath);
+            if (!newOptionIds.has(optionId)) {
+                deletionPromises.push(deleteFile(imagePath));
+            }
         }
+        await Promise.all(deletionPromises);
 
         productToUpdate.variations = updatedVariations;
         productToUpdate.markModified('variations');
@@ -153,23 +167,31 @@ const updateProduct = async (req, res, next) => {
         const updatedProduct = await productToUpdate.save();
         res.json(updatedProduct);
     } catch (error) {
-        if (req.files) req.files.forEach(f => deleteFile(`/uploads/products/${f.filename}`));
         next(error);
     }
 };
+
 const deleteProduct = async (req, res, next) => {
     try {
-        const productToDelete = await Product.findByIdAndDelete(req.params.id);
+        const productToDelete = await Product.findById(req.params.id);
         if (!productToDelete) return res.status(404).json({ message: 'Product not found.' });
 
-        deleteFile(productToDelete.mainImage);
-        productToDelete.variations.forEach(v => v.options.forEach(o => { if (o.image) deleteFile(o.image); }));
+        const deletionPromises = [];
+        if (productToDelete.mainImage) {
+            deletionPromises.push(deleteFile(productToDelete.mainImage));
+        }
+        productToDelete.variations.forEach(v => v.options.forEach(o => { if (o.image) deletionPromises.push(deleteFile(o.image)); }));
+
+        await Promise.all(deletionPromises);
+        
+        await Product.findByIdAndDelete(req.params.id);
 
         res.json({ message: 'Product deleted successfully.' });
     } catch (error) {
         next(error);
     }
 };
+
 const createProductReview = async (req, res, next) => {
     const { rating, comment } = req.body;
     try {

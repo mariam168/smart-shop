@@ -20,8 +20,6 @@ const ProductList = () => {
     const [isDeleting, setIsDeleting] = useState(false);
     const [copiedId, setCopiedId] = useState(null);
 
-    const SERVER_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
-
     const fetchProducts = useCallback(async () => {
         try {
             setLoading(true);
@@ -73,7 +71,7 @@ const ProductList = () => {
     }, [products, searchTerm]);
 
     if (loading) { return (<div className="flex min-h-[60vh] w-full items-center justify-center"><Loader2 size={32} className="animate-spin text-primary" /></div>); }
-    if (error) { return (<div className="flex min-h-[60vh] w-full items-center justify-center p-4">{/*...Error JSX...*/}</div>); }
+    if (error) { return (<div className="flex min-h-[60vh] w-full items-center justify-center p-4"></div>); }
 
     return (
         <div className="bg-white dark:bg-zinc-900 p-4 sm:p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-zinc-800">
@@ -110,7 +108,7 @@ const ProductList = () => {
                             <tr key={product._id} className="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors">
                                 <td className="p-4 flex items-center gap-4 min-w-[250px]">
                                     <div className="h-12 w-12 rounded-lg bg-gray-100 dark:bg-zinc-800 flex items-center justify-center flex-shrink-0">
-                                        {product.mainImage ? <img src={`${SERVER_URL}${product.mainImage}`} alt={product.name?.[language]} className="h-full w-full object-cover rounded-lg" /> : <ImageIcon className="h-6 w-6 text-gray-400" />}
+                                        {product.mainImage ? <img src={product.mainImage} alt={product.name?.[language]} className="h-full w-full object-cover rounded-lg" /> : <ImageIcon className="h-6 w-6 text-gray-400" />}
                                     </div>
                                     <div>
                                         <p className="font-semibold text-gray-800 dark:text-white" dir={language === 'ar' ? 'rtl' : 'ltr'}>{product.name?.[language] || product.name?.en}</p>
