@@ -99,7 +99,7 @@ const AdminOrderDetailsPage = () => {
                     <DetailCard title={t('adminOrdersPage.orderItems')} icon={<Package />}>
                         {order.orderItems.map((item, index) => (
                             <div key={`${item.product}-${index}`} className="flex items-start border-b border-zinc-200 dark:border-zinc-800 pb-4 last:border-b-0 last:pb-0">
-                                <img src={item.image ? `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000'}${item.image}` : `https://via.placeholder.com/80?text=N/A`} alt={getDisplayName(item.name)} className="w-16 h-16 object-cover rounded-lg mr-4 border border-zinc-200 dark:border-zinc-700" />
+                                <img src={item.image || `https://via.placeholder.com/80?text=N/A`} alt={getDisplayName(item.name)} className="w-16 h-16 object-cover rounded-lg mr-4 border border-zinc-200 dark:border-zinc-700" />
                                 <div className="flex-1">
                                     <Link to={`/shop/${item.product}`} className="font-semibold text-zinc-800 dark:text-white hover:text-primary dark:hover:text-primary-light">{getDisplayName(item.name)}</Link>
                                     <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">{item.quantity} x {formatPrice(item.price)}</p>
