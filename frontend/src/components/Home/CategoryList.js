@@ -93,7 +93,7 @@ const CategoryList = () => {
                             >
                                 <div className="relative w-28 h-28 sm:w-32 sm:h-32 rounded-3xl overflow-hidden mb-5 bg-gray-200 dark:bg-zinc-800 transition-all duration-300 shadow-lg group-hover:shadow-xl group-hover:shadow-primary-light/20 group-hover:ring-4 group-hover:ring-primary-light/50">
                                     <img
-                                        src={`${SERVER_URL}${category.imageUrl}`}
+                                        src={category.imageUrl}
                                         alt={category.name || t('categoryList.imageAlt')}
                                         className="w-full h-full object-cover transition-transform duration-300 transform group-hover:scale-110"
                                         onError={(e) => { e.target.onerror = null; e.target.src = `https://via.placeholder.com/300?text=${encodeURIComponent(category.name?.[0] || '?')}`; }}
