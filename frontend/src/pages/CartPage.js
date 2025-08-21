@@ -4,14 +4,12 @@ import { useLanguage } from '../context/LanguageContext';
 import { Trash2, Plus, Minus, ShoppingCart, Loader2, ImageOff, ArrowRight } from 'lucide-react'; 
 import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
-import { useAuth } from '../context/AuthContext';
 
 const CartPage = () => {
     const { t, language } = useLanguage(); 
     const navigate = useNavigate();
     const { showToast } = useToast(); 
     const { cartItems, loadingCart, updateCartItemQuantity, removeFromCart, cartTotal } = useCart();
-    const { API_BASE_URL } = useAuth();
 
     const validCartItems = useMemo(() => cartItems.filter(item => item.product), [cartItems]);
 
@@ -82,7 +80,7 @@ const CartPage = () => {
                                 <div key={`${item.product._id}-${item.selectedVariant || 'default'}`} className="flex flex-col sm:flex-row items-start gap-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
                                     <Link to={`/shop/${item.product._id}`} className="flex-shrink-0">
                                         <div className="h-28 w-28 overflow-hidden rounded-lg bg-gray-100 dark:bg-zinc-800">
-                                            {item.image ? <img src={`${API_BASE_URL}${item.image}`} alt={item.name.en} className="h-full w-full object-cover"/> : <div className="flex h-full w-full items-center justify-center"><ImageOff className="text-gray-400"/></div>}
+                                            {item.image ? <img src={item.image} alt={item.name.en} className="h-full w-full object-cover"/> : <div className="flex h-full w-full items-center justify-center"><ImageOff className="text-gray-400"/></div>}
                                         </div>
                                     </Link>
                                     <div className="flex flex-1 flex-col justify-between self-stretch">
