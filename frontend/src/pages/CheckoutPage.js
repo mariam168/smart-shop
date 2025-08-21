@@ -12,7 +12,7 @@ const CheckoutPage = () => {
     const { showToast } = useToast();
     const navigate = useNavigate();
     const { cartItems, loadingCart, clearCart, cartTotal } = useCart();
-    const { isAuthenticated, token, API_BASE_URL = 'https://smart-shop-backend-ivory.vercel.app' } = useAuth();
+    const { isAuthenticated, token, API_BASE_URL } = useAuth();
 
     const [shippingAddress, setShippingAddress] = useState({
         address: '123 Main St', city: 'Cairo', postalCode: '11511', country: 'Egypt', phone: ''
@@ -152,7 +152,7 @@ const CheckoutPage = () => {
                                 {cartItems.map(item => (
                                     <div key={item.uniqueId || `${item.product}-${item.selectedVariant}`} className="flex items-center gap-4">
                                         <div className="h-16 w-16 flex-shrink-0 overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-800">
-                                            {item.image ? <img src={`${API_BASE_URL}${item.image}`} alt={item.name.en} className="h-full w-full object-cover"/> : <ImageOff className="h-full w-full text-zinc-400 p-4"/>}
+                                            {item.image ? <img src={item.image} alt={item.name.en} className="h-full w-full object-cover"/> : <ImageOff className="h-full w-full text-zinc-400 p-4"/>}
                                         </div>
                                         <div className="flex-1"><p className="text-sm font-medium text-zinc-900 dark:text-white line-clamp-1">{language === 'ar' ? item.name.ar : item.name.en}</p><p className="text-xs text-zinc-500 dark:text-zinc-400">{t('general.quantity')}: {item.quantity}</p></div>
                                         <p className="flex-shrink-0 text-sm font-medium text-zinc-700 dark:text-zinc-300">{formatPrice(item.price * item.quantity)}</p>
