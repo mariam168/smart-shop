@@ -135,7 +135,7 @@ const updateProduct = async (req, res, next) => {
         productToUpdate.variations.forEach(v => v.options.forEach(o => { if (o._id && o.image) oldVariationOptionsImages.set(o._id.toString(), o.image); }));
 
         const updatedVariationsPromises = incomingVariations.map(async (iVar, vIndex) => {
-            const optionsPromises = iVar.options.map(async (iOpt, oIndex) => {
+            const optionsPromises = (iVar.options || []).map(async (iOpt, oIndex) => {
                 const imageFile = req.files.find(f => f.fieldname === `variationImage_${vIndex}_${oIndex}`);
                 let imagePath = iOpt.image;
                 if (imageFile) {
@@ -144,7 +144,8 @@ const updateProduct = async (req, res, next) => {
                     }
                     imagePath = imageFile.path;
                 }
-                return { ...iOpt, _id: iOpt._id || new mongoose.Types.ObjectId(), image: imagePath, skus: iOpt.skus.map(s => ({...s, _id: s._id || new mongoose.Types.ObjectId()})) };
+                const skus = (iOpt.skus || []).map(s => ({ ...s, _id: s._id || new mongoose.Types.ObjectId() }));
+                return { ...iOpt, _id: iOpt._id || new mongoose.Types.ObjectId(), image: imagePath, skus: skus };
             });
             const options = await Promise.all(optionsPromises);
             return { ...iVar, _id: iVar._id || new mongoose.Types.ObjectId(), options: options };
