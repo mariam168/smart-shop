@@ -39,6 +39,7 @@ export const useProductForm = (productToEdit) => {
                     setVariations((fullProduct.variations || []).map(v => {
                         const newOptions = (v.options || []).map(o => ({
                             ...o,
+                            skus: o.skus || [],
                             preview: o.image || null
                         }));
                         return {...v, options: newOptions};
@@ -82,7 +83,7 @@ export const useProductForm = (productToEdit) => {
         }
     };
     
-    const addSkuToOption = (vIndex, oIndex) => setVariations(prev => prev.map((v, i) => (i === vIndex ? { ...v, options: v.options.map((o, j) => (j === oIndex ? { ...o, skus: [...o.skus, { _id: `temp_${Date.now()}`, name_en: '', name_ar: '', price: product.basePrice, stock: 0, sku: '' }] } : o)) } : v)));
+    const addSkuToOption = (vIndex, oIndex) => setVariations(prev => prev.map((v, i) => (i === vIndex ? { ...v, options: v.options.map((o, j) => (j === oIndex ? { ...o, skus: [...(o.skus || []), { _id: `temp_${Date.now()}`, name_en: '', name_ar: '', price: product.basePrice, stock: 0, sku: '' }] } : o)) } : v)));
     const removeSku = (vIndex, oIndex, sIndex) => setVariations(prev => prev.map((v, i) => (i === vIndex ? { ...v, options: v.options.map((o, j) => (j === oIndex ? { ...o, skus: o.skus.filter((_, k) => k !== sIndex) } : o)) } : v)));
     const handleSkuChange = (vIndex, oIndex, sIndex, field, value) => setVariations(prev => prev.map((v, i) => (i === vIndex ? { ...v, options: v.options.map((o, j) => (j === oIndex ? { ...o, skus: o.skus.map((s, k) => (k === sIndex ? { ...s, [field]: value } : s)) } : v)) } : v)));
 
@@ -93,8 +94,8 @@ export const useProductForm = (productToEdit) => {
         formData.append('attributes', JSON.stringify(attributes));
         
         const finalVariations = variations.map(v => {
-            const options = v.options.map(o => {
-                const skus = o.skus.map(s => {
+            const options = (v.options || []).map(o => {
+                const skus = (o.skus || []).map(s => {
                     const newSku = {...s};
                     if (String(s._id).startsWith('temp_')) delete newSku._id;
                     return newSku;

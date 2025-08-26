@@ -144,7 +144,7 @@ const updateProduct = async (req, res, next) => {
                     }
                     imagePath = imageFile.path;
                 }
-                const skus = (iOpt.skus || []).map(s => ({ ...s, _id: s._id || new mongoose.Types.ObjectId() }));
+                const skus = (iOpt.skus || []).map(s => ({...s, _id: s._id || new mongoose.Types.ObjectId()}));
                 return { ...iOpt, _id: iOpt._id || new mongoose.Types.ObjectId(), image: imagePath, skus: skus };
             });
             const options = await Promise.all(optionsPromises);
@@ -153,7 +153,7 @@ const updateProduct = async (req, res, next) => {
         
         const updatedVariations = await Promise.all(updatedVariationsPromises);
         
-        const newOptionIds = new Set(updatedVariations.flatMap(v => v.options.map(o => o._id.toString())));
+        const newOptionIds = new Set(updatedVariations.flatMap(v => (v.options || []).map(o => o._id.toString())));
         const deletionPromises = [];
         for (const [optionId, imagePath] of oldVariationOptionsImages.entries()) {
             if (!newOptionIds.has(optionId)) {
