@@ -76,9 +76,9 @@ const ShopPage = () => {
             }
             
             if (Array.isArray(productsData) && productsData.length > 0) {
-                const prices = productsData.map((p) => {
-                    if (p.advertisement && p.advertisement.discountPercentage > 0) {
-                        return p.basePrice * (1 - p.advertisement.discountPercentage / 100);
+                 const prices = productsData.flatMap(p => {
+                    if (p.variations && p.variations.length > 0) {
+                        return p.variations.flatMap(v => v.options.map(o => o.price));
                     }
                     return p.basePrice || 0;
                 }).filter(price => price > 0);
@@ -105,20 +105,27 @@ const ShopPage = () => {
 
     const displayedProducts = useMemo(() => {
         const searchTerm = searchParams.get('search')?.toLowerCase() || '';
+        
         let processedProducts = allProducts.map((p) => {
             const adData = p.advertisement;
             let displayPrice = p.basePrice;
 
+            if (p.variations && p.variations.length > 0 && p.variations[0].options && p.variations[0].options.length > 0) {
+                displayPrice = p.variations[0].options[0].price;
+            }
+
             if (adData && adData.discountPercentage > 0) {
-                displayPrice = p.basePrice * (1 - (adData.discountPercentage / 100));
+                displayPrice = displayPrice * (1 - (adData.discountPercentage / 100));
             }
             return { ...p, displayPrice, localizedProductName: p.name };
         });   
+
         if (searchTerm) {
             processedProducts = processedProducts.filter(p => 
                 p.localizedProductName.toLowerCase().includes(searchTerm)
             );
         }
+
         return processedProducts
             .filter((p) => selectedCategory === 'All' || p.category?._id === selectedCategory)
             .filter((p) => selectedSubCategory === 'All' || p.subCategory === selectedSubCategory)
@@ -140,9 +147,9 @@ const ShopPage = () => {
         setSelectedCategory('All');
         setSelectedSubCategory('All');
         
-        const prices = allProducts.map((p) => {
-            if (p.advertisement && p.advertisement.discountPercentage > 0) {
-                return p.basePrice * (1 - p.advertisement.discountPercentage / 100);
+        const prices = allProducts.flatMap(p => {
+            if (p.variations && p.variations.length > 0) {
+                return p.variations.flatMap(v => v.options.map(o => o.price));
             }
             return p.basePrice || 0;
         }).filter(price => price > 0);
