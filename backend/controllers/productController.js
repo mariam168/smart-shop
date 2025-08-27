@@ -132,7 +132,7 @@ const updateProduct = async (req, res, next) => {
         
         const incomingVariations = variations ? JSON.parse(variations) : [];
         const oldVariationOptionsImages = new Map();
-        productToUpdate.variations.forEach(v => v.options.forEach(o => { if (o._id && o.image) oldVariationOptionsImages.set(o._id.toString(), o.image); }));
+        (productToUpdate.variations || []).forEach(v => (v.options || []).forEach(o => { if (o._id && o.image) oldVariationOptionsImages.set(o._id.toString(), o.image); }));
 
         const updatedVariationsPromises = incomingVariations.map(async (iVar, vIndex) => {
             const optionsPromises = (iVar.options || []).map(async (iOpt, oIndex) => {
@@ -144,8 +144,7 @@ const updateProduct = async (req, res, next) => {
                     }
                     imagePath = imageFile.path;
                 }
-                const skus = (iOpt.skus || []).map(s => ({...s, _id: s._id || new mongoose.Types.ObjectId()}));
-                return { ...iOpt, _id: iOpt._id || new mongoose.Types.ObjectId(), image: imagePath, skus: skus };
+                return { ...iOpt, _id: iOpt._id || new mongoose.Types.ObjectId(), image: imagePath };
             });
             const options = await Promise.all(optionsPromises);
             return { ...iVar, _id: iVar._id || new mongoose.Types.ObjectId(), options: options };
@@ -181,7 +180,7 @@ const deleteProduct = async (req, res, next) => {
         if (productToDelete.mainImage) {
             deletionPromises.push(deleteFile(productToDelete.mainImage));
         }
-        productToDelete.variations.forEach(v => v.options.forEach(o => { if (o.image) deletionPromises.push(deleteFile(o.image)); }));
+        (productToDelete.variations || []).forEach(v => (v.options || []).forEach(o => { if (o.image) deletionPromises.push(deleteFile(o.image)); }));
 
         await Promise.all(deletionPromises);
         

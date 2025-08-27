@@ -36,14 +36,10 @@ export const useProductForm = (productToEdit) => {
                         subCategory: fullProduct.subCategory?._id || fullProduct.subCategory || '',
                     });
                     setAttributes(fullProduct.attributes || []);
-                    setVariations((fullProduct.variations || []).map(v => {
-                        const newOptions = (v.options || []).map(o => ({
-                            ...o,
-                            skus: o.skus || [],
-                            preview: o.image || null
-                        }));
-                        return {...v, options: newOptions};
-                    }));
+                    setVariations((fullProduct.variations || []).map(v => ({
+                        ...v,
+                        options: (v.options || []).map(o => ({ ...o, preview: o.image || null }))
+                    })));
                     if (fullProduct.mainImage) {
                         setMainImage({ file: null, preview: fullProduct.mainImage, clear: false });
                     }
@@ -72,9 +68,32 @@ export const useProductForm = (productToEdit) => {
     const removeVariation = (vIndex) => setVariations(prev => prev.filter((_, i) => i !== vIndex));
     const handleVariationNameChange = (vIndex, lang, value) => setVariations(prev => prev.map((v, i) => (i === vIndex ? { ...v, [`name_${lang}`]: value } : v)));
 
-    const addOptionToVariation = (vIndex) => setVariations(prev => prev.map((v, i) => (i === vIndex ? { ...v, options: [...v.options, { _id: `temp_${Date.now()}`, name_en: '', name_ar: '', image: null, preview: null, skus: [] }] } : v)));
+    const addOptionToVariation = (vIndex) => {
+        const newOption = {
+            _id: `temp_option_${Date.now()}`,
+            name_en: '',
+            name_ar: '',
+            image: null,
+            preview: null,
+            price: product.basePrice || 0,
+            stock: 0,
+            sku: ''
+        };
+        setVariations(prev => prev.map((v, i) => (
+            i === vIndex ? { ...v, options: [...(v.options || []), newOption] } : v
+        )));
+    };
+    
     const removeOption = (vIndex, oIndex) => setVariations(prev => prev.map((v, i) => (i === vIndex ? { ...v, options: v.options.filter((_, j) => j !== oIndex) } : v)));
-    const handleOptionNameChange = (vIndex, oIndex, lang, value) => setVariations(prev => prev.map((v, i) => (i === vIndex ? { ...v, options: v.options.map((o, j) => (j === oIndex ? { ...o, [`name_${lang}`]: value } : o)) } : v)));
+    
+    const handleOptionChange = (vIndex, oIndex, field, value) => {
+        setVariations(prev => prev.map((v, i) => (
+            i === vIndex 
+            ? { ...v, options: v.options.map((o, j) => (j === oIndex ? { ...o, [field]: value } : o)) } 
+            : v
+        )));
+    };
+    
     const handleOptionImageChange = (vIndex, oIndex, file) => {
         if (file) {
             const key = `variationImage_${vIndex}_${oIndex}`;
@@ -82,10 +101,6 @@ export const useProductForm = (productToEdit) => {
             setVariations(prev => prev.map((v, i) => (i === vIndex ? { ...v, options: v.options.map((o, j) => (j === oIndex ? { ...o, preview: URL.createObjectURL(file) } : o)) } : v)));
         }
     };
-    
-    const addSkuToOption = (vIndex, oIndex) => setVariations(prev => prev.map((v, i) => (i === vIndex ? { ...v, options: v.options.map((o, j) => (j === oIndex ? { ...o, skus: [...(o.skus || []), { _id: `temp_${Date.now()}`, name_en: '', name_ar: '', price: product.basePrice, stock: 0, sku: '' }] } : o)) } : v)));
-    const removeSku = (vIndex, oIndex, sIndex) => setVariations(prev => prev.map((v, i) => (i === vIndex ? { ...v, options: v.options.map((o, j) => (j === oIndex ? { ...o, skus: o.skus.filter((_, k) => k !== sIndex) } : o)) } : v)));
-    const handleSkuChange = (vIndex, oIndex, sIndex, field, value) => setVariations(prev => prev.map((v, i) => (i === vIndex ? { ...v, options: v.options.map((o, j) => (j === oIndex ? { ...o, skus: o.skus.map((s, k) => (k === sIndex ? { ...s, [field]: value } : s)) } : v)) } : v)));
 
     const prepareFormData = () => {
         const formData = new FormData();
@@ -93,14 +108,9 @@ export const useProductForm = (productToEdit) => {
         
         formData.append('attributes', JSON.stringify(attributes));
         
-        const finalVariations = variations.map(v => {
+        const finalVariations = (variations || []).map(v => {
             const options = (v.options || []).map(o => {
-                const skus = (o.skus || []).map(s => {
-                    const newSku = {...s};
-                    if (String(s._id).startsWith('temp_')) delete newSku._id;
-                    return newSku;
-                });
-                const newOption = {...o, skus};
+                const newOption = {...o};
                 if (String(o._id).startsWith('temp_')) delete newOption._id;
                 delete newOption.preview;
                 return newOption;
@@ -125,8 +135,7 @@ export const useProductForm = (productToEdit) => {
         product, handleProductChange,
         attributes, addAttribute, removeAttribute, handleAttributeChange,
         variations, addVariation, removeVariation, handleVariationNameChange,
-        addOptionToVariation, removeOption, handleOptionNameChange, handleOptionImageChange,
-        addSkuToOption, removeSku, handleSkuChange,
+        addOptionToVariation, removeOption, handleOptionChange, handleOptionImageChange,
         mainImage, handleMainImageChange, handleRemoveMainImage,
         categories, isLoading, error,
         prepareFormData
