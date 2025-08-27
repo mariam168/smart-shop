@@ -1,12 +1,13 @@
 const Cart = require('../models/cartModel');
 const Product = require('../models/productModel');
 const Advertisement = require('../models/advertisementModel');
+
 const getCart = async (req, res, next) => {
     try {
         let userCart = await Cart.findOne({ user: req.user.id })
             .populate({
                 path: 'items.product',
-                select: 'name mainImage variations stock'
+                select: 'name mainImage variations'
             });
 
         if (!userCart) {
@@ -23,6 +24,7 @@ const getCart = async (req, res, next) => {
         next(error);
     }
 };
+
 const addToCart = async (req, res, next) => {
     try {
         const { productId, quantity = 1, selectedVariantId = null } = req.body;
@@ -43,23 +45,34 @@ const addToCart = async (req, res, next) => {
         let variantDetailsText = '';
 
         if (selectedVariantId) {
-            const sku = product.variations
-                .flatMap(v => v.options.flatMap(o => o.skus))
-                .find(s => s._id.equals(selectedVariantId));
-            if (!sku) return res.status(400).json({ message: 'Variant not found' });
-            priceForCalculation = sku.price; 
-            finalStock = sku.stock;
-            const optionParent = product.variations.flatMap(v => v.options).find(o => o.skus.some(s => s._id.equals(selectedVariantId)));
-            if (optionParent?.image) finalImage = optionParent.image;
-            variantDetailsText = [optionParent?.name_en, sku.name_en].filter(Boolean).join(' / ');
+            const option = product.variations
+                .flatMap(v => v.options)
+                .find(o => o._id.equals(selectedVariantId));
+            
+            if (!option) return res.status(400).json({ message: 'Variant not found' });
+            
+            priceForCalculation = option.price; 
+            finalStock = option.stock;
+            if (option.image) finalImage = option.image;
+
+            const variationParent = product.variations.find(v => v.options.some(o => o._id.equals(selectedVariantId)));
+            const variationName = variationParent ? (variationParent.name_en || '') : '';
+            const optionName = option.name_en || '';
+            variantDetailsText = [variationName, optionName].filter(Boolean).join(': ');
+            
         } else {
+             if (product.variations && product.variations.length > 0) {
+                return res.status(400).json({ message: 'Please select a product variant.' });
+            }
             finalStock = product.stock;
         }
 
         const activeAd = await Advertisement.findOne({
             productRef: productId, isActive: true,
-            $or: [{ startDate: null }, { startDate: { $lte: new Date() } }],
-            $or: [{ endDate: null }, { endDate: { $gte: new Date() } }]
+            $and: [
+                { $or: [{ startDate: null }, { startDate: { $lte: new Date() } }] },
+                { $or: [{ endDate: null }, { endDate: { $gte: new Date() } }] }
+            ]
         });
         
         let finalPrice = priceForCalculation;
@@ -87,6 +100,7 @@ const addToCart = async (req, res, next) => {
         next(error);
     }
 };
+
 const updateCartItem = async (req, res, next) => {
     try {
         const { productId, quantity, selectedVariantId = null } = req.body;
@@ -116,6 +130,7 @@ const updateCartItem = async (req, res, next) => {
         next(error);
     }
 };
+
 const clearCart = async (req, res, next) => {
     try {
         await Cart.findOneAndUpdate({ user: req.user.id }, { $set: { items: [] } });

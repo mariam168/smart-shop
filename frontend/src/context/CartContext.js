@@ -45,7 +45,8 @@ export const CartProvider = ({ children }) => {
             setLoadingCart(false);
         }
     }, [isAuthenticated, fetchCart]);
-    const addToCart = async (product, quantity = 1, selectedSkuId = null) => { 
+    
+    const addToCart = async (product, quantity = 1, selectedOptionId = null) => { 
         if (!isAuthenticated) { 
             showToast(t('cart.loginRequired'), 'info'); 
             navigate('/login'); 
@@ -60,7 +61,7 @@ export const CartProvider = ({ children }) => {
             await axios.post(`${API_BASE_URL}/api/cart`, { 
                 productId: product._id,
                 quantity, 
-                selectedVariantId: selectedSkuId 
+                selectedVariantId: selectedOptionId 
             }, { headers: { Authorization: `Bearer ${token}` } });
             await fetchCart();
             showToast(t('cart.productAddedSuccess'), 'success');
@@ -85,6 +86,7 @@ export const CartProvider = ({ children }) => {
             setLoadingCart(false);
         }
     };
+    
     const removeFromCart = async (productId, selectedVariantId = null) => {
         await updateCartItemQuantity(productId, 0, selectedVariantId);
     };
