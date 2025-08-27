@@ -7,6 +7,8 @@ import { Loader2, Info, DollarSign, ShoppingCart, Users, Package, TrendingUp, Ba
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { Link } from 'react-router-dom';
 
+// -- Helper Functions & Components --
+
 const formatCurrency = (amount, language, currencyCode) => {
     return new Intl.NumberFormat(language === 'ar' ? 'ar-EG' : 'en-US', {
         style: 'currency',
@@ -16,83 +18,86 @@ const formatCurrency = (amount, language, currencyCode) => {
     }).format(amount || 0);
 };
 
-const SalesChart = ({ data, language, currencyCode }) => (
-    <div className="lg:col-span-2 bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-zinc-800">
+const DashboardPanel = ({ title, icon, children, className = "" }) => (
+    <div className={`bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-zinc-800 ${className}`}>
         <h3 className="font-bold text-lg text-gray-800 dark:text-white flex items-center gap-2 mb-4">
-            <TrendingUp size={20} className="text-primary"/>
-            Sales Over Time
+            {icon}
+            {title}
         </h3>
-        <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-                <RechartsBarChart data={data} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                    <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="hsl(var(--muted-foreground))" />
-                    <YAxis tickFormatter={(value) => formatCurrency(value, language, currencyCode)} tick={{ fontSize: 12 }} stroke="hsl(var(--muted-foreground))" />
-                    <Tooltip
-                        cursor={{ fill: 'hsla(var(--primary), 0.1)' }}
-                        contentStyle={{
-                            backgroundColor: 'hsl(var(--background))',
-                            borderColor: 'hsl(var(--border))',
-                            borderRadius: '0.5rem',
-                        }}
-                        labelStyle={{ color: 'hsl(var(--foreground))' }}
-                        formatter={(value) => [formatCurrency(value, language, currencyCode), 'Revenue']}
-                    />
-                    <Bar dataKey="revenue" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
-                </RechartsBarChart>
-            </ResponsiveContainer>
-        </div>
+        {children}
     </div>
 );
 
-const TopProductsChart = ({ data, t }) => (
-    <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-zinc-800">
-        <h3 className="font-bold text-lg text-gray-800 dark:text-white flex items-center gap-2 mb-4">
-            <BarChart size={20} className="text-primary"/>
-            {t('dashboard.topSellingProducts')}
-        </h3>
-        <div className="h-72">
-            <ResponsiveContainer width="100%" height="100%">
-                <RechartsBarChart layout="vertical" data={data} margin={{ top: 5, right: 30, left: 10, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false}/>
-                    <XAxis type="number" hide />
-                    <YAxis dataKey="name" type="category" width={80} tickLine={false} axisLine={false} tick={{ fontSize: 12 }} stroke="hsl(var(--muted-foreground))" />
-                    <Tooltip
-                        cursor={{ fill: 'hsla(var(--primary), 0.1)' }}
-                        contentStyle={{ backgroundColor: 'hsl(var(--background))', borderColor: 'hsl(var(--border))', borderRadius: '0.5rem' }}
-                        formatter={(value) => [value, 'Sold']}
-                    />
-                    <Bar dataKey="quantitySold" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} barSize={20} />
-                </RechartsBarChart>
-            </ResponsiveContainer>
-        </div>
+const SalesChart = ({ data, language, currencyCode }) => (
+    <div className="h-80">
+        <ResponsiveContainer width="100%" height="100%">
+            <RechartsBarChart data={data} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="hsl(var(--muted-foreground))" />
+                <YAxis tickFormatter={(value) => formatCurrency(value, language, currencyCode)} tick={{ fontSize: 12 }} stroke="hsl(var(--muted-foreground))" />
+                <Tooltip
+                    cursor={{ fill: 'hsla(var(--primary), 0.1)' }}
+                    contentStyle={{ backgroundColor: 'hsl(var(--background))', borderColor: 'hsl(var(--border))', borderRadius: '0.5rem' }}
+                    labelStyle={{ color: 'hsl(var(--foreground))' }}
+                    formatter={(value) => [formatCurrency(value, language, currencyCode), 'Revenue']}
+                />
+                <Bar dataKey="revenue" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+            </RechartsBarChart>
+        </ResponsiveContainer>
+    </div>
+);
+
+const TopProductsChart = ({ data }) => (
+    <div className="h-80">
+        <ResponsiveContainer width="100%" height="100%">
+            <RechartsBarChart layout="vertical" data={data} margin={{ top: 5, right: 30, left: 10, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false}/>
+                <XAxis type="number" hide />
+                <YAxis dataKey="name" type="category" width={80} tickLine={false} axisLine={false} tick={{ fontSize: 12 }} stroke="hsl(var(--muted-foreground))" />
+                <Tooltip
+                    cursor={{ fill: 'hsla(var(--primary), 0.1)' }}
+                    contentStyle={{ backgroundColor: 'hsl(var(--background))', borderColor: 'hsl(var(--border))', borderRadius: '0.5rem' }}
+                    formatter={(value) => [value, 'Sold']}
+                />
+                <Bar dataKey="quantitySold" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} barSize={20} />
+            </RechartsBarChart>
+        </ResponsiveContainer>
     </div>
 );
 
 const RecentOrdersTable = ({ orders, language, currencyCode }) => (
-    <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-zinc-800">
-        <h3 className="font-bold text-lg text-gray-800 dark:text-white flex items-center gap-2 mb-4">
-            <UserCheck size={20} className="text-primary"/>
-            Recent Orders
-        </h3>
-        <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-                <tbody className="divide-y divide-gray-200 dark:divide-zinc-800">
-                    {orders.map(order => (
-                        <tr key={order._id}>
-                            <td className="py-3 px-4 font-medium text-gray-800 dark:text-white">{order.user?.name || 'User Deleted'}</td>
-                            <td className="py-3 px-4 text-gray-500 dark:text-zinc-400">{new Date(order.createdAt).toLocaleDateString()}</td>
-                            <td className="py-3 px-4 font-semibold text-right text-green-600">{formatCurrency(order.totalPrice, language, currencyCode)}</td>
-                            <td className="py-3 px-4 text-right">
-                                <Link to={`/admin/orders/${order._id}`} className="text-primary dark:text-primary-light hover:underline font-semibold">View</Link>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        </div>
+    <div className="overflow-x-auto">
+        <table className="min-w-full text-sm">
+            <tbody className="divide-y divide-gray-200 dark:divide-zinc-800">
+                {orders.map(order => (
+                    <tr key={order._id} className="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors">
+                        <td className="py-3 px-4 font-medium text-gray-800 dark:text-white">{order.user?.name || 'User Deleted'}</td>
+                        <td className="py-3 px-4 text-gray-500 dark:text-zinc-400">{new Date(order.createdAt).toLocaleDateString()}</td>
+                        <td className="py-3 px-4 font-semibold text-right text-green-600">{formatCurrency(order.totalPrice, language, currencyCode)}</td>
+                        <td className="py-3 px-4 text-right">
+                            <Link to={`/admin/orders/${order._id}`} className="text-primary dark:text-primary-light hover:underline font-semibold">View</Link>
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
     </div>
 );
+
+const LoadingSkeleton = () => (
+    <div className="space-y-8 animate-pulse">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => <div key={i} className="bg-white dark:bg-zinc-800 h-32 rounded-2xl"></div>)}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 bg-white dark:bg-zinc-800 h-96 rounded-2xl"></div>
+            <div className="bg-white dark:bg-zinc-800 h-96 rounded-2xl"></div>
+        </div>
+         <div className="bg-white dark:bg-zinc-800 h-64 rounded-2xl"></div>
+    </div>
+);
+
+// -- Main Component --
 
 const AdminDashboardPage = () => {
     const { t, language } = useLanguage();
@@ -141,18 +146,7 @@ const AdminDashboardPage = () => {
     })).reverse();
 
     if (loading) {
-        return (
-            <div className="space-y-8 animate-pulse">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {[...Array(4)].map((_, i) => <div key={i} className="bg-white dark:bg-zinc-800 h-32 rounded-2xl"></div>)}
-                </div>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <div className="lg:col-span-2 bg-white dark:bg-zinc-800 h-80 rounded-2xl"></div>
-                    <div className="bg-white dark:bg-zinc-800 h-80 rounded-2xl"></div>
-                </div>
-                 <div className="bg-white dark:bg-zinc-800 h-96 rounded-2xl"></div>
-            </div>
-        );
+        return <LoadingSkeleton />;
     }
 
     if (error) {
@@ -172,6 +166,11 @@ const AdminDashboardPage = () => {
     
     return (
         <div className="space-y-8">
+             <header>
+                <h1 className="text-3xl font-bold text-gray-800 dark:text-white">{t('dashboard.title')}</h1>
+                <p className="mt-1 text-gray-500 dark:text-zinc-400">{t('dashboard.subtitle')}</p>
+            </header>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard title={t('dashboard.totalRevenue')} value={formatCurrency(stats?.totalRevenue, language, t('general.currencyCode'))} icon={<DollarSign />} color="green" />
                 <StatCard title={t('dashboard.totalOrders')} value={stats?.totalOrders.toLocaleString(language) || '0'} icon={<ShoppingCart />} color="sky" />
@@ -180,11 +179,18 @@ const AdminDashboardPage = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <SalesChart data={salesData} language={language} currencyCode={t('general.currencyCode')} />
-                <TopProductsChart data={topProductsChartData} t={t} />
+                <DashboardPanel title={t('dashboard.salesOverTime')} icon={<TrendingUp size={20} className="text-primary"/>} className="lg:col-span-2">
+                    <SalesChart data={salesData} language={language} currencyCode={t('general.currencyCode')} />
+                </DashboardPanel>
+                
+                <DashboardPanel title={t('dashboard.topSellingProducts')} icon={<BarChart size={20} className="text-primary"/>}>
+                    <TopProductsChart data={topProductsChartData} />
+                </DashboardPanel>
             </div>
 
-            <RecentOrdersTable orders={recentOrders} language={language} currencyCode={t('general.currencyCode')} />
+            <DashboardPanel title={t('dashboard.recentOrders')} icon={<UserCheck size={20} className="text-primary"/>}>
+                <RecentOrdersTable orders={recentOrders} language={language} currencyCode={t('general.currencyCode')} />
+            </DashboardPanel>
         </div>
     );
 };
