@@ -49,7 +49,16 @@ const translations = {
             "savedSuccess":"تم الحفظ بنجاح",
 
         },
-        
+      
+        "dashboard": {
+            "totalRevenue": "الإيرادات الكلية",
+            "totalOrders": "عدد الطلبات",
+            "totalProducts": "عدد المنتجات",
+            "totalUsers": "عدد المستخدمين",
+            "salesOverTime": "مبيعات عبر الوقت",
+            "topSellingProducts": "المنتجات الأكثر مبيعاً",
+            "recentOrders": "الطلبات الحديثة",
+        },
         "productDetailsPage": {
              "reviews": "تقييمات",
       "customerReviews": "تقييمات العملاء",
@@ -879,6 +888,15 @@ const translations = {
                 "shipped": "Shipped",
                 "delivered": "Delivered",
                 "cancelled": "Cancelled"
+            },
+            "dashboard": {
+                "totalRevenue": "Total Revenue",
+                "totalOrders": "Total Orders",
+                "totalProducts": "Total Products",
+                "totalUsers": "Total Users",
+                "salesOverTime": "Sales Over Time",
+                "topSellingProducts": "Top Selling Products",
+                "recentOrders": "Recent Orders",
             },
             "orderStatuses": {
                 "pending": "Pending",
