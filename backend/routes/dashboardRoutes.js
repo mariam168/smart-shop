@@ -8,7 +8,7 @@ const {
 } = require('../controllers/dashboardController');
 const { protect, admin } = require('../middlewares/authMiddleware');
 
-router.use(protect, admin); 
+router.use(protect, admin);
 
 router.get('/summary-stats', getSummaryStats);
 router.get('/sales-over-time', getSalesOverTime);

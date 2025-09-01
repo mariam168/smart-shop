@@ -7,8 +7,6 @@ import { Loader2, Info, DollarSign, ShoppingCart, Users, Package, TrendingUp, Ba
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { Link } from 'react-router-dom';
 
-// -- Helper Functions & Components --
-
 const formatCurrency = (amount, language, currencyCode) => {
     return new Intl.NumberFormat(language === 'ar' ? 'ar-EG' : 'en-US', {
         style: 'currency',
@@ -21,8 +19,7 @@ const formatCurrency = (amount, language, currencyCode) => {
 const DashboardPanel = ({ title, icon, children, className = "" }) => (
     <div className={`bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-zinc-800 ${className}`}>
         <h3 className="font-bold text-lg text-gray-800 dark:text-white flex items-center gap-2 mb-4">
-            {icon}
-            {title}
+            {icon}{title}
         </h3>
         {children}
     </div>
@@ -93,11 +90,9 @@ const LoadingSkeleton = () => (
             <div className="lg:col-span-2 bg-white dark:bg-zinc-800 h-96 rounded-2xl"></div>
             <div className="bg-white dark:bg-zinc-800 h-96 rounded-2xl"></div>
         </div>
-         <div className="bg-white dark:bg-zinc-800 h-64 rounded-2xl"></div>
+        <div className="bg-white dark:bg-zinc-800 h-64 rounded-2xl"></div>
     </div>
 );
-
-// -- Main Component --
 
 const AdminDashboardPage = () => {
     const { t, language } = useLanguage();
@@ -134,7 +129,7 @@ const AdminDashboardPage = () => {
     useEffect(() => {
         fetchAllDashboardData();
     }, [fetchAllDashboardData]);
-    
+
     const getTranslatedName = (nameObj) => {
         if (!nameObj) return 'Unnamed Product';
         return (language === 'ar' && nameObj.ar ? nameObj.ar : nameObj.en) || 'Unnamed Product';
@@ -163,7 +158,7 @@ const AdminDashboardPage = () => {
             </div>
         );
     }
-    
+
     return (
         <div className="space-y-8">
              <header>
