@@ -78,41 +78,24 @@ const getTopSellingProducts = async (req, res, next) => {
                     as: "productDetails"
                 }
             },
+            { $unwind: "$productDetails" },
             {
-                $unwind: {
-                    path: "$productDetails",
-                    preserveNullAndEmptyArrays: true
+                $match: {
+                    "productDetails.name": { $exists: true, $ne: null },
+                    "productDetails.name.en": { $exists: true, $ne: null, $ne: "" }
                 }
             },
+            { $limit: 5 },
             {
                 $project: {
-                    _id: 1,
-                    totalQuantitySold: 1,
-                    productDetails: 1 
+                    _id: 0,
+                    name: "$productDetails.name",
+                    quantitySold: "$totalQuantitySold"
                 }
             }
         ]);
-        
-
-        console.log("RAW DATA FROM AGGREGATION:", JSON.stringify(productSalesData, null, 2));
-
-
-        const finalData = productSalesData
-            .filter(item => 
-                item.productDetails && 
-                item.productDetails.name && 
-                typeof item.productDetails.name === 'object' && 
-                item.productDetails.name.en
-            )
-            .slice(0, 5)
-            .map(item => ({
-                name: item.productDetails.name,
-                quantitySold: item.totalQuantitySold
-            }));
-
-        res.status(200).json(finalData);
+        res.status(200).json(productSalesData);
     } catch (error) {
-        console.error("Error in getTopSellingProducts:", error);
         next(error);
     }
 };
@@ -129,9 +112,45 @@ const getRecentOrders = async (req, res, next) => {
     }
 };
 
+const getCategoryDistribution = async (req, res, next) => {
+    try {
+        const categoryData = await Product.aggregate([
+            {
+                $group: {
+                    _id: "$category",
+                    productCount: { $sum: 1 }
+                }
+            },
+            {
+                $lookup: {
+                    from: "categories",
+                    localField: "_id",
+                    foreignField: "_id",
+                    as: "categoryDetails"
+                }
+            },
+            {
+                $unwind: "$categoryDetails"
+            },
+            {
+                $project: {
+                    _id: 0,
+                    categoryName: "$categoryDetails.name",
+                    productCount: "$productCount"
+                }
+            },
+            { $sort: { productCount: -1 } }
+        ]);
+        res.status(200).json(categoryData);
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     getSummaryStats,
     getSalesOverTime,
     getTopSellingProducts,
-    getRecentOrders
+    getRecentOrders,
+    getCategoryDistribution
 };

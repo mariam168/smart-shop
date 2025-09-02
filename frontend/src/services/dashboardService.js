@@ -23,11 +23,16 @@ const getRecentOrders = (token) => {
     return axios.get(`${API_URL}/recent-orders`, { headers: getAuthHeaders(token) });
 };
 
+const getCategoryDistribution = (token) => {
+    return axios.get(`${API_URL}/category-distribution`, { headers: getAuthHeaders(token) });
+};
+
 const dashboardService = {
     getSummaryStats,
     getSalesOverTime,
     getTopSellingProducts,
-    getRecentOrders
+    getRecentOrders,
+    getCategoryDistribution
 };
 
 export default dashboardService;

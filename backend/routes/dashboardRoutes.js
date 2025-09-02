@@ -4,7 +4,8 @@ const {
     getSummaryStats,
     getSalesOverTime,
     getTopSellingProducts,
-    getRecentOrders
+    getRecentOrders,
+    getCategoryDistribution
 } = require('../controllers/dashboardController');
 const { protect, admin } = require('../middlewares/authMiddleware');
 
@@ -14,5 +15,6 @@ router.get('/summary-stats', getSummaryStats);
 router.get('/sales-over-time', getSalesOverTime);
 router.get('/product-sales', getTopSellingProducts);
 router.get('/recent-orders', getRecentOrders);
+router.get('/category-distribution', getCategoryDistribution);
 
 module.exports = router;

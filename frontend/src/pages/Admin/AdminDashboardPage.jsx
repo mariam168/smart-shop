@@ -3,10 +3,9 @@ import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import dashboardService from '../../services/dashboardService';
 import StatCard from '../../components/Admin/DashboardPage/StatCard';
-import { Loader2, Info, DollarSign, ShoppingCart, Users, Package, TrendingUp, BarChart, ClipboardList } from 'lucide-react';
-import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+import { Loader2, Info, DollarSign, ShoppingCart, Users, Package, TrendingUp, PieChart as PieChartIcon, ClipboardList } from 'lucide-react';
+import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid, PieChart, Pie, Cell, Legend } from 'recharts';
 import { Link } from 'react-router-dom';
-
 
 const formatCurrency = (amount = 0, language, currencyCode) => {
     return new Intl.NumberFormat(language === 'ar' ? 'ar-EG' : 'en-US', {
@@ -26,16 +25,16 @@ const DashboardPanel = ({ title, icon, children, className = "" }) => (
     </div>
 );
 
-const SalesChart = ({ data, language, currencyCode, dashboardTranslations }) => (
+const SalesChart = ({ data, language, currencyCode, t }) => (
     <div className="h-80 w-full">
         {data && data.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
                 <RechartsBarChart data={data} margin={{ top: 20, right: 10, left: 0, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
                     <XAxis 
                         dataKey="date" 
-                        tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} 
-                        stroke="hsl(var(--border))" 
+                        tick={{ fontSize: 11, fill: '#6b7280' }} 
+                        stroke="#e5e7eb" 
                         axisLine={false} 
                         tickLine={false}
                         interval="preserveStartEnd"
@@ -45,102 +44,96 @@ const SalesChart = ({ data, language, currencyCode, dashboardTranslations }) => 
                     />
                     <YAxis 
                         tickFormatter={(value) => formatCurrency(value, language, currencyCode)} 
-                        tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} 
-                        stroke="hsl(var(--border))" 
+                        tick={{ fontSize: 11, fill: '#6b7280' }} 
+                        stroke="#e5e7eb" 
                         axisLine={false} 
                         tickLine={false}
                     />
                     <Tooltip
-                        cursor={{ fill: 'hsla(240, 5.9%, 10%, 0.1)' }}
+                        cursor={{ fill: 'rgba(79, 70, 229, 0.1)' }}
                         contentStyle={{ 
-                            backgroundColor: 'hsl(var(--background))', 
-                            borderColor: 'hsl(var(--border))', 
+                            backgroundColor: '#ffffff', 
+                            borderColor: '#e5e7eb', 
                             borderRadius: '0.5rem',
-                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-                            fontSize: '0.875rem'
+                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)'
                         }}
-                        labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 'bold' }}
-                        itemStyle={{ color: 'hsl(var(--muted-foreground))' }}
-                        formatter={(value) => [formatCurrency(value, language, currencyCode), dashboardTranslations.salesChart?.revenue || 'Revenue']}
                     />
                     <Bar 
                         dataKey="revenue" 
-                        fill="hsl(var(--primary))" 
+                        fill="#4f46e5"
                         radius={[5, 5, 0, 0]} 
                         barSize={20} 
-                        className="hover:opacity-80 transition-opacity"
+                        activeBar={{ fill: '#4338ca' }}
                     />
                 </RechartsBarChart>
             </ResponsiveContainer>
         ) : (
-            <div className="flex items-center justify-center h-full text-gray-500 dark:text-zinc-400">
-                {dashboardTranslations.salesChart?.noData || 'No data available'}
+            <div className="flex items-center justify-center h-full text-gray-500">
+                {t('dashboard.salesChart.noData')}
             </div>
         )}
     </div>
 );
 
-const TopProductsChart = ({ data, language, dashboardTranslations }) => (
-    <div className="h-80 w-full">
-        {data && data.length > 0 ? (
-            <ResponsiveContainer width="100%" height="100%">
-                <RechartsBarChart layout="vertical" data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false}/>
-                    <XAxis 
-                        type="number" 
-                        tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} 
-                        stroke="hsl(var(--border))" 
-                        axisLine={false} 
-                        tickLine={false}
-                    />
-                    <YAxis 
-                        dataKey="name" 
-                        type="category" 
-                        width={100} 
-                        tickLine={false} 
-                        axisLine={false} 
-                        tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} 
-                        stroke="hsl(var(--border))"
-                    />
-                    <Tooltip
-                        cursor={{ fill: 'hsla(240, 5.9%, 10%, 0.1)' }}
-                        contentStyle={{ 
-                            backgroundColor: 'hsl(var(--background))', 
-                            borderColor: 'hsl(var(--border))', 
-                            borderRadius: '0.5rem',
-                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-                            fontSize: '0.875rem'
-                        }}
-                        labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 'bold' }}
-                        itemStyle={{ color: 'hsl(var(--muted-foreground))' }}
-                        formatter={(value) => [value.toLocaleString(language), dashboardTranslations.topProductsChart?.sold || 'Sold']}
-                    />
-                    <Bar 
-                        dataKey="quantitySold" 
-                        fill="hsl(var(--primary))" 
-                        radius={[0, 5, 5, 0]} 
-                        barSize={25} 
-                        className="hover:opacity-80 transition-opacity"
-                    />
-                </RechartsBarChart>
-            </ResponsiveContainer>
-        ) : (
-            <div className="flex items-center justify-center h-full text-gray-500 dark:text-zinc-400">
-                {dashboardTranslations.topProductsChart?.noData || 'No data available'}
-            </div>
-        )}
-    </div>
-);
+const CategoryDistributionChart = ({ data, t }) => {
+    const COLORS = ['#4f46e5', '#10b981', '#f59e0b', '#3b82f6', '#ec4899', '#6d28d9', '#d946ef'];
 
-const RecentOrdersTable = ({ orders, language, currencyCode, dashboardTranslations, t }) => (
+    const RADIAN = Math.PI / 180;
+    const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
+        if (percent < 0.05) return null;
+        const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+        const x = cx + radius * Math.cos(-midAngle * RADIAN);
+        const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+        return (
+            <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central" className="font-semibold text-xs">
+                {`${(percent * 100).toFixed(0)}%`}
+            </text>
+        );
+    };
+
+    return (
+        <div className="h-80 w-full">
+            {data && data.length > 0 ? (
+                <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                        <Pie
+                            data={data}
+                            cx="50%"
+                            cy="50%"
+                            labelLine={false}
+                            label={renderCustomizedLabel}
+                            outerRadius={100}
+                            fill="#8884d8"
+                            dataKey="productCount"
+                            nameKey="categoryName"
+                        >
+                            {data.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                            ))}
+                        </Pie>
+                        <Tooltip formatter={(value, name) => [`${value} ${t('adminDashboardPage.productCountLabel') || 'Products'}`, name]} />
+                        <Legend iconType="circle" />
+                    </PieChart>
+                </ResponsiveContainer>
+            ) : (
+                <div className="flex items-center justify-center h-full text-gray-500">
+                    {t('dashboard.categoryChart.noData')}
+                </div>
+            )}
+        </div>
+    );
+};
+
+const RecentOrdersTable = ({ orders, language, currencyCode, t }) => (
     <div className="overflow-x-auto">
         <table className="min-w-full text-sm divide-y divide-gray-200 dark:divide-zinc-800">
             <thead className="bg-gray-50 dark:bg-zinc-800">
                 <tr>
-                    <th className="py-3 px-4 text-left text-xs font-semibold text-gray-600 dark:text-zinc-300 uppercase tracking-wider">{dashboardTranslations.orderTable?.customer || 'Customer'}</th>
-                    <th className="py-3 px-4 text-left text-xs font-semibold text-gray-600 dark:text-zinc-300 uppercase tracking-wider">{dashboardTranslations.orderTable?.date || 'Date'}</th>
-                    <th className="py-3 px-4 text-right text-xs font-semibold text-gray-600 dark:text-zinc-300 uppercase tracking-wider">{dashboardTranslations.orderTable?.total || 'Total'}</th>
-                    <th className="py-3 px-4 text-right text-xs font-semibold text-gray-600 dark:text-zinc-300 uppercase tracking-wider">{dashboardTranslations.orderTable?.actions || 'Actions'}</th>
+                    <th className="py-3 px-4 text-left text-xs font-semibold text-gray-600 dark:text-zinc-300 uppercase tracking-wider">{t('dashboard.orderTable.customer')}</th>
+                    <th className="py-3 px-4 text-left text-xs font-semibold text-gray-600 dark:text-zinc-300 uppercase tracking-wider">{t('dashboard.orderTable.date')}</th>
+                    <th className="py-3 px-4 text-right text-xs font-semibold text-gray-600 dark:text-zinc-300 uppercase tracking-wider">{t('dashboard.orderTable.total')}</th>
+                    <th className="py-3 px-4 text-right text-xs font-semibold text-gray-600 dark:text-zinc-300 uppercase tracking-wider">{t('dashboard.orderTable.actions')}</th>
                 </tr>
             </thead>
             <tbody className="bg-white dark:bg-zinc-900 divide-y divide-gray-200 dark:divide-zinc-800">
@@ -188,26 +181,15 @@ const LoadingSkeleton = () => (
     </div>
 );
 
-
 const AdminDashboardPage = () => {
     const { t, language } = useLanguage();
     const { token } = useAuth();
     const [stats, setStats] = useState(null);
     const [salesData, setSalesData] = useState([]);
-    const [topProducts, setTopProducts] = useState([]);
+    const [categoryData, setCategoryData] = useState([]);
     const [recentOrders, setRecentOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
-    const dashboardTranslations = t('dashboard');
-    const generalTranslations = t('general');
-    
-    const getTranslatedName = useCallback((nameObj) => {
-        if (!nameObj || typeof nameObj !== 'object') {
-            return dashboardTranslations.unnamedProduct || 'Unnamed Product';
-        }
-        return (language === 'ar' && nameObj.ar) ? nameObj.ar : nameObj.en || (dashboardTranslations.unnamedProduct || 'Unnamed Product');
-    }, [language, dashboardTranslations]);
 
     const fetchAllDashboardData = useCallback(async () => {
         if (!token) {
@@ -217,21 +199,21 @@ const AdminDashboardPage = () => {
         setLoading(true);
         setError(null);
         try {
-            const [statsRes, salesRes, topProductsRes, recentOrdersRes] = await Promise.all([
+            const [statsRes, salesRes, categoryRes, recentOrdersRes] = await Promise.all([
                 dashboardService.getSummaryStats(token),
                 dashboardService.getSalesOverTime(token),
-                dashboardService.getTopSellingProducts(token),
+                dashboardService.getCategoryDistribution(token),
                 dashboardService.getRecentOrders(token),
             ]);
 
             setStats(statsRes.data);
             setSalesData(salesRes.data);
             
-            const translatedTopProducts = topProductsRes.data.map(product => ({
-                ...product,
-                name: getTranslatedName(product.name),
+            const translatedCategoryData = categoryRes.data.map(cat => ({
+                ...cat,
+                categoryName: (language === 'ar' && cat.categoryName?.ar) ? cat.categoryName.ar : cat.categoryName?.en || cat._id
             }));
-            setTopProducts(translatedTopProducts);
+            setCategoryData(translatedCategoryData);
 
             setRecentOrders(recentOrdersRes.data);
         } catch (err) {
@@ -240,16 +222,11 @@ const AdminDashboardPage = () => {
         } finally {
             setLoading(false);
         }
-    }, [token, t, getTranslatedName]);
+    }, [token, t, language]);
 
     useEffect(() => {
         fetchAllDashboardData();
     }, [fetchAllDashboardData]);
-
-    const topProductsChartData = topProducts.map(product => ({
-        name: product.name,
-        quantitySold: product.quantitySold,
-    })).reverse();
 
     if (loading) {
         return <LoadingSkeleton />;
@@ -273,29 +250,29 @@ const AdminDashboardPage = () => {
     return (
         <div className="space-y-8">
              <header className="mb-8">
-                <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white">{dashboardTranslations.title || 'Dashboard'}</h1>
-                <p className="mt-2 text-gray-600 dark:text-zinc-400">{dashboardTranslations.subtitle || 'Overview'}</p>
+                <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white">{t('dashboard.title')}</h1>
+                <p className="mt-2 text-gray-600 dark:text-zinc-400">{t('dashboard.subtitle')}</p>
             </header>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatCard title={dashboardTranslations.totalRevenue} value={formatCurrency(stats?.totalRevenue, language, generalTranslations.currencyCode)} icon={<DollarSign />} color="green" />
-                <StatCard title={dashboardTranslations.totalOrders} value={stats?.totalOrders?.toLocaleString(language) || '0'} icon={<ShoppingCart />} color="sky" />
-                <StatCard title={dashboardTranslations.totalProducts} value={stats?.totalProducts?.toLocaleString(language) || '0'} icon={<Package />} color="amber" />
-                <StatCard title={dashboardTranslations.totalUsers} value={stats?.totalUsers?.toLocaleString(language) || '0'} icon={<Users />} color="primary" />
+                <StatCard title={t('dashboard.totalRevenue')} value={formatCurrency(stats?.totalRevenue, language, t('general.currencyCode'))} icon={<DollarSign />} color="green" />
+                <StatCard title={t('dashboard.totalOrders')} value={stats?.totalOrders?.toLocaleString(language) || '0'} icon={<ShoppingCart />} color="sky" />
+                <StatCard title={t('dashboard.totalProducts')} value={stats?.totalProducts?.toLocaleString(language) || '0'} icon={<Package />} color="amber" />
+                <StatCard title={t('dashboard.totalUsers')} value={stats?.totalUsers?.toLocaleString(language) || '0'} icon={<Users />} color="primary" />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <DashboardPanel title={dashboardTranslations.salesOverTime} icon={<TrendingUp size={24} className="text-indigo-600 dark:text-indigo-400"/>} className="lg:col-span-2">
-                    <SalesChart data={salesData} language={language} currencyCode={generalTranslations.currencyCode} dashboardTranslations={dashboardTranslations} />
+                <DashboardPanel title={t('dashboard.salesOverTime')} icon={<TrendingUp size={24} className="text-indigo-600 dark:text-indigo-400"/>} className="lg:col-span-2">
+                    <SalesChart data={salesData} language={language} currencyCode={t('general.currencyCode')} t={t} />
                 </DashboardPanel>
                 
-                <DashboardPanel title={dashboardTranslations.topSellingProducts} icon={<BarChart size={24} className="text-indigo-600 dark:text-indigo-400"/>}>
-                    <TopProductsChart data={topProductsChartData} language={language} dashboardTranslations={dashboardTranslations} />
+                <DashboardPanel title={t('dashboard.categoryDistribution')} icon={<PieChartIcon size={24} className="text-indigo-600 dark:text-indigo-400"/>}>
+                    <CategoryDistributionChart data={categoryData} t={t} />
                 </DashboardPanel>
             </div>
 
-            <DashboardPanel title={dashboardTranslations.recentOrders} icon={<ClipboardList size={24} className="text-indigo-600 dark:text-indigo-400"/>}>
-                <RecentOrdersTable orders={recentOrders} language={language} currencyCode={generalTranslations.currencyCode} dashboardTranslations={dashboardTranslations} t={t} />
+            <DashboardPanel title={t('dashboard.recentOrders')} icon={<ClipboardList size={24} className="text-indigo-600 dark:text-indigo-400"/>}>
+                <RecentOrdersTable orders={recentOrders} language={language} currencyCode={t('general.currencyCode')} t={t} />
             </DashboardPanel>
         </div>
     );
