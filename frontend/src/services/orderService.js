@@ -11,7 +11,6 @@ const getAuthHeaders = (token) => {
 };
 
 const getAllOrders = (token) => {
-    console.log("Attempting to fetch orders from:", API_URL); 
     return axios.get(API_URL, { headers: getAuthHeaders(token) });
 };
 

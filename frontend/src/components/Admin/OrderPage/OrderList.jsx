@@ -20,17 +20,19 @@ const OrderList = () => {
     const fetchOrders = useCallback(async () => {
         if (!token) {
             setLoading(false);
+            console.log("Fetch aborted: No token available.");
             return;
         }
         setLoading(true);
+        setError(null);
         try {
             const response = await orderService.getAllOrders(token);
             setOrders(response.data);
-            setError(null);
         } catch (err) {
-            const msg = t('adminOrdersPage.errorFetchingOrdersToast');
+            const msg = err.response?.data?.message || t('adminOrdersPage.errorFetchingOrdersToast');
             setError(msg);
             showToast(msg, 'error');
+            console.error("Failed to fetch orders:", err);
         } finally {
             setLoading(false);
         }
