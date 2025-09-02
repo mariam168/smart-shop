@@ -1,5 +1,4 @@
 import React from 'react';
-import { cn } from '../../lib/utils'; // افتراض وجود ملف utility لتجميع ال classes مثل tailwind-merge
 
 const StatCard = ({ title, value, icon, color = 'primary' }) => {
     const colorClasses = {
@@ -16,10 +15,7 @@ const StatCard = ({ title, value, icon, color = 'primary' }) => {
                     <span className="text-sm font-medium text-gray-500 dark:text-zinc-400">{title}</span>
                     <span className="text-3xl font-bold text-gray-800 dark:text-white mt-1">{value}</span>
                 </div>
-                <div className={cn(
-                    "p-3 rounded-full flex items-center justify-center",
-                    colorClasses[color]
-                )}>
+                <div className={`p-3 rounded-full flex items-center justify-center ${colorClasses[color]}`}>
                     {React.cloneElement(icon, { size: 28, className: "shrink-0" })}
                 </div>
             </div>
