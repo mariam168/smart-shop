@@ -50,6 +50,29 @@ const translations = {
             "manageItemsMessage":"يمكنك اداراه مناجاتك.",
             "discounts":"الخصومات",
         },
+         "userManagement": {
+            "pageTitle": "إدارة المستخدمين",
+            "listTitle": "قائمة المستخدمين",
+            "listSubtitle": "عرض وإدارة جميع مستخدمي الموقع. ({count} مستخدم)",
+            "fetchError": "فشل في جلب المستخدمين.",
+            "deleteSuccess": "تم حذف المستخدم بنجاح.",
+            "deleteError": "فشل في حذف المستخدم.",
+            "roleUpdateSuccess": "تم تحديث دور المستخدم بنجاح.",
+            "roleUpdateError": "فشل في تحديث دور المستخدم.",
+            "deleteConfirmTitle": "تأكيد الحذف",
+            "deleteConfirmMessage": "هل أنت متأكد من رغبتك في حذف المستخدم \"{userName}\"؟ لا يمكن التراجع عن هذا الإجراء.",
+            "table": {
+                "user": "المستخدم",
+                "email": "البريد الإلكتروني",
+                "role": "الدور",
+                "activated": "مفعّل",
+                "actions": "الإجراءات"
+            },
+            "roles": {
+                "user": "مستخدم",
+                "admin": "مسؤول"
+            }
+        },
         "dashboard": {
             "title": "لوحة التحكم",
             "subtitle": "نظرة سريعة على أداء متجرك.",
@@ -692,6 +715,29 @@ const translations = {
         "allOffersPage": {
             "title": "All Available Offers", "noOffers": "No offers are available at the moment.", "noOffersTitle": "No Offers Available!",
             "productNotLinked": "This offer is not linked to a specific product."
+        },
+         "userManagement": {
+            "pageTitle": "User Management",
+            "listTitle": "User List",
+            "listSubtitle": "View and manage all site users. ({count} users)",
+            "fetchError": "Failed to fetch users.",
+            "deleteSuccess": "User deleted successfully.",
+            "deleteError": "Failed to delete user.",
+            "roleUpdateSuccess": "User role updated successfully.",
+            "roleUpdateError": "Failed to update user role.",
+            "deleteConfirmTitle": "Confirm Deletion",
+            "deleteConfirmMessage": "Are you sure you want to delete the user \"{userName}\"? This action cannot be undone.",
+            "table": {
+                "user": "User",
+                "email": "Email",
+                "role": "Role",
+                "activated": "Activated",
+                "actions": "Actions"
+            },
+            "roles": {
+                "user": "User",
+                "admin": "Admin"
+            }
         },
         "advertisementDetails": {
             "notFound": "Advertisement not found.", "noDetails": "No advertisement details found.", "noDetailsTitle": "No Advertisement Details!",

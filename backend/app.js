@@ -15,6 +15,7 @@ const categoryRoutes = require('./routes/categoryRoutes');
 const advertisementRoutes = require('./routes/advertisementRoutes');
 const discountRoutes = require('./routes/discountRoutes');
 const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes'); 
 const wishlistRoutes = require('./routes/wishlistRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const orderRoutes = require('./routes/orderRoutes');
@@ -23,13 +24,13 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 
 const app = express();
 
-
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('✅ MongoDB connected successfully.'))
     .catch((error) => {
         console.error('❌ MongoDB connection error:', error.message);
         process.exit(1); 
     });
+
 app.use(cors({
     origin: process.env.CLIENT_URL,
     credentials: true,
@@ -60,6 +61,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/advertisements', advertisementRoutes);
 app.use('/api/discounts', discountRoutes);
 app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes); 
 app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);

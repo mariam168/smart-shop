@@ -1,6 +1,6 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation, Outlet, Navigate } from 'react-router-dom';
-import { LanguageProvider } from './context/LanguageContext';
+import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from 'react-router-dom';
+import { LanguageProvider } from './context/LanguageProvider';
 import { AuthProvider } from './context/AuthContext';
 import { WishlistProvider } from './context/WishlistContext'; 
 import { CartProvider } from './context/CartContext';
@@ -31,6 +31,7 @@ import AdminOrdersPage from './pages/Admin/AdminOrdersPage';
 import AdminOrderDetailsPage from './components/Admin/OrderPage/AdminOrderDetailsPage';
 import AdvertisementList from './pages/Admin/AdminAdvertisementsPage';
 import DiscountList from './pages/Admin/AdminDiscountsPage';
+import AdminUsersPage from './pages/Admin/AdminUsersPage';
 import ProfilePage from './pages/ProfilePage';
 import OrderDetailsPage from './pages/OrderDetailsPage';
 
@@ -88,7 +89,8 @@ function App() {
                       <Route path="orders" element={<AdminOrdersPage />} />         
                       <Route path="orders/:id" element={<AdminOrderDetailsPage />} />
                       <Route path="advertisements" element={<AdvertisementList />} /> 
-                      <Route path="discounts" element={<DiscountList />} />   
+                      <Route path="discounts" element={<DiscountList />} />
+                      <Route path="users" element={<AdminUsersPage />} /> 
                     </Route>
                   </Route>
                 </Routes>

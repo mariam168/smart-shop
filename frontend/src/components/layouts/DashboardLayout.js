@@ -1,9 +1,10 @@
 import React from 'react';
-import { Home, Package, Folder, ShoppingCart, Megaphone, Tag, LogOut, Settings, UserCircle } from 'lucide-react';
+import { Home, Package, Folder, ShoppingCart, Megaphone, Tag, LogOut, UserCircle, Users } from 'lucide-react'; // <-- إضافة Users
 import { useLanguage } from "../../context/LanguageContext";
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import Logo from '../../Assets/logo.png';
+
 const DashboardLayout = () => {
   const { t } = useLanguage();
   const location = useLocation();
@@ -14,6 +15,7 @@ const DashboardLayout = () => {
     { to: "/admin/products", icon: Package, label: t('adminDashboardPage.productManagement') },
     { to: "/admin/categories", icon: Folder, label: t('adminDashboardPage.categoryManagement') },
     { to: "/admin/orders", icon: ShoppingCart, label: t('adminDashboardPage.orderManagement') },
+    { to: "/admin/users", icon: Users, label: t('adminDashboardPage.userManagement') }, 
     { to: "/admin/advertisements", icon: Megaphone, label: t('adminDashboardPage.advertisementManagement') },
     { to: "/admin/discounts", icon: Tag, label: t('adminDashboardPage.discountManagement') },
   ];
