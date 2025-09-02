@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import orderService from '../../../services/orderService';
-import { useAuth } from '../../../context/AuthContext';
-import { useLanguage } from '../../../context/LanguageContext';
-import { useToast } from '../../../context/ToastContext';
-import ConfirmationModal from '../../common/ConfirmationModal';
+import orderService from '../../services/orderService';
+import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
+import { useToast } from '../../context/ToastContext';
+import ConfirmationModal from '../../components/common/ConfirmationModal';
 import { Loader2, CheckCircle, XCircle, Truck, User, Package, Calendar, ChevronLeft, Info, ReceiptText, Phone, Trash2 } from 'lucide-react';
 
 const AdminOrderDetailsPage = () => {
