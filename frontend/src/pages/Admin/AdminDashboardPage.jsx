@@ -7,6 +7,8 @@ import { Loader2, Info, DollarSign, ShoppingCart, Users, Package, TrendingUp, Ba
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { Link } from 'react-router-dom';
 
+// --- المكونات الفرعية (مضمنة هنا لتسهيل الأمر) ---
+
 const formatCurrency = (amount = 0, language, currencyCode) => {
     return new Intl.NumberFormat(language === 'ar' ? 'ar-EG' : 'en-US', {
         style: 'currency',
@@ -25,7 +27,7 @@ const DashboardPanel = ({ title, icon, children, className = "" }) => (
     </div>
 );
 
-const SalesChart = ({ data, language, currencyCode, t }) => (
+const SalesChart = ({ data, language, currencyCode, dashboardTranslations }) => (
     <div className="h-80 w-full">
         {data && data.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
@@ -60,7 +62,7 @@ const SalesChart = ({ data, language, currencyCode, t }) => (
                         }}
                         labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 'bold' }}
                         itemStyle={{ color: 'hsl(var(--muted-foreground))' }}
-                        formatter={(value) => [formatCurrency(value, language, currencyCode), t('dashboard.salesChart.revenue')]}
+                        formatter={(value) => [formatCurrency(value, language, currencyCode), dashboardTranslations.salesChart?.revenue || 'Revenue']}
                     />
                     <Bar 
                         dataKey="revenue" 
@@ -73,13 +75,13 @@ const SalesChart = ({ data, language, currencyCode, t }) => (
             </ResponsiveContainer>
         ) : (
             <div className="flex items-center justify-center h-full text-gray-500 dark:text-zinc-400">
-                {t('dashboard.salesChart.noData')}
+                {dashboardTranslations.salesChart?.noData || 'No data available'}
             </div>
         )}
     </div>
 );
 
-const TopProductsChart = ({ data, language, t }) => (
+const TopProductsChart = ({ data, language, dashboardTranslations }) => (
     <div className="h-80 w-full">
         {data && data.length > 0 ? (
             <ResponsiveContainer width="100%" height="100%">
@@ -112,7 +114,7 @@ const TopProductsChart = ({ data, language, t }) => (
                         }}
                         labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 'bold' }}
                         itemStyle={{ color: 'hsl(var(--muted-foreground))' }}
-                        formatter={(value) => [value.toLocaleString(language), t('dashboard.topProductsChart.sold')]}
+                        formatter={(value) => [value.toLocaleString(language), dashboardTranslations.topProductsChart?.sold || 'Sold']}
                     />
                     <Bar 
                         dataKey="quantitySold" 
@@ -125,21 +127,21 @@ const TopProductsChart = ({ data, language, t }) => (
             </ResponsiveContainer>
         ) : (
             <div className="flex items-center justify-center h-full text-gray-500 dark:text-zinc-400">
-                {t('dashboard.topProductsChart.noData')}
+                {dashboardTranslations.topProductsChart?.noData || 'No data available'}
             </div>
         )}
     </div>
 );
 
-const RecentOrdersTable = ({ orders, language, currencyCode, t }) => (
+const RecentOrdersTable = ({ orders, language, currencyCode, dashboardTranslations, t }) => (
     <div className="overflow-x-auto">
         <table className="min-w-full text-sm divide-y divide-gray-200 dark:divide-zinc-800">
             <thead className="bg-gray-50 dark:bg-zinc-800">
                 <tr>
-                    <th className="py-3 px-4 text-left text-xs font-semibold text-gray-600 dark:text-zinc-300 uppercase tracking-wider">{t('dashboard.orderTable.customer')}</th>
-                    <th className="py-3 px-4 text-left text-xs font-semibold text-gray-600 dark:text-zinc-300 uppercase tracking-wider">{t('dashboard.orderTable.date')}</th>
-                    <th className="py-3 px-4 text-right text-xs font-semibold text-gray-600 dark:text-zinc-300 uppercase tracking-wider">{t('dashboard.orderTable.total')}</th>
-                    <th className="py-3 px-4 text-right text-xs font-semibold text-gray-600 dark:text-zinc-300 uppercase tracking-wider">{t('dashboard.orderTable.actions')}</th>
+                    <th className="py-3 px-4 text-left text-xs font-semibold text-gray-600 dark:text-zinc-300 uppercase tracking-wider">{dashboardTranslations.orderTable?.customer || 'Customer'}</th>
+                    <th className="py-3 px-4 text-left text-xs font-semibold text-gray-600 dark:text-zinc-300 uppercase tracking-wider">{dashboardTranslations.orderTable?.date || 'Date'}</th>
+                    <th className="py-3 px-4 text-right text-xs font-semibold text-gray-600 dark:text-zinc-300 uppercase tracking-wider">{dashboardTranslations.orderTable?.total || 'Total'}</th>
+                    <th className="py-3 px-4 text-right text-xs font-semibold text-gray-600 dark:text-zinc-300 uppercase tracking-wider">{dashboardTranslations.orderTable?.actions || 'Actions'}</th>
                 </tr>
             </thead>
             <tbody className="bg-white dark:bg-zinc-900 divide-y divide-gray-200 dark:divide-zinc-800">
@@ -150,11 +152,7 @@ const RecentOrdersTable = ({ orders, language, currencyCode, t }) => (
                                 {order.user ? order.user.name : t('dashboard.orderTable.deletedUser')}
                             </td>
                             <td className="py-3 px-4 text-gray-500 dark:text-zinc-400">
-                                {new Date(order.createdAt).toLocaleDateString(language === 'ar' ? 'ar-EG' : 'en-US', {
-                                    year: 'numeric',
-                                    month: 'short',
-                                    day: 'numeric',
-                                })}
+                                {new Date(order.createdAt).toLocaleDateString(language === 'ar' ? 'ar-EG' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' })}
                             </td>
                             <td className="py-3 px-4 font-semibold text-right text-emerald-600 dark:text-emerald-400">
                                 {formatCurrency(order.totalPrice, language, currencyCode)}
@@ -191,6 +189,7 @@ const LoadingSkeleton = () => (
     </div>
 );
 
+// --- المكون الرئيسي ---
 
 const AdminDashboardPage = () => {
     const { t, language } = useLanguage();
@@ -202,12 +201,16 @@ const AdminDashboardPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // الوصول المباشر للترجمات لتجنب مشاكل دالة t() مع الكائنات المتداخلة
+    const dashboardTranslations = t('dashboard');
+    const generalTranslations = t('general');
+    
     const getTranslatedName = useCallback((nameObj) => {
         if (!nameObj || typeof nameObj !== 'object') {
-            return t('dashboard.unnamedProduct');
+            return dashboardTranslations.unnamedProduct || 'Unnamed Product';
         }
-        return (language === 'ar' && nameObj.ar) ? nameObj.ar : nameObj.en || t('dashboard.unnamedProduct');
-    }, [language, t]);
+        return (language === 'ar' && nameObj.ar) ? nameObj.ar : nameObj.en || (dashboardTranslations.unnamedProduct || 'Unnamed Product');
+    }, [language, dashboardTranslations]);
 
     const fetchAllDashboardData = useCallback(async () => {
         if (!token) {
@@ -223,8 +226,6 @@ const AdminDashboardPage = () => {
                 dashboardService.getTopSellingProducts(token),
                 dashboardService.getRecentOrders(token),
             ]);
-
-            console.log('API Response for Top Products:', topProductsRes.data);
 
             setStats(statsRes.data);
             setSalesData(salesRes.data);
@@ -275,29 +276,29 @@ const AdminDashboardPage = () => {
     return (
         <div className="space-y-8">
              <header className="mb-8">
-                <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white">{t('dashboard.title')}</h1>
-                <p className="mt-2 text-gray-600 dark:text-zinc-400">{t('dashboard.subtitle')}</p>
+                <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white">{dashboardTranslations.title || 'Dashboard'}</h1>
+                <p className="mt-2 text-gray-600 dark:text-zinc-400">{dashboardTranslations.subtitle || 'Overview'}</p>
             </header>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <StatCard title={t('dashboard.totalRevenue')} value={formatCurrency(stats?.totalRevenue, language, t('general.currencyCode'))} icon={<DollarSign />} color="green" />
-                <StatCard title={t('dashboard.totalOrders')} value={stats?.totalOrders?.toLocaleString(language) || '0'} icon={<ShoppingCart />} color="sky" />
-                <StatCard title={t('dashboard.totalProducts')} value={stats?.totalProducts?.toLocaleString(language) || '0'} icon={<Package />} color="amber" />
-                <StatCard title={t('dashboard.totalUsers')} value={stats?.totalUsers?.toLocaleString(language) || '0'} icon={<Users />} color="primary" />
+                <StatCard title={dashboardTranslations.totalRevenue} value={formatCurrency(stats?.totalRevenue, language, generalTranslations.currencyCode)} icon={<DollarSign />} color="green" />
+                <StatCard title={dashboardTranslations.totalOrders} value={stats?.totalOrders?.toLocaleString(language) || '0'} icon={<ShoppingCart />} color="sky" />
+                <StatCard title={dashboardTranslations.totalProducts} value={stats?.totalProducts?.toLocaleString(language) || '0'} icon={<Package />} color="amber" />
+                <StatCard title={dashboardTranslations.totalUsers} value={stats?.totalUsers?.toLocaleString(language) || '0'} icon={<Users />} color="primary" />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <DashboardPanel title={t('dashboard.salesOverTime')} icon={<TrendingUp size={24} className="text-indigo-600 dark:text-indigo-400"/>} className="lg:col-span-2">
-                    <SalesChart data={salesData} language={language} currencyCode={t('general.currencyCode')} t={t} />
+                <DashboardPanel title={dashboardTranslations.salesOverTime} icon={<TrendingUp size={24} className="text-indigo-600 dark:text-indigo-400"/>} className="lg:col-span-2">
+                    <SalesChart data={salesData} language={language} currencyCode={generalTranslations.currencyCode} dashboardTranslations={dashboardTranslations} />
                 </DashboardPanel>
                 
-                <DashboardPanel title={t('dashboard.topSellingProducts')} icon={<BarChart size={24} className="text-indigo-600 dark:text-indigo-400"/>}>
-                    <TopProductsChart data={topProductsChartData} language={language} t={t} />
+                <DashboardPanel title={dashboardTranslations.topSellingProducts} icon={<BarChart size={24} className="text-indigo-600 dark:text-indigo-400"/>}>
+                    <TopProductsChart data={topProductsChartData} language={language} dashboardTranslations={dashboardTranslations} />
                 </DashboardPanel>
             </div>
 
-            <DashboardPanel title={t('dashboard.recentOrders')} icon={<ClipboardList size={24} className="text-indigo-600 dark:text-indigo-400"/>}>
-                <RecentOrdersTable orders={recentOrders} language={language} currencyCode={t('general.currencyCode')} t={t} />
+            <DashboardPanel title={dashboardTranslations.recentOrders} icon={<ClipboardList size={24} className="text-indigo-600 dark:text-indigo-400"/>}>
+                <RecentOrdersTable orders={recentOrders} language={language} currencyCode={generalTranslations.currencyCode} dashboardTranslations={dashboardTranslations} t={t} />
             </DashboardPanel>
         </div>
     );
