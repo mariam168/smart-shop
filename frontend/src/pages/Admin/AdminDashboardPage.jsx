@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../../../context/AuthContext';
-import { useLanguage } from '../../../context/LanguageContext';
-import dashboardService from '../../../services/dashboardService';
+import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
+import dashboardService from '../../services/dashboardService';
 import StatCard from './StatCard';
 import { Loader2, Info, DollarSign, ShoppingCart, Users, Package, TrendingUp, BarChart, ClipboardList } from 'lucide-react';
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
