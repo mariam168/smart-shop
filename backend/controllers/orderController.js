@@ -66,7 +66,7 @@ const createOrder = async (req, res, next) => {
                     }
                 }
             } else {
-               
+                
                 // if (typeof productToUpdate.stock === 'number') {
                 //     productToUpdate.stock -= item.quantity;
                 // }
