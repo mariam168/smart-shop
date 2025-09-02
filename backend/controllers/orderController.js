@@ -87,24 +87,9 @@ const getMyOrders = async (req, res, next) => {
 };
 
 const getAllOrders = async (req, res, next) => {
-    const limit = parseInt(req.query.limit) || 20;
-    const page = parseInt(req.query.page) || 1;
-    const skip = (page - 1) * limit;
-
     try {
-        const totalOrders = await Order.countDocuments();
-        const orders = await Order.find({})
-            .populate('user', 'id name')
-            .sort({ createdAt: -1 })
-            .skip(skip)
-            .limit(limit);
-
-        res.json({
-            orders,
-            page,
-            totalPages: Math.ceil(totalOrders / limit),
-            totalOrders
-        });
+        const orders = await Order.find({}).populate('user', 'id name').sort({ createdAt: -1 });
+        res.json(orders);
     } catch (error) {
         next(error);
     }
@@ -164,28 +149,6 @@ const updateOrderToDelivered = async (req, res, next) => {
     }
 };
 
-const updateOrder = async (req, res, next) => {
-    try {
-        const order = await Order.findById(req.params.id);
-        if (!order) {
-            return res.status(404).json({ message: 'Order not found' });
-        }
-
-        const { shippingAddress } = req.body;
-        if (shippingAddress) {
-            order.shippingAddress = {
-                ...order.shippingAddress,
-                ...shippingAddress,
-            };
-        }
-        
-        const updatedOrder = await order.save();
-        res.json(updatedOrder);
-    } catch (error) {
-        next(error);
-    }
-};
-
 const deleteOrder = async (req, res, next) => {
     try {
         const order = await Order.findById(req.params.id);
@@ -206,6 +169,5 @@ module.exports = {
     getOrderById,
     updateOrderToPaid,
     updateOrderToDelivered,
-    updateOrder,
     deleteOrder,
 };

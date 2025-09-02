@@ -5,7 +5,7 @@ import { useAuth } from '../../../context/AuthContext';
 import { useLanguage } from '../../../context/LanguageContext';
 import { useToast } from '../../../context/ToastContext';
 import ConfirmationModal from '../../common/ConfirmationModal';
-import { Loader2, Info, CheckCircle, XCircle, Eye, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Loader2, Info, CheckCircle, XCircle, Eye, Trash2 } from 'lucide-react';
 
 const OrderList = () => {
     const { t, language } = useLanguage();
@@ -14,21 +14,15 @@ const OrderList = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [totalOrders, setTotalOrders] = useState(0);
     const [orderToDelete, setOrderToDelete] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
 
-    const fetchOrders = useCallback(async (currentPage) => {
+    const fetchOrders = useCallback(async () => {
         if (!token) return;
         setLoading(true);
         try {
-            const response = await orderService.getAllOrders(token, currentPage);
-            setOrders(response.data.orders);
-            setPage(response.data.page);
-            setTotalPages(response.data.totalPages);
-            setTotalOrders(response.data.totalOrders);
+            const response = await orderService.getAllOrders(token);
+            setOrders(response.data);
             setError(null);
         } catch (err) {
             const msg = t('adminOrdersPage.errorFetchingOrdersToast');
@@ -40,8 +34,8 @@ const OrderList = () => {
     }, [token, t, showToast]);
 
     useEffect(() => {
-        fetchOrders(page);
-    }, [fetchOrders, page]);
+        fetchOrders();
+    }, [fetchOrders]);
 
     const handleDeleteClick = (order) => {
         setOrderToDelete(order);
@@ -53,7 +47,7 @@ const OrderList = () => {
         try {
             await orderService.deleteOrder(orderToDelete._id, token);
             showToast(t('adminOrdersPage.deleteSuccess'), 'success');
-            fetchOrders(page);
+            fetchOrders();
         } catch (err) {
             showToast(t('adminOrdersPage.deleteError'), 'error');
         } finally {
@@ -68,21 +62,15 @@ const OrderList = () => {
         }).format(Number(price || 0));
     };
 
-    const handlePageChange = (newPage) => {
-        if (newPage > 0 && newPage <= totalPages) {
-            setPage(newPage);
-        }
-    };
-
-    if (loading && orders.length === 0) { return (<div className="flex min-h-[60vh] w-full items-center justify-center"><Loader2 size={32} className="animate-spin text-primary" /></div>); }
-    if (error) { return (<div className="flex min-h-[60vh] w-full items-center justify-center p-4"><div className="text-center p-8 bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-red-200 dark:border-red-800"><Info size={40} className="mx-auto mb-4 text-red-500" /><h3 className="text-xl font-bold mb-2">Error</h3><p className="text-red-600">{error}</p><button onClick={() => fetchOrders(1)} className="mt-6 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white">Try Again</button></div></div>); }
+    if (loading) { return (<div className="flex min-h-[60vh] w-full items-center justify-center"><Loader2 size={32} className="animate-spin text-primary" /></div>); }
+    if (error) { return (<div className="flex min-h-[60vh] w-full items-center justify-center p-4"><div className="text-center p-8 bg-white dark:bg-zinc-900 rounded-lg shadow-sm border border-red-200 dark:border-red-800"><Info size={40} className="mx-auto mb-4 text-red-500" /><h3 className="text-xl font-bold mb-2">Error</h3><p className="text-red-600">{error}</p><button onClick={fetchOrders} className="mt-6 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white">Try Again</button></div></div>); }
 
     return (
         <div className="bg-white dark:bg-zinc-900 p-4 sm:p-6 rounded-2xl shadow-lg border border-gray-200 dark:border-zinc-800">
             <header className="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
                 <div>
                     <h2 className="text-xl font-bold text-gray-800 dark:text-white">{t('adminOrdersPage.allOrders')}</h2>
-                    <p className="text-sm text-gray-500 dark:text-zinc-400 mt-1">{t('general.manageItemsMessage', { count: totalOrders, itemName: t('general.orders') })}</p>
+                    <p className="text-sm text-gray-500 dark:text-zinc-400 mt-1">{t('general.manageItemsMessage', { count: orders.length, itemName: t('general.orders') })}</p>
                 </div>
             </header>
             
@@ -141,19 +129,6 @@ const OrderList = () => {
                         ))}
                     </tbody>
                 </table>
-            </div>
-             <div className="flex justify-between items-center pt-4">
-                <span className="text-sm text-gray-600 dark:text-zinc-400">
-                    Page {page} of {totalPages}
-                </span>
-                <div className="flex items-center gap-2">
-                    <button onClick={() => handlePageChange(page - 1)} disabled={page === 1} className="p-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-zinc-800">
-                        <ChevronLeft size={20} />
-                    </button>
-                    <button onClick={() => handlePageChange(page + 1)} disabled={page === totalPages} className="p-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-zinc-800">
-                        <ChevronRight size={20} />
-                    </button>
-                </div>
             </div>
              <ConfirmationModal 
                 isOpen={!!orderToDelete} 

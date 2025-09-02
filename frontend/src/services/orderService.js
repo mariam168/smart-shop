@@ -9,16 +9,12 @@ const getAuthHeaders = (token) => {
     };
 };
 
-const getAllOrders = (token, page = 1, limit = 20) => {
-    return axios.get(`${API_URL}?page=${page}&limit=${limit}`, { headers: getAuthHeaders(token) });
+const getAllOrders = (token) => {
+    return axios.get(API_URL, { headers: getAuthHeaders(token) });
 };
 
 const getOrderById = (id, token) => {
     return axios.get(`${API_URL}/${id}`, { headers: getAuthHeaders(token) });
-};
-
-const updateOrder = (id, orderData, token) => {
-    return axios.put(`${API_URL}/${id}`, orderData, { headers: getAuthHeaders(token) });
 };
 
 const deleteOrder = (id, token) => {
@@ -36,7 +32,6 @@ const markAsDelivered = (id, token) => {
 const orderService = {
     getAllOrders,
     getOrderById,
-    updateOrder,
     deleteOrder,
     markAsPaid,
     markAsDelivered

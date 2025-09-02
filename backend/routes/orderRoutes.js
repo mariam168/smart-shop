@@ -7,7 +7,6 @@ const {
     getOrderById,
     updateOrderToPaid,
     updateOrderToDelivered,
-    updateOrder,
     deleteOrder,
 } = require('../controllers/orderController');
 const { protect, admin } = require('../middlewares/authMiddleware');
@@ -20,7 +19,6 @@ router.get('/myorders', protect, getMyOrders);
 
 router.route('/:id')
     .get(protect, getOrderById)
-    .put(protect, admin, updateOrder)
     .delete(protect, admin, deleteOrder);
 
 router.put('/:id/pay', protect, admin, updateOrderToPaid);
