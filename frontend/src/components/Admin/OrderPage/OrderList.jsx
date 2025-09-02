@@ -4,7 +4,8 @@ import orderService from '../../../services/orderService';
 import { useAuth } from '../../../context/AuthContext';
 import { useLanguage } from '../../../context/LanguageContext';
 import { useToast } from '../../../context/ToastContext';
-import { Loader2, Info, CheckCircle, XCircle, Eye } from 'lucide-react';
+import ConfirmationModal from '../../common/ConfirmationModal';
+import { Loader2, Info, CheckCircle, XCircle, Eye, Trash2 } from 'lucide-react';
 
 const OrderList = () => {
     const { t, language } = useLanguage();
@@ -13,6 +14,8 @@ const OrderList = () => {
     const [orders, setOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [orderToDelete, setOrderToDelete] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const fetchOrders = useCallback(async () => {
         if (!token) return;
@@ -33,6 +36,25 @@ const OrderList = () => {
     useEffect(() => {
         fetchOrders();
     }, [fetchOrders]);
+
+    const handleDeleteClick = (order) => {
+        setOrderToDelete(order);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!orderToDelete) return;
+        setIsDeleting(true);
+        try {
+            await orderService.deleteOrder(orderToDelete._id, token);
+            showToast(t('adminOrdersPage.deleteSuccess'), 'success');
+            fetchOrders();
+        } catch (err) {
+            showToast(t('adminOrdersPage.deleteError'), 'error');
+        } finally {
+            setIsDeleting(false);
+            setOrderToDelete(null);
+        }
+    };
 
     const formatPrice = (price) => {
         return new Intl.NumberFormat(language === 'ar' ? 'ar-EG' : 'en-US', {
@@ -92,16 +114,30 @@ const OrderList = () => {
                                         <XCircle className="text-red-500 inline-block h-5 w-5" />
                                     }
                                 </td>
-                                <td className="px-4 py-3 text-center">
-                                    <Link to={`/admin/orders/${order._id}`} className="inline-block rounded-full p-2 text-gray-600 hover:bg-gray-200 hover:text-primary dark:text-zinc-400 dark:hover:bg-zinc-700 dark:hover:text-primary-light">
-                                        <Eye size={16} />
-                                    </Link>
+                                <td className="p-4 text-center">
+                                    <div className="inline-flex items-center rounded-full bg-gray-100 dark:bg-zinc-800 text-xs shadow-sm">
+                                        <Link to={`/admin/orders/${order._id}`} className="p-2 text-gray-600 hover:bg-gray-200 hover:text-primary dark:text-zinc-400 dark:hover:bg-zinc-700 dark:hover:text-primary-light rounded-l-full">
+                                            <Eye size={16} />
+                                        </Link>
+                                        <div className="w-px h-4 bg-gray-200 dark:bg-zinc-700"></div>
+                                        <button onClick={() => handleDeleteClick(order)} className="p-2 text-gray-600 hover:bg-gray-200 hover:text-red-600 dark:text-zinc-400 dark:hover:bg-zinc-700 dark:hover:text-red-400 rounded-r-full">
+                                            <Trash2 size={16} />
+                                        </button>
+                                    </div>
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
+             <ConfirmationModal 
+                isOpen={!!orderToDelete} 
+                onClose={() => setOrderToDelete(null)} 
+                onConfirm={handleConfirmDelete} 
+                isConfirming={isDeleting} 
+                title={t('adminOrdersPage.deleteConfirmTitle')} 
+                message={t('adminOrdersPage.deleteConfirmMessage', { orderId: orderToDelete?._id.slice(-6).toUpperCase() || '' })} 
+            />
         </div>
     );
 };

@@ -6,7 +6,9 @@ const {
     getAllOrders,
     getOrderById,
     updateOrderToPaid,
-    updateOrderToDelivered
+    updateOrderToDelivered,
+    updateOrder,
+    deleteOrder,
 } = require('../controllers/orderController');
 const { protect, admin } = require('../middlewares/authMiddleware');
 
@@ -17,7 +19,9 @@ router.route('/')
 router.get('/myorders', protect, getMyOrders);
 
 router.route('/:id')
-    .get(protect, getOrderById);
+    .get(protect, getOrderById)
+    .put(protect, admin, updateOrder)
+    .delete(protect, admin, deleteOrder);
 
 router.put('/:id/pay', protect, admin, updateOrderToPaid);
 router.put('/:id/deliver', protect, admin, updateOrderToDelivered);

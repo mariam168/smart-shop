@@ -17,6 +17,14 @@ const getOrderById = (id, token) => {
     return axios.get(`${API_URL}/${id}`, { headers: getAuthHeaders(token) });
 };
 
+const updateOrder = (id, orderData, token) => {
+    return axios.put(`${API_URL}/${id}`, orderData, { headers: getAuthHeaders(token) });
+};
+
+const deleteOrder = (id, token) => {
+    return axios.delete(`${API_URL}/${id}`, { headers: getAuthHeaders(token) });
+};
+
 const markAsPaid = (id, paymentResult, token) => {
     return axios.put(`${API_URL}/${id}/pay`, paymentResult, { headers: getAuthHeaders(token) });
 };
@@ -28,6 +36,8 @@ const markAsDelivered = (id, token) => {
 const orderService = {
     getAllOrders,
     getOrderById,
+    updateOrder,
+    deleteOrder,
     markAsPaid,
     markAsDelivered
 };
