@@ -89,9 +89,10 @@ const getMyOrders = async (req, res, next) => {
 const getAllOrders = async (req, res, next) => {
     try {
         const orders = await Order.find({}).populate('user', 'id name').sort({ createdAt: -1 });
-        res.json(orders);
+        res.status(200).json(orders);
     } catch (error) {
-        next(error);
+        console.error("Error in getAllOrders:", error);
+        res.status(500).json({ message: "Failed to fetch orders due to a server error." });
     }
 };
 
