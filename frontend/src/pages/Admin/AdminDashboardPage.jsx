@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
 import dashboardService from '../../services/dashboardService';
 import StatCard from '../../components/Admin/DashboardPage/StatCard';
-import { Loader2, Info, DollarSign, ShoppingCart, Users, Package, TrendingUp, BarChart, UserCheck } from 'lucide-react';
+import { Loader2, Info, DollarSign, ShoppingCart, Users, Package, TrendingUp, BarChart, ClipboardList } from 'lucide-react';
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { Link } from 'react-router-dom';
 
@@ -17,8 +17,8 @@ const formatCurrency = (amount, language, currencyCode) => {
 };
 
 const DashboardPanel = ({ title, icon, children, className = "" }) => (
-    <div className={`bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-gray-200 dark:border-zinc-800 ${className}`}>
-        <h3 className="font-bold text-lg text-gray-800 dark:text-white flex items-center gap-2 mb-4">
+    <div className={`bg-white dark:bg-zinc-900 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-zinc-800 ${className}`}>
+        <h3 className="font-bold text-xl text-gray-800 dark:text-white flex items-center gap-3 mb-5">
             {icon}{title}
         </h3>
         {children}
@@ -28,54 +28,134 @@ const DashboardPanel = ({ title, icon, children, className = "" }) => (
 const SalesChart = ({ data, language, currencyCode }) => (
     <div className="h-80">
         <ResponsiveContainer width="100%" height="100%">
-            <RechartsBarChart data={data} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-                <XAxis dataKey="date" tick={{ fontSize: 12 }} stroke="hsl(var(--muted-foreground))" />
-                <YAxis tickFormatter={(value) => formatCurrency(value, language, currencyCode)} tick={{ fontSize: 12 }} stroke="hsl(var(--muted-foreground))" />
+            <RechartsBarChart data={data} margin={{ top: 20, right: 10, left: -10, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="4 4" stroke="hsl(var(--border))" vertical={false} />
+                <XAxis 
+                    dataKey="date" 
+                    tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} 
+                    stroke="hsl(var(--border))" 
+                    axisLine={false} 
+                    tickLine={false}
+                    interval="preserveStartEnd"
+                    angle={-30}
+                    textAnchor="end"
+                    height={60}
+                />
+                <YAxis 
+                    tickFormatter={(value) => formatCurrency(value, language, currencyCode)} 
+                    tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} 
+                    stroke="hsl(var(--border))" 
+                    axisLine={false} 
+                    tickLine={false}
+                />
                 <Tooltip
-                    cursor={{ fill: 'hsla(var(--primary), 0.1)' }}
-                    contentStyle={{ backgroundColor: 'hsl(var(--background))', borderColor: 'hsl(var(--border))', borderRadius: '0.5rem' }}
-                    labelStyle={{ color: 'hsl(var(--foreground))' }}
+                    cursor={{ fill: 'hsla(var(--primary), 0.15)' }}
+                    contentStyle={{ 
+                        backgroundColor: 'hsl(var(--background))', 
+                        borderColor: 'hsl(var(--border))', 
+                        borderRadius: '0.5rem',
+                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+                        fontSize: '0.875rem'
+                    }}
+                    labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 'bold' }}
+                    itemStyle={{ color: 'hsl(var(--muted-foreground))' }}
                     formatter={(value) => [formatCurrency(value, language, currencyCode), 'Revenue']}
                 />
-                <Bar dataKey="revenue" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                <Bar 
+                    dataKey="revenue" 
+                    fill="hsl(var(--primary))" 
+                    radius={[6, 6, 0, 0]} 
+                    barSize={20}
+                    activeBar={{ fill: 'hsl(var(--primary-dark))' }}
+                />
             </RechartsBarChart>
         </ResponsiveContainer>
     </div>
 );
 
-const TopProductsChart = ({ data }) => (
+const TopProductsChart = ({ data, language }) => (
     <div className="h-80">
         <ResponsiveContainer width="100%" height="100%">
-            <RechartsBarChart layout="vertical" data={data} margin={{ top: 5, right: 30, left: 10, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" horizontal={false}/>
-                <XAxis type="number" hide />
-                <YAxis dataKey="name" type="category" width={80} tickLine={false} axisLine={false} tick={{ fontSize: 12 }} stroke="hsl(var(--muted-foreground))" />
-                <Tooltip
-                    cursor={{ fill: 'hsla(var(--primary), 0.1)' }}
-                    contentStyle={{ backgroundColor: 'hsl(var(--background))', borderColor: 'hsl(var(--border))', borderRadius: '0.5rem' }}
-                    formatter={(value) => [value, 'Sold']}
+            <RechartsBarChart layout="vertical" data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="4 4" stroke="hsl(var(--border))" vertical={false}/>
+                <XAxis 
+                    type="number" 
+                    tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} 
+                    stroke="hsl(var(--border))" 
+                    axisLine={false} 
+                    tickLine={false}
                 />
-                <Bar dataKey="quantitySold" fill="hsl(var(--primary))" radius={[0, 4, 4, 0]} barSize={20} />
+                <YAxis 
+                    dataKey="name" 
+                    type="category" 
+                    width={100} 
+                    tickLine={false} 
+                    axisLine={false} 
+                    tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} 
+                    stroke="hsl(var(--border))"
+                />
+                <Tooltip
+                    cursor={{ fill: 'hsla(var(--primary), 0.15)' }}
+                    contentStyle={{ 
+                        backgroundColor: 'hsl(var(--background))', 
+                        borderColor: 'hsl(var(--border))', 
+                        borderRadius: '0.5rem',
+                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+                        fontSize: '0.875rem'
+                    }}
+                    labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 'bold' }}
+                    itemStyle={{ color: 'hsl(var(--muted-foreground))' }}
+                    formatter={(value) => [value.toLocaleString(language), 'Sold']}
+                />
+                <Bar 
+                    dataKey="quantitySold" 
+                    fill="hsl(var(--primary))" 
+                    radius={[0, 6, 6, 0]} 
+                    barSize={25} 
+                    activeBar={{ fill: 'hsl(var(--primary-dark))' }}
+                />
             </RechartsBarChart>
         </ResponsiveContainer>
     </div>
 );
 
-const RecentOrdersTable = ({ orders, language, currencyCode }) => (
+const RecentOrdersTable = ({ orders, language, currencyCode, t }) => (
     <div className="overflow-x-auto">
-        <table className="min-w-full text-sm">
-            <tbody className="divide-y divide-gray-200 dark:divide-zinc-800">
+        <table className="min-w-full text-sm divide-y divide-gray-200 dark:divide-zinc-800">
+            <thead className="bg-gray-50 dark:bg-zinc-800">
+                <tr>
+                    <th className="py-3 px-4 text-left text-xs font-semibold text-gray-600 dark:text-zinc-300 uppercase tracking-wider">{t('dashboard.orderTable.customer')}</th>
+                    <th className="py-3 px-4 text-left text-xs font-semibold text-gray-600 dark:text-zinc-300 uppercase tracking-wider">{t('dashboard.orderTable.date')}</th>
+                    <th className="py-3 px-4 text-right text-xs font-semibold text-gray-600 dark:text-zinc-300 uppercase tracking-wider">{t('dashboard.orderTable.total')}</th>
+                    <th className="py-3 px-4 text-right text-xs font-semibold text-gray-600 dark:text-zinc-300 uppercase tracking-wider">{t('dashboard.orderTable.actions')}</th>
+                </tr>
+            </thead>
+            <tbody className="bg-white dark:bg-zinc-900 divide-y divide-gray-200 dark:divide-zinc-800">
                 {orders.map(order => (
                     <tr key={order._id} className="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors">
-                        <td className="py-3 px-4 font-medium text-gray-800 dark:text-white">{order.user?.name || 'User Deleted'}</td>
-                        <td className="py-3 px-4 text-gray-500 dark:text-zinc-400">{new Date(order.createdAt).toLocaleDateString()}</td>
-                        <td className="py-3 px-4 font-semibold text-right text-green-600">{formatCurrency(order.totalPrice, language, currencyCode)}</td>
+                        <td className="py-3 px-4 font-medium text-gray-800 dark:text-white">
+                            {order.user ? order.user.name : t('dashboard.orderTable.deletedUser')}
+                        </td>
+                        <td className="py-3 px-4 text-gray-500 dark:text-zinc-400">
+                            {new Date(order.createdAt).toLocaleDateString(language === 'ar' ? 'ar-EG' : 'en-US')}
+                        </td>
+                        <td className="py-3 px-4 font-semibold text-right text-emerald-600 dark:text-emerald-400">
+                            {formatCurrency(order.totalPrice, language, currencyCode)}
+                        </td>
                         <td className="py-3 px-4 text-right">
-                            <Link to={`/admin/orders/${order._id}`} className="text-primary dark:text-primary-light hover:underline font-semibold">View</Link>
+                            <Link to={`/admin/orders/${order._id}`} className="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold text-sm">
+                                {t('dashboard.orderTable.view')}
+                            </Link>
                         </td>
                     </tr>
                 ))}
+                {orders.length === 0 && (
+                    <tr>
+                        <td colSpan="4" className="py-4 text-center text-gray-500 dark:text-zinc-400">
+                            {t('dashboard.orderTable.noOrders')}
+                        </td>
+                    </tr>
+                )}
             </tbody>
         </table>
     </div>
@@ -84,13 +164,13 @@ const RecentOrdersTable = ({ orders, language, currencyCode }) => (
 const LoadingSkeleton = () => (
     <div className="space-y-8 animate-pulse">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[...Array(4)].map((_, i) => <div key={i} className="bg-white dark:bg-zinc-800 h-32 rounded-2xl"></div>)}
+            {[...Array(4)].map((_, i) => <div key={i} className="bg-gray-200 dark:bg-zinc-800 h-32 rounded-xl"></div>)}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 bg-white dark:bg-zinc-800 h-96 rounded-2xl"></div>
-            <div className="bg-white dark:bg-zinc-800 h-96 rounded-2xl"></div>
+            <div className="lg:col-span-2 bg-gray-200 dark:bg-zinc-800 h-96 rounded-xl"></div>
+            <div className="bg-gray-200 dark:bg-zinc-800 h-96 rounded-xl"></div>
         </div>
-        <div className="bg-white dark:bg-zinc-800 h-64 rounded-2xl"></div>
+        <div className="bg-gray-200 dark:bg-zinc-800 h-64 rounded-xl"></div>
     </div>
 );
 
@@ -105,7 +185,10 @@ const AdminDashboardPage = () => {
     const [error, setError] = useState(null);
 
     const fetchAllDashboardData = useCallback(async () => {
-        if (!token) return;
+        if (!token) {
+            setLoading(false);
+            return;
+        }
         setLoading(true);
         setError(null);
         try {
@@ -117,28 +200,29 @@ const AdminDashboardPage = () => {
             ]);
             setStats(statsRes.data);
             setSalesData(salesRes.data);
-            setTopProducts(topProductsRes.data);
+            const translatedTopProducts = topProductsRes.data.map(product => ({
+                ...product,
+                name: (language === 'ar' && product.name.ar ? product.name.ar : product.name.en) || t('dashboard.unnamedProduct'),
+            }));
+            setTopProducts(translatedTopProducts);
+
             setRecentOrders(recentOrdersRes.data);
         } catch (err) {
+            console.error("Failed to fetch dashboard data:", err);
             setError(t('dashboard.errorFetchingStats'));
         } finally {
             setLoading(false);
         }
-    }, [token, t]);
+    }, [token, t, language]);
 
     useEffect(() => {
         fetchAllDashboardData();
     }, [fetchAllDashboardData]);
 
-    const getTranslatedName = (nameObj) => {
-        if (!nameObj) return 'Unnamed Product';
-        return (language === 'ar' && nameObj.ar ? nameObj.ar : nameObj.en) || 'Unnamed Product';
-    };
-
     const topProductsChartData = topProducts.map(product => ({
-        name: getTranslatedName(product.name).split(' ').slice(0, 2).join(' '),
+        name: product.name, 
         quantitySold: product.quantitySold,
-    })).reverse();
+    })).reverse(); 
 
     if (loading) {
         return <LoadingSkeleton />;
@@ -147,12 +231,12 @@ const AdminDashboardPage = () => {
     if (error) {
         return (
             <div className="flex items-center justify-center p-4" style={{ minHeight: '60vh' }}>
-                <div className="text-center p-8 bg-white dark:bg-zinc-900 rounded-lg shadow-md border border-red-200 dark:border-red-800">
+                <div className="text-center p-8 bg-white dark:bg-zinc-900 rounded-xl shadow-lg border border-red-200 dark:border-red-800">
                     <Info size={40} className="mx-auto mb-4 text-red-500" />
-                    <h3 className="text-xl font-bold mb-2 text-gray-800 dark:text-white">Error Occurred</h3>
-                    <p className="text-red-600">{error}</p>
-                    <button onClick={fetchAllDashboardData} className="mt-6 rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-dark">
-                        Try Again
+                    <h3 className="text-xl font-bold mb-2 text-gray-800 dark:text-white">{t('common.error')}</h3>
+                    <p className="text-red-600 dark:text-red-400">{error}</p>
+                    <button onClick={fetchAllDashboardData} className="mt-6 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-indigo-700">
+                        {t('common.tryAgain')}
                     </button>
                 </div>
             </div>
@@ -161,9 +245,9 @@ const AdminDashboardPage = () => {
 
     return (
         <div className="space-y-8">
-             <header>
-                <h1 className="text-3xl font-bold text-gray-800 dark:text-white">{t('dashboard.title')}</h1>
-                <p className="mt-1 text-gray-500 dark:text-zinc-400">{t('dashboard.subtitle')}</p>
+             <header className="mb-8">
+                <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white">{t('dashboard.title')}</h1>
+                <p className="mt-2 text-gray-600 dark:text-zinc-400">{t('dashboard.subtitle')}</p>
             </header>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -174,17 +258,17 @@ const AdminDashboardPage = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <DashboardPanel title={t('dashboard.salesOverTime')} icon={<TrendingUp size={20} className="text-primary"/>} className="lg:col-span-2">
+                <DashboardPanel title={t('dashboard.salesOverTime')} icon={<TrendingUp size={24} className="text-indigo-600 dark:text-indigo-400"/>} className="lg:col-span-2">
                     <SalesChart data={salesData} language={language} currencyCode={t('general.currencyCode')} />
                 </DashboardPanel>
                 
-                <DashboardPanel title={t('dashboard.topSellingProducts')} icon={<BarChart size={20} className="text-primary"/>}>
-                    <TopProductsChart data={topProductsChartData} />
+                <DashboardPanel title={t('dashboard.topSellingProducts')} icon={<BarChart size={24} className="text-indigo-600 dark:text-indigo-400"/>}>
+                    <TopProductsChart data={topProductsChartData} language={language} />
                 </DashboardPanel>
             </div>
 
-            <DashboardPanel title={t('dashboard.recentOrders')} icon={<UserCheck size={20} className="text-primary"/>}>
-                <RecentOrdersTable orders={recentOrders} language={language} currencyCode={t('general.currencyCode')} />
+            <DashboardPanel title={t('dashboard.recentOrders')} icon={<ClipboardList size={24} className="text-indigo-600 dark:text-indigo-400"/>}>
+                <RecentOrdersTable orders={recentOrders} language={language} currencyCode={t('general.currencyCode')} t={t} />
             </DashboardPanel>
         </div>
     );
