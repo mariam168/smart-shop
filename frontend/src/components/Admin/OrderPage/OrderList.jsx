@@ -18,8 +18,13 @@ const OrderList = () => {
     const [isDeleting, setIsDeleting] = useState(false);
 
     const fetchOrders = useCallback(async () => {
-        if (!token) return;
         setLoading(true);
+        if (!token) {
+            setError(t('auth.loginRequired')); // أظهر خطأ إذا لم يكن هناك token
+            setLoading(false);
+            return;
+        }
+        
         try {
             const response = await orderService.getAllOrders(token);
             setOrders(response.data);
