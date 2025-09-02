@@ -7,7 +7,6 @@ import { Loader2, Info, DollarSign, ShoppingCart, Users, Package, TrendingUp, Ba
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { Link } from 'react-router-dom';
 
-// --- المكونات الفرعية (مضمنة هنا لتسهيل الأمر) ---
 
 const formatCurrency = (amount = 0, language, currencyCode) => {
     return new Intl.NumberFormat(language === 'ar' ? 'ar-EG' : 'en-US', {
@@ -189,7 +188,6 @@ const LoadingSkeleton = () => (
     </div>
 );
 
-// --- المكون الرئيسي ---
 
 const AdminDashboardPage = () => {
     const { t, language } = useLanguage();
@@ -201,7 +199,6 @@ const AdminDashboardPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // الوصول المباشر للترجمات لتجنب مشاكل دالة t() مع الكائنات المتداخلة
     const dashboardTranslations = t('dashboard');
     const generalTranslations = t('general');
     
