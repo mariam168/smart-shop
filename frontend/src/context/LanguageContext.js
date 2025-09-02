@@ -327,6 +327,10 @@ const translations = {
             "productCountLabel":"عدد المنتجات",
             "orderCountLabel":"عدد الطلبات",
         },
+        "common": {
+            "error":"خطاء",
+            "tryAgain":"حاول مرة اخرى",
+        },
         "adminCategoryPage": {
             "errorFetchingCategories": "خطأ في جلب الفئات.", "confirmDelete": "هل أنت متأكد من رغبتك في حذف الفئة \"{categoryName}\"؟",
             "manageCategories": "إدارة الفئات", "addCategoryButton": "إضافة فئة جديدة", "subCategoriesCount": "فئات فرعية",
@@ -1088,6 +1092,10 @@ const translations = {
             "productList": "product list",
             "manageProductsMessage": "  Welcome to product management page",
             "title": "product management",
+        },
+        "common": {
+            "error": "Error",
+            "tryAgain": "Try Again",
         },
         "productDetailsPage": {
             "reviews": "Reviews",
