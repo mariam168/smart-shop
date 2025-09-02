@@ -69,7 +69,7 @@ const getTopSellingProducts = async (req, res, next) => {
                 }
             },
             { $sort: { totalQuantitySold: -1 } },
-            { $limit: 10 }, 
+            { $limit: 10 },
             {
                 $lookup: {
                     from: "products",
@@ -78,24 +78,41 @@ const getTopSellingProducts = async (req, res, next) => {
                     as: "productDetails"
                 }
             },
-            { $unwind: "$productDetails" },
             {
-                $match: {
-                    "productDetails.name": { $exists: true, $ne: null },
-                    "productDetails.name.en": { $exists: true, $ne: null, $ne: "" }
+                $unwind: {
+                    path: "$productDetails",
+                    preserveNullAndEmptyArrays: true
                 }
             },
-            { $limit: 5 }, 
             {
                 $project: {
-                    _id: 0,
-                    name: "$productDetails.name",
-                    quantitySold: "$totalQuantitySold"
+                    _id: 1,
+                    totalQuantitySold: 1,
+                    productDetails: 1 
                 }
             }
         ]);
-        res.status(200).json(productSalesData);
+        
+
+        console.log("RAW DATA FROM AGGREGATION:", JSON.stringify(productSalesData, null, 2));
+
+
+        const finalData = productSalesData
+            .filter(item => 
+                item.productDetails && 
+                item.productDetails.name && 
+                typeof item.productDetails.name === 'object' && 
+                item.productDetails.name.en
+            )
+            .slice(0, 5)
+            .map(item => ({
+                name: item.productDetails.name,
+                quantitySold: item.totalQuantitySold
+            }));
+
+        res.status(200).json(finalData);
     } catch (error) {
+        console.error("Error in getTopSellingProducts:", error);
         next(error);
     }
 };
