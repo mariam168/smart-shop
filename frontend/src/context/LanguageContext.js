@@ -48,6 +48,7 @@ const translations = {
             "tryAgain":"حاول مرة اخرى",
             "savedSuccess":"تم الحفظ بنجاح",
             "manageItemsMessage":"يمكنك اداراه مناجاتك.",
+            "discounts":"الخصومات",
         },
         "dashboard": {
             "title": "لوحة التحكم",
@@ -609,6 +610,7 @@ const translations = {
             "tryAgain": "Try Again",
             "savedSuccess": "Saved Successfully!",
             "manageItemsMessage": "You can manage your items from the Items page.",
+            "discounts":"Discounts",
         },
         "dashboard": {
             "title": "Dashboard",
