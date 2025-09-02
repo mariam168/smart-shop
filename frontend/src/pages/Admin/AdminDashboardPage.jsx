@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../../context/AuthContext';
-import { useLanguage } from '../../context/LanguageContext';
-import dashboardService from '../../services/dashboardService';
-import StatCard from '../../components/Admin/DashboardPage/StatCard';
+import { useAuth } from '../../../context/AuthContext';
+import { useLanguage } from '../../../context/LanguageContext';
+import dashboardService from '../../../services/dashboardService';
+import StatCard from './StatCard';
 import { Loader2, Info, DollarSign, ShoppingCart, Users, Package, TrendingUp, BarChart, ClipboardList } from 'lucide-react';
 import { Bar, BarChart as RechartsBarChart, ResponsiveContainer, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import { Link } from 'react-router-dom';
 
-const formatCurrency = (amount, language, currencyCode) => {
+const formatCurrency = (amount = 0, language, currencyCode) => {
     return new Intl.NumberFormat(language === 'ar' ? 'ar-EG' : 'en-US', {
         style: 'currency',
-        currency: currencyCode,
+        currency: currencyCode || 'USD',
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
-    }).format(amount || 0);
+    }).format(amount);
 };
 
 const DashboardPanel = ({ title, icon, children, className = "" }) => (
@@ -50,7 +50,7 @@ const SalesChart = ({ data, language, currencyCode, t }) => (
                         tickLine={false}
                     />
                     <Tooltip
-                        cursor={{ fill: 'hsla(var(--primary), 0.15)' }}
+                        cursor={{ fill: 'hsla(240, 5.9%, 10%, 0.1)' }}
                         contentStyle={{ 
                             backgroundColor: 'hsl(var(--background))', 
                             borderColor: 'hsl(var(--border))', 
@@ -66,7 +66,7 @@ const SalesChart = ({ data, language, currencyCode, t }) => (
                         dataKey="revenue" 
                         fill="hsl(var(--primary))" 
                         radius={[5, 5, 0, 0]} 
-                        barSize={20}
+                        barSize={20} 
                         className="hover:opacity-80 transition-opacity"
                     />
                 </RechartsBarChart>
@@ -102,7 +102,7 @@ const TopProductsChart = ({ data, language, t }) => (
                         stroke="hsl(var(--border))"
                     />
                     <Tooltip
-                        cursor={{ fill: 'hsla(var(--primary), 0.15)' }}
+                        cursor={{ fill: 'hsla(240, 5.9%, 10%, 0.1)' }}
                         contentStyle={{ 
                             backgroundColor: 'hsl(var(--background))', 
                             borderColor: 'hsl(var(--border))', 
@@ -191,6 +191,7 @@ const LoadingSkeleton = () => (
     </div>
 );
 
+
 const AdminDashboardPage = () => {
     const { t, language } = useLanguage();
     const { token } = useAuth();
@@ -200,6 +201,13 @@ const AdminDashboardPage = () => {
     const [recentOrders, setRecentOrders] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    const getTranslatedName = useCallback((nameObj) => {
+        if (!nameObj || typeof nameObj !== 'object') {
+            return t('dashboard.unnamedProduct');
+        }
+        return (language === 'ar' && nameObj.ar) ? nameObj.ar : nameObj.en || t('dashboard.unnamedProduct');
+    }, [language, t]);
 
     const fetchAllDashboardData = useCallback(async () => {
         if (!token) {
@@ -215,13 +223,15 @@ const AdminDashboardPage = () => {
                 dashboardService.getTopSellingProducts(token),
                 dashboardService.getRecentOrders(token),
             ]);
+
+            console.log('API Response for Top Products:', topProductsRes.data);
+
             setStats(statsRes.data);
             setSalesData(salesRes.data);
             
-            // Map product names for translation and proper display
             const translatedTopProducts = topProductsRes.data.map(product => ({
                 ...product,
-                name: (language === 'ar' && product.name?.ar ? product.name.ar : product.name?.en) || t('dashboard.unnamedProduct'),
+                name: getTranslatedName(product.name),
             }));
             setTopProducts(translatedTopProducts);
 
@@ -232,16 +242,16 @@ const AdminDashboardPage = () => {
         } finally {
             setLoading(false);
         }
-    }, [token, t, language]);
+    }, [token, t, getTranslatedName]);
 
     useEffect(() => {
         fetchAllDashboardData();
     }, [fetchAllDashboardData]);
 
     const topProductsChartData = topProducts.map(product => ({
-        name: product.name, // Use the already translated name
+        name: product.name,
         quantitySold: product.quantitySold,
-    })).reverse(); // Reverse for better display in vertical bar chart
+    })).reverse();
 
     if (loading) {
         return <LoadingSkeleton />;
@@ -271,9 +281,9 @@ const AdminDashboardPage = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard title={t('dashboard.totalRevenue')} value={formatCurrency(stats?.totalRevenue, language, t('general.currencyCode'))} icon={<DollarSign />} color="green" />
-                <StatCard title={t('dashboard.totalOrders')} value={stats?.totalOrders.toLocaleString(language) || '0'} icon={<ShoppingCart />} color="sky" />
-                <StatCard title={t('dashboard.totalProducts')} value={stats?.totalProducts.toLocaleString(language) || '0'} icon={<Package />} color="amber" />
-                <StatCard title={t('dashboard.totalUsers')} value={stats?.totalUsers.toLocaleString(language) || '0'} icon={<Users />} color="primary" />
+                <StatCard title={t('dashboard.totalOrders')} value={stats?.totalOrders?.toLocaleString(language) || '0'} icon={<ShoppingCart />} color="sky" />
+                <StatCard title={t('dashboard.totalProducts')} value={stats?.totalProducts?.toLocaleString(language) || '0'} icon={<Package />} color="amber" />
+                <StatCard title={t('dashboard.totalUsers')} value={stats?.totalUsers?.toLocaleString(language) || '0'} icon={<Users />} color="primary" />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
