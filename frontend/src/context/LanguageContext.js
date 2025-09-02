@@ -47,6 +47,7 @@ const translations = {
             "deleteImage":"حذف صورة",
             "tryAgain":"حاول مرة اخرى",
             "savedSuccess":"تم الحفظ بنجاح",
+            "manageItemsMessage":"يمكنك اداراه مناجاتك.",
         },
         "dashboard": {
             "title": "لوحة التحكم",
@@ -357,6 +358,8 @@ const translations = {
             "importantDates": "تواريخ هامة", "noOrdersFound": "لا يوجد طلبات", "checkLater": "تحقق من جديد",
             "orderID": "Order ID",
             "orderStatus": "حالة الطلب",
+            "manageOrders": "ادارة الطلبات",
+            "manageItemsMessage": "يمكنك ادارة المنتجات من صفحة المنتجات.",
         },
         "advertisementAdmin": {
             "titleRequired": "عناوين الإعلان باللغة الإنجليزية والعربية مطلوبة.", "imageRequired": "صورة الإعلان مطلوبة.",
@@ -430,6 +433,7 @@ const translations = {
             "fixedAmountPlaceholder": "مثال: 50",
             "minOrderAmountPlaceholder": "مثال: 200",
             "maxDiscountAmountPlaceholder": "مثال: 100",
+            "manageDiscountsTitle": "ادارة الخصومات",
 
             "tableHeader": {
                 "code": "الكود",
@@ -556,7 +560,7 @@ const translations = {
         "adminProductsPage": {
             "productList": "اداره المنتاجات",
             "manageProductsMessage": "  اهلا بك في صفحه اداره المنتاجات",
-            "title": "title",
+            "title": "اداره المنتاجات",
         },
     },
     en: {
@@ -600,6 +604,7 @@ const translations = {
             "changeImage": "Change Image","change":"change",
             "tryAgain": "Try Again",
             "savedSuccess": "Saved Successfully!",
+            "manageItemsMessage": "You can manage your items from the Items page.",
         },
         "dashboard": {
             "title": "Dashboard",
@@ -914,6 +919,9 @@ const translations = {
             "subtotal": "Subtotal",
             "importantDates": "Important Dates", "noOrdersFound": "No orders found.", "checkLater": "Check back later.",
             "orderID": "Order ID","orderStatus": "Order Status",
+            "manageOrders": "Manage Orders",
+            "manageItemsMessage": "You can manage your items from the Items page.",
+        
         },
         "advertisementAdmin": {
             "titleRequired": "Advertisement English and Arabic titles are required.", "imageRequired": "Advertisement image is required.",
@@ -1020,6 +1028,7 @@ const translations = {
             },
             "percentageType": "Percentage",
             "fixedAmountType": "Fixed Amount",
+            "manageDiscountsTitle": "Manage Discounts",
             "noLimit": "No Limit",
             "starts": "Starts",
             "ends": "Ends",
@@ -1078,7 +1087,7 @@ const translations = {
         "adminProductsPage": {
             "productList": "product list",
             "manageProductsMessage": "  Welcome to product management page",
-            "title": "title"
+            "title": "product management",
         },
         "productDetailsPage": {
             "reviews": "Reviews",
