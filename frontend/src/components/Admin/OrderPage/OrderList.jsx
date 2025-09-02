@@ -18,13 +18,11 @@ const OrderList = () => {
     const [isDeleting, setIsDeleting] = useState(false);
 
     const fetchOrders = useCallback(async () => {
-        setLoading(true);
         if (!token) {
             setLoading(false);
-            console.warn("Attempted to fetch orders without a token.");
             return;
         }
-        
+        setLoading(true);
         try {
             const response = await orderService.getAllOrders(token);
             setOrders(response.data);
@@ -33,19 +31,14 @@ const OrderList = () => {
             const msg = t('adminOrdersPage.errorFetchingOrdersToast');
             setError(msg);
             showToast(msg, 'error');
-            console.error("Failed to fetch orders:", err.response || err);
         } finally {
             setLoading(false);
         }
     }, [token, t, showToast]);
 
     useEffect(() => {
-        if (token) {
-            fetchOrders();
-        } else {
-            setLoading(false);
-        }
-    }, [token, fetchOrders]);
+        fetchOrders();
+    }, [fetchOrders]);
 
     const handleDeleteClick = (order) => {
         setOrderToDelete(order);
