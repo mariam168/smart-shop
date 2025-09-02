@@ -51,6 +51,8 @@ const orderSchema = mongoose.Schema({
     timestamps: true,
 });
 
+orderSchema.index({ createdAt: -1 });
+
 const Order = mongoose.model('Order', orderSchema);
 
 module.exports = Order;

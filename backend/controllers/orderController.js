@@ -65,10 +65,6 @@ const createOrder = async (req, res, next) => {
                         break;
                     }
                 }
-            } else {
-                // if (typeof productToUpdate.stock === 'number') {
-                //     productToUpdate.stock -= item.quantity;
-                // }
             }
             await productToUpdate.save();
         }
@@ -91,9 +87,24 @@ const getMyOrders = async (req, res, next) => {
 };
 
 const getAllOrders = async (req, res, next) => {
+    const limit = parseInt(req.query.limit) || 20;
+    const page = parseInt(req.query.page) || 1;
+    const skip = (page - 1) * limit;
+
     try {
-        const orders = await Order.find({}).populate('user', 'id name').sort({ createdAt: -1 });
-        res.json(orders);
+        const totalOrders = await Order.countDocuments();
+        const orders = await Order.find({})
+            .populate('user', 'id name')
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        res.json({
+            orders,
+            page,
+            totalPages: Math.ceil(totalOrders / limit),
+            totalOrders
+        });
     } catch (error) {
         next(error);
     }

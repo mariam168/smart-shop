@@ -9,8 +9,8 @@ const getAuthHeaders = (token) => {
     };
 };
 
-const getAllOrders = (token) => {
-    return axios.get(API_URL, { headers: getAuthHeaders(token) });
+const getAllOrders = (token, page = 1, limit = 20) => {
+    return axios.get(`${API_URL}?page=${page}&limit=${limit}`, { headers: getAuthHeaders(token) });
 };
 
 const getOrderById = (id, token) => {
