@@ -17,7 +17,7 @@ const formatCurrency = (amount, language, currencyCode) => {
 };
 
 const DashboardPanel = ({ title, icon, children, className = "" }) => (
-    <div className={`bg-white dark:bg-zinc-900 p-6 rounded-xl shadow-lg border border-gray-200 dark:border-zinc-800 ${className}`}>
+    <div className={`bg-white dark:bg-zinc-900 p-6 rounded-lg shadow-md border border-gray-200 dark:border-zinc-800 ${className}`}>
         <h3 className="font-bold text-xl text-gray-800 dark:text-white flex items-center gap-3 mb-5">
             {icon}{title}
         </h3>
@@ -25,97 +25,109 @@ const DashboardPanel = ({ title, icon, children, className = "" }) => (
     </div>
 );
 
-const SalesChart = ({ data, language, currencyCode }) => (
-    <div className="h-80">
-        <ResponsiveContainer width="100%" height="100%">
-            <RechartsBarChart data={data} margin={{ top: 20, right: 10, left: -10, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="4 4" stroke="hsl(var(--border))" vertical={false} />
-                <XAxis 
-                    dataKey="date" 
-                    tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} 
-                    stroke="hsl(var(--border))" 
-                    axisLine={false} 
-                    tickLine={false}
-                    interval="preserveStartEnd"
-                    angle={-30}
-                    textAnchor="end"
-                    height={60}
-                />
-                <YAxis 
-                    tickFormatter={(value) => formatCurrency(value, language, currencyCode)} 
-                    tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} 
-                    stroke="hsl(var(--border))" 
-                    axisLine={false} 
-                    tickLine={false}
-                />
-                <Tooltip
-                    cursor={{ fill: 'hsla(var(--primary), 0.15)' }}
-                    contentStyle={{ 
-                        backgroundColor: 'hsl(var(--background))', 
-                        borderColor: 'hsl(var(--border))', 
-                        borderRadius: '0.5rem',
-                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-                        fontSize: '0.875rem'
-                    }}
-                    labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 'bold' }}
-                    itemStyle={{ color: 'hsl(var(--muted-foreground))' }}
-                    formatter={(value) => [formatCurrency(value, language, currencyCode), 'Revenue']}
-                />
-                <Bar 
-                    dataKey="revenue" 
-                    fill="hsl(var(--primary))" 
-                    radius={[6, 6, 0, 0]} 
-                    barSize={20}
-                    activeBar={{ fill: 'hsl(var(--primary-dark))' }}
-                />
-            </RechartsBarChart>
-        </ResponsiveContainer>
+const SalesChart = ({ data, language, currencyCode, t }) => (
+    <div className="h-80 w-full">
+        {data && data.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+                <RechartsBarChart data={data} margin={{ top: 20, right: 10, left: 0, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
+                    <XAxis 
+                        dataKey="date" 
+                        tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} 
+                        stroke="hsl(var(--border))" 
+                        axisLine={false} 
+                        tickLine={false}
+                        interval="preserveStartEnd"
+                        angle={-30}
+                        textAnchor="end"
+                        height={60}
+                    />
+                    <YAxis 
+                        tickFormatter={(value) => formatCurrency(value, language, currencyCode)} 
+                        tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} 
+                        stroke="hsl(var(--border))" 
+                        axisLine={false} 
+                        tickLine={false}
+                    />
+                    <Tooltip
+                        cursor={{ fill: 'hsla(var(--primary), 0.15)' }}
+                        contentStyle={{ 
+                            backgroundColor: 'hsl(var(--background))', 
+                            borderColor: 'hsl(var(--border))', 
+                            borderRadius: '0.5rem',
+                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+                            fontSize: '0.875rem'
+                        }}
+                        labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 'bold' }}
+                        itemStyle={{ color: 'hsl(var(--muted-foreground))' }}
+                        formatter={(value) => [formatCurrency(value, language, currencyCode), t('dashboard.salesChart.revenue')]}
+                    />
+                    <Bar 
+                        dataKey="revenue" 
+                        fill="hsl(var(--primary))" 
+                        radius={[5, 5, 0, 0]} 
+                        barSize={20}
+                        className="hover:opacity-80 transition-opacity"
+                    />
+                </RechartsBarChart>
+            </ResponsiveContainer>
+        ) : (
+            <div className="flex items-center justify-center h-full text-gray-500 dark:text-zinc-400">
+                {t('dashboard.salesChart.noData')}
+            </div>
+        )}
     </div>
 );
 
-const TopProductsChart = ({ data, language }) => (
-    <div className="h-80">
-        <ResponsiveContainer width="100%" height="100%">
-            <RechartsBarChart layout="vertical" data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="4 4" stroke="hsl(var(--border))" vertical={false}/>
-                <XAxis 
-                    type="number" 
-                    tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} 
-                    stroke="hsl(var(--border))" 
-                    axisLine={false} 
-                    tickLine={false}
-                />
-                <YAxis 
-                    dataKey="name" 
-                    type="category" 
-                    width={100} 
-                    tickLine={false} 
-                    axisLine={false} 
-                    tick={{ fontSize: 12, fill: 'hsl(var(--muted-foreground))' }} 
-                    stroke="hsl(var(--border))"
-                />
-                <Tooltip
-                    cursor={{ fill: 'hsla(var(--primary), 0.15)' }}
-                    contentStyle={{ 
-                        backgroundColor: 'hsl(var(--background))', 
-                        borderColor: 'hsl(var(--border))', 
-                        borderRadius: '0.5rem',
-                        boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
-                        fontSize: '0.875rem'
-                    }}
-                    labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 'bold' }}
-                    itemStyle={{ color: 'hsl(var(--muted-foreground))' }}
-                    formatter={(value) => [value.toLocaleString(language), 'Sold']}
-                />
-                <Bar 
-                    dataKey="quantitySold" 
-                    fill="hsl(var(--primary))" 
-                    radius={[0, 6, 6, 0]} 
-                    barSize={25} 
-                    activeBar={{ fill: 'hsl(var(--primary-dark))' }}
-                />
-            </RechartsBarChart>
-        </ResponsiveContainer>
+const TopProductsChart = ({ data, language, t }) => (
+    <div className="h-80 w-full">
+        {data && data.length > 0 ? (
+            <ResponsiveContainer width="100%" height="100%">
+                <RechartsBarChart layout="vertical" data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false}/>
+                    <XAxis 
+                        type="number" 
+                        tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} 
+                        stroke="hsl(var(--border))" 
+                        axisLine={false} 
+                        tickLine={false}
+                    />
+                    <YAxis 
+                        dataKey="name" 
+                        type="category" 
+                        width={100} 
+                        tickLine={false} 
+                        axisLine={false} 
+                        tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} 
+                        stroke="hsl(var(--border))"
+                    />
+                    <Tooltip
+                        cursor={{ fill: 'hsla(var(--primary), 0.15)' }}
+                        contentStyle={{ 
+                            backgroundColor: 'hsl(var(--background))', 
+                            borderColor: 'hsl(var(--border))', 
+                            borderRadius: '0.5rem',
+                            boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
+                            fontSize: '0.875rem'
+                        }}
+                        labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 'bold' }}
+                        itemStyle={{ color: 'hsl(var(--muted-foreground))' }}
+                        formatter={(value) => [value.toLocaleString(language), t('dashboard.topProductsChart.sold')]}
+                    />
+                    <Bar 
+                        dataKey="quantitySold" 
+                        fill="hsl(var(--primary))" 
+                        radius={[0, 5, 5, 0]} 
+                        barSize={25} 
+                        className="hover:opacity-80 transition-opacity"
+                    />
+                </RechartsBarChart>
+            </ResponsiveContainer>
+        ) : (
+            <div className="flex items-center justify-center h-full text-gray-500 dark:text-zinc-400">
+                {t('dashboard.topProductsChart.noData')}
+            </div>
+        )}
     </div>
 );
 
@@ -131,25 +143,30 @@ const RecentOrdersTable = ({ orders, language, currencyCode, t }) => (
                 </tr>
             </thead>
             <tbody className="bg-white dark:bg-zinc-900 divide-y divide-gray-200 dark:divide-zinc-800">
-                {orders.map(order => (
-                    <tr key={order._id} className="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors">
-                        <td className="py-3 px-4 font-medium text-gray-800 dark:text-white">
-                            {order.user ? order.user.name : t('dashboard.orderTable.deletedUser')}
-                        </td>
-                        <td className="py-3 px-4 text-gray-500 dark:text-zinc-400">
-                            {new Date(order.createdAt).toLocaleDateString(language === 'ar' ? 'ar-EG' : 'en-US')}
-                        </td>
-                        <td className="py-3 px-4 font-semibold text-right text-emerald-600 dark:text-emerald-400">
-                            {formatCurrency(order.totalPrice, language, currencyCode)}
-                        </td>
-                        <td className="py-3 px-4 text-right">
-                            <Link to={`/admin/orders/${order._id}`} className="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold text-sm">
-                                {t('dashboard.orderTable.view')}
-                            </Link>
-                        </td>
-                    </tr>
-                ))}
-                {orders.length === 0 && (
+                {orders && orders.length > 0 ? (
+                    orders.map(order => (
+                        <tr key={order._id} className="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors">
+                            <td className="py-3 px-4 font-medium text-gray-800 dark:text-white">
+                                {order.user ? order.user.name : t('dashboard.orderTable.deletedUser')}
+                            </td>
+                            <td className="py-3 px-4 text-gray-500 dark:text-zinc-400">
+                                {new Date(order.createdAt).toLocaleDateString(language === 'ar' ? 'ar-EG' : 'en-US', {
+                                    year: 'numeric',
+                                    month: 'short',
+                                    day: 'numeric',
+                                })}
+                            </td>
+                            <td className="py-3 px-4 font-semibold text-right text-emerald-600 dark:text-emerald-400">
+                                {formatCurrency(order.totalPrice, language, currencyCode)}
+                            </td>
+                            <td className="py-3 px-4 text-right">
+                                <Link to={`/admin/orders/${order._id}`} className="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold text-sm">
+                                    {t('dashboard.orderTable.view')}
+                                </Link>
+                            </td>
+                        </tr>
+                    ))
+                ) : (
                     <tr>
                         <td colSpan="4" className="py-4 text-center text-gray-500 dark:text-zinc-400">
                             {t('dashboard.orderTable.noOrders')}
@@ -164,13 +181,13 @@ const RecentOrdersTable = ({ orders, language, currencyCode, t }) => (
 const LoadingSkeleton = () => (
     <div className="space-y-8 animate-pulse">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[...Array(4)].map((_, i) => <div key={i} className="bg-gray-200 dark:bg-zinc-800 h-32 rounded-xl"></div>)}
+            {[...Array(4)].map((_, i) => <div key={i} className="bg-gray-200 dark:bg-zinc-800 h-32 rounded-lg"></div>)}
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 bg-gray-200 dark:bg-zinc-800 h-96 rounded-xl"></div>
-            <div className="bg-gray-200 dark:bg-zinc-800 h-96 rounded-xl"></div>
+            <div className="lg:col-span-2 bg-gray-200 dark:bg-zinc-800 h-96 rounded-lg"></div>
+            <div className="bg-gray-200 dark:bg-zinc-800 h-96 rounded-lg"></div>
         </div>
-        <div className="bg-gray-200 dark:bg-zinc-800 h-64 rounded-xl"></div>
+        <div className="bg-gray-200 dark:bg-zinc-800 h-64 rounded-lg"></div>
     </div>
 );
 
@@ -200,9 +217,11 @@ const AdminDashboardPage = () => {
             ]);
             setStats(statsRes.data);
             setSalesData(salesRes.data);
+            
+            // Map product names for translation and proper display
             const translatedTopProducts = topProductsRes.data.map(product => ({
                 ...product,
-                name: (language === 'ar' && product.name.ar ? product.name.ar : product.name.en) || t('dashboard.unnamedProduct'),
+                name: (language === 'ar' && product.name?.ar ? product.name.ar : product.name?.en) || t('dashboard.unnamedProduct'),
             }));
             setTopProducts(translatedTopProducts);
 
@@ -220,9 +239,9 @@ const AdminDashboardPage = () => {
     }, [fetchAllDashboardData]);
 
     const topProductsChartData = topProducts.map(product => ({
-        name: product.name, 
+        name: product.name, // Use the already translated name
         quantitySold: product.quantitySold,
-    })).reverse(); 
+    })).reverse(); // Reverse for better display in vertical bar chart
 
     if (loading) {
         return <LoadingSkeleton />;
@@ -231,7 +250,7 @@ const AdminDashboardPage = () => {
     if (error) {
         return (
             <div className="flex items-center justify-center p-4" style={{ minHeight: '60vh' }}>
-                <div className="text-center p-8 bg-white dark:bg-zinc-900 rounded-xl shadow-lg border border-red-200 dark:border-red-800">
+                <div className="text-center p-8 bg-white dark:bg-zinc-900 rounded-lg shadow-md border border-red-200 dark:border-red-800">
                     <Info size={40} className="mx-auto mb-4 text-red-500" />
                     <h3 className="text-xl font-bold mb-2 text-gray-800 dark:text-white">{t('common.error')}</h3>
                     <p className="text-red-600 dark:text-red-400">{error}</p>
@@ -259,11 +278,11 @@ const AdminDashboardPage = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <DashboardPanel title={t('dashboard.salesOverTime')} icon={<TrendingUp size={24} className="text-indigo-600 dark:text-indigo-400"/>} className="lg:col-span-2">
-                    <SalesChart data={salesData} language={language} currencyCode={t('general.currencyCode')} />
+                    <SalesChart data={salesData} language={language} currencyCode={t('general.currencyCode')} t={t} />
                 </DashboardPanel>
                 
                 <DashboardPanel title={t('dashboard.topSellingProducts')} icon={<BarChart size={24} className="text-indigo-600 dark:text-indigo-400"/>}>
-                    <TopProductsChart data={topProductsChartData} language={language} />
+                    <TopProductsChart data={topProductsChartData} language={language} t={t} />
                 </DashboardPanel>
             </div>
 

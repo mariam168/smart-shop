@@ -50,15 +50,36 @@ const translations = {
 
         },
       
-        "dashboard": {
-            "totalRevenue": "الإيرادات الكلية",
-            "totalOrders": "عدد الطلبات",
-            "totalProducts": "عدد المنتجات",
-            "totalUsers": "عدد المستخدمين",
-            "salesOverTime": "مبيعات عبر الوقت",
-            "topSellingProducts": "المنتجات الأكثر مبيعاً",
-            "recentOrders": "الطلبات الحديثة",
-        },
+      "dashboard": {
+    "title": "لوحة التحكم",
+    "subtitle": "نظرة سريعة على أداء متجرك.",
+    "totalRevenue": "إجمالي الإيرادات",
+    "totalOrders": "إجمالي الطلبات",
+    "totalProducts": "إجمالي المنتجات",
+    "totalUsers": "إجمالي المستخدمين",
+    "salesOverTime": "المبيعات بمرور الوقت",
+    "topSellingProducts": "المنتجات الأكثر مبيعاً",
+    "recentOrders": "الطلبات الأخيرة",
+    "unnamedProduct": "منتج غير مسمى",
+    "errorFetchingStats": "فشل في جلب إحصائيات لوحة التحكم. يرجى المحاولة مرة أخرى.",
+    "salesChart": {
+      "revenue": "الإيرادات",
+      "noData": "لا توجد بيانات مبيعات متاحة لهذه الفترة."
+    },
+    "topProductsChart": {
+      "sold": "مباع",
+      "noData": "لا توجد بيانات للمنتجات الأكثر مبيعًا."
+    },
+    "orderTable": {
+      "customer": "العميل",
+      "date": "التاريخ",
+      "total": "الإجمالي",
+      "actions": "الإجراءات",
+      "deletedUser": "مستخدم محذوف",
+      "noOrders": "لم يتم العثور على طلبات حديثة.",
+      "view": "عرض"
+    }
+  },
         "productDetailsPage": {
              "reviews": "تقييمات",
       "customerReviews": "تقييمات العملاء",
@@ -890,14 +911,35 @@ const translations = {
                 "cancelled": "Cancelled"
             },
             "dashboard": {
-                "totalRevenue": "Total Revenue",
-                "totalOrders": "Total Orders",
-                "totalProducts": "Total Products",
-                "totalUsers": "Total Users",
-                "salesOverTime": "Sales Over Time",
-                "topSellingProducts": "Top Selling Products",
-                "recentOrders": "Recent Orders",
-            },
+    "title": "Dashboard",
+    "subtitle": "Here's a quick overview of your store's performance.",
+    "totalRevenue": "Total Revenue",
+    "totalOrders": "Total Orders",
+    "totalProducts": "Total Products",
+    "totalUsers": "Total Users",
+    "salesOverTime": "Sales Over Time",
+    "topSellingProducts": "Top Selling Products",
+    "recentOrders": "Recent Orders",
+    "unnamedProduct": "Unnamed Product",
+    "errorFetchingStats": "Failed to fetch dashboard statistics. Please try again.",
+    "salesChart": {
+      "revenue": "Revenue",
+      "noData": "No sales data available for this period."
+    },
+    "topProductsChart": {
+      "sold": "Sold",
+      "noData": "No top selling products data available."
+    },
+    "orderTable": {
+      "customer": "Customer",
+      "date": "Date",
+      "total": "Total",
+      "actions": "Actions",
+      "deletedUser": "Deleted User",
+      "noOrders": "No recent orders found.",
+      "view": "View"
+    }
+  },
             "orderStatuses": {
                 "pending": "Pending",
                 "processing": "Processing",
@@ -1086,7 +1128,8 @@ const translations = {
             "datesRequired": "Start and End dates are required.",
             "endDateError": "End date must be after the start date.",
 
-            "noDiscounts": "No discount codes found."
+            "noDiscounts": "No discount codes found.",
+            "manageDiscountsTitle": "Manage Discounts",
 
         },
         "productAdmin": {
