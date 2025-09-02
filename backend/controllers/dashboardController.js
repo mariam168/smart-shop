@@ -29,7 +29,7 @@ const getSummaryStats = async (req, res, next) => {
 const getSalesOverTime = async (req, res, next) => {
     try {
         const salesData = await Order.aggregate([
-            { $match: { isPaid: true, createdAt: { $ne: null } } }, // Ensure createdAt exists
+            { $match: { isPaid: true, createdAt: { $ne: null } } },
             {
                 $group: {
                     _id: {
@@ -69,7 +69,7 @@ const getTopSellingProducts = async (req, res, next) => {
                 }
             },
             { $sort: { totalQuantitySold: -1 } },
-            { $limit: 5 },
+            { $limit: 10 }, 
             {
                 $lookup: {
                     from: "products",
@@ -79,6 +79,13 @@ const getTopSellingProducts = async (req, res, next) => {
                 }
             },
             { $unwind: "$productDetails" },
+            {
+                $match: {
+                    "productDetails.name": { $exists: true, $ne: null },
+                    "productDetails.name.en": { $exists: true, $ne: null, $ne: "" }
+                }
+            },
+            { $limit: 5 }, 
             {
                 $project: {
                     _id: 0,
