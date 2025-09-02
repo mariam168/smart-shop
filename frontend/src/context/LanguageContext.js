@@ -1,5 +1,7 @@
 import { createContext, useState, useContext, useEffect } from 'react';
+
 const LanguageContext = createContext();
+
 const translations = {
     ar: {
         "general": {
@@ -15,7 +17,6 @@ const translations = {
             "cancel": "الغاء", "addCategory": "اضافة فئة", "saving": "جاري الحفظ...", "saveChanges": "حفظ التغييرات",
             "errorOccurred": "حدث خطاء. يرجى المحاولة لاحقاً.", "retry": "اعادة المحاولة", "actions": "العمليات",
             "edit": "تحرير", "delete": "حذف", "noResultsFound": "لم يتم العثور على نتائج.", "add": "إضافة",
-            "edit": "تعديل",
             "delete": "حذف","notAvailable":"غير متاح",
             "actions": "إجراءات", "noDataForChart": "لا توجد بيانات للمخطط.",
             "days": "أيام",
@@ -43,43 +44,44 @@ const translations = {
             "viewAll":"عرض الكل", "yesDelete":"نعم, حذف", "noCancel":"لا, الغاء", "uploadImage":"تحميل صورة",
             "changeImage":"تغيير صورة","change":"تغيير",
             "upload":"تحميل",
-            "changeImage":"تغيير صورة",
             "deleteImage":"حذف صورة",
             "tryAgain":"حاول مرة اخرى",
             "savedSuccess":"تم الحفظ بنجاح",
-
         },
-      
-      "dashboard": {
-    "title": "لوحة التحكم",
-    "subtitle": "نظرة سريعة على أداء متجرك.",
-    "totalRevenue": "إجمالي الإيرادات",
-    "totalOrders": "إجمالي الطلبات",
-    "totalProducts": "إجمالي المنتجات",
-    "totalUsers": "إجمالي المستخدمين",
-    "salesOverTime": "المبيعات بمرور الوقت",
-    "topSellingProducts": "المنتجات الأكثر مبيعاً",
-    "recentOrders": "الطلبات الأخيرة",
-    "unnamedProduct": "منتج غير مسمى",
-    "errorFetchingStats": "فشل في جلب إحصائيات لوحة التحكم. يرجى المحاولة مرة أخرى.",
-    "salesChart": {
-      "revenue": "الإيرادات",
-      "noData": "لا توجد بيانات مبيعات متاحة لهذه الفترة."
-    },
-    "topProductsChart": {
-      "sold": "مباع",
-      "noData": "لا توجد بيانات للمنتجات الأكثر مبيعًا."
-    },
-    "orderTable": {
-      "customer": "العميل",
-      "date": "التاريخ",
-      "total": "الإجمالي",
-      "actions": "الإجراءات",
-      "deletedUser": "مستخدم محذوف",
-      "noOrders": "لم يتم العثور على طلبات حديثة.",
-      "view": "عرض"
-    }
-  },
+        "dashboard": {
+            "title": "لوحة التحكم",
+            "subtitle": "نظرة سريعة على أداء متجرك.",
+            "totalRevenue": "إجمالي الإيرادات",
+            "totalOrders": "إجمالي الطلبات",
+            "totalProducts": "إجمالي المنتجات",
+            "totalUsers": "إجمالي المستخدمين",
+            "salesOverTime": "المبيعات بمرور الوقت",
+            "topSellingProducts": "المنتجات الأكثر مبيعاً",
+            "categoryDistribution": "المنتجات حسب الفئة",
+            "recentOrders": "الطلبات الأخيرة",
+            "unnamedProduct": "منتج غير مسمى",
+            "errorFetchingStats": "فشل في جلب إحصائيات لوحة التحكم. يرجى المحاولة مرة أخرى.",
+            "salesChart": {
+              "revenue": "الإيرادات",
+              "noData": "لا توجد بيانات مبيعات متاحة لهذه الفترة."
+            },
+            "topProductsChart": {
+              "sold": "مباع",
+              "noData": "لا توجد بيانات للمنتجات الأكثر مبيعًا."
+            },
+            "categoryChart": {
+                "noData": "لا توجد بيانات للفئات."
+            },
+            "orderTable": {
+              "customer": "العميل",
+              "date": "التاريخ",
+              "total": "الإجمالي",
+              "actions": "الإجراءات",
+              "deletedUser": "مستخدم محذوف",
+              "noOrders": "لم يتم العثور على طلبات حديثة.",
+              "view": "عرض"
+            }
+        },
         "productDetailsPage": {
              "reviews": "تقييمات",
       "customerReviews": "تقييمات العملاء",
@@ -108,7 +110,6 @@ const translations = {
       "outOfStock": "غير متوفر",
       "description": "الوصف",
       "specifications": "المواصفات"
-
         },
         "topBar": {
             "language": "English", "home": "الرئيسية", "shop": "المتجر", "aboutUs": "من نحن", "contactUs": "اتصل بنا",
@@ -130,7 +131,6 @@ const translations = {
             "easyReturns": "إرجاع سهل",
             "securePayment": "دفع آمن"
         },
- 
         "footer": {
             "description": "متجرك الأول لأفضل المنتجات. جودة وثقة تصلك حتى باب منزلك.",
             "newsletterTitle": "انضم إلى نشرتنا البريدية",
@@ -188,15 +188,13 @@ const translations = {
             "goToOffer": "انتقل إلى العرض", "typeSlide": "عرض الشريحة الرئيسية", "typeSideOffer": "عرض جانبي",
             "typeWeeklyOffer": "صفقة الأسبوع", "typeOther": "عرض خاص", "priceDetails": "تفاصيل السعر"
         },
-      
-  "aboutUsPage": {
-    "title": "عن OUNO",
-    "commitment": "في OUNO، وجهتك الأولى لكل ما هو عصري ومبتكر. نؤمن بأن الجودة هي أساس كل شيء، لذلك نحرص على انتقاء تشكيلة فريدة من أحدث المنتجات، الأجهزة عالية الأداء، والإكسسوارات الفاخرة التي تلبي شغفك وتفوق توقعاتك.",
-    "belief": "تجربتك معنا لا تقتصر على مجرد شراء منتج، بل هي رحلة متكاملة من الراحة والثقة. نضمن لك توصيلاً سريعاً يصلك أينما كنت، خيارات دفع آمنة ومتنوعة، وفريق خدمة عملاء جاهز لمساعدتك في كل خطوة.",
-    "explore": "استكشف مجموعتنا الآن وكن دائماً في المقدمة. في OUNO، رضاكم ليس مجرد هدف، بل هو مقياس نجاحنا.",
-    "imageAlt": "صورة تعبر عن هوية ورؤية متجر OUNO"
-  },
-
+        "aboutUsPage": {
+            "title": "عن OUNO",
+            "commitment": "في OUNO، وجهتك الأولى لكل ما هو عصري ومبتكر. نؤمن بأن الجودة هي أساس كل شيء، لذلك نحرص على انتقاء تشكيلة فريدة من أحدث المنتجات، الأجهزة عالية الأداء، والإكسسوارات الفاخرة التي تلبي شغفك وتفوق توقعاتك.",
+            "belief": "تجربتك معنا لا تقتصر على مجرد شراء منتج، بل هي رحلة متكاملة من الراحة والثقة. نضمن لك توصيلاً سريعاً يصلك أينما كنت، خيارات دفع آمنة ومتنوعة، وفريق خدمة عملاء جاهز لمساعدتك في كل خطوة.",
+            "explore": "استكشف مجموعتنا الآن وكن دائماً في المقدمة. في OUNO، رضاكم ليس مجرد هدف، بل هو مقياس نجاحنا.",
+            "imageAlt": "صورة تعبر عن هوية ورؤية متجر OUNO"
+        },
         "contactUsPage": {
             "title": "اتصل بنا", "description": "هل لديك أي أسئلة؟ لا تتردد في التواصل معنا. فريقنا متاح لمساعدتك.",
             "yourName": "اسمك", "yourSubject": "الموضوع", "yourEmail": "بريدك الإلكتروني", "yourPhone": "رقم هاتفك",
@@ -219,7 +217,6 @@ const translations = {
             "cartTotal": "إجمالي السلة",
             "proceedToCheckout": "متابعة إلى الدفع"
         },
-
         "cartPage": {
             "shoppingCart": "سلة التسوق",
             "subtotal": "المجموع الفرعي",
@@ -260,8 +257,6 @@ const translations = {
             "wishlistSubtitle": "  كل منتجاتك المفضلة هنا",
             "emptyWishlist": "قائمة المفضلات فارغة.",
             "emptyWishlistDesc": "لا يوجد منتجات في قائمة المفضلات.",
-            "emptyWishlist": "قائمة المفضلات فارغة.",
-
         },
         "auth": {
             "login": "تسجيل الدخول", "register": "انشاء حساب",
@@ -309,7 +304,6 @@ const translations = {
             "filters": "الفلاتر",
             "categories": "الفئات", "subCategories": "الفئات الفرعية", "allSubCategories": "كل الفئات الفرعية",
              "viewResults": "عرض النتايج",
-            
         },
         "adminDashboardPage": {
             "footerText": "متجري. جميع الحقوق محفوظة.", "errorFetchingData": "خطأ في جلب بيانات لوحة التحكم: ",
@@ -326,27 +320,11 @@ const translations = {
             "total": "الإجمالي", "status": "الحالة", "noRecentOrders": "لا توجد طلبات حديثة.", "guestUser": "مستخدم زائر",
             "orderStatuses": { "pending": "قيد الانتظار", "processing": "قيد المعالجة", "shipped": "تم الشحن", "delivered": "تم التوصيل", "cancelled": "ملغي" },
             "productManagement": "إدارة المنتجات", "categoryManagement": "إدارة الفئات", "orderManagement": "إدارة الطلبات",
+
             "userManagement": "إدارة المستخدمين", "advertisementManagement": "إدارة الإعلانات", "discountManagement": "إدارة الخصومات",
-            "welcomeMessage": "مرحبا بك في لوحة التحكم", "orderStatuses.": "حالات الطلبات",
-            "orderStatuses": {
-                "pending": "قيد الانتظار",
-                "processing": "قيد المعالجة",
-                "shipped": "تم الشحن",
-                "delivered": "تم التوصيل",
-                "cancelled": "ملغي"
-            },
-            "orderStatuses": {
-                "pending": "قيد الانتظار",
-                "processing": "قيد المعالجة",
-                "shipped": "تم الشحن",
-                "delivered": "تم التوصيل",
-                "cancelled": "ملغي",
-                "null": "Null",
-                "undefined": "غير محدد"
-            },
+            "welcomeMessage": "مرحبا بك في لوحة التحكم",
             "productCountLabel":"عدد المنتجات",
             "orderCountLabel":"عدد الطلبات",
-
         },
         "adminCategoryPage": {
             "errorFetchingCategories": "خطأ في جلب الفئات.", "confirmDelete": "هل أنت متأكد من رغبتك في حذف الفئة \"{categoryName}\"؟",
@@ -389,7 +367,6 @@ const translations = {
             "getStartedByAdding": "ابدا بالإضافة الإعلان الأول.",
             "linkLabel": "رابط URL", "typeLabel": "النوع",
             "titlePlaceholderEn": "ادخل العنوان باللغة الانجليزية", "titlePlaceholderAr": "ادخل العنوان باللغة العربية",
-            "searchProductPlaceholder": "ابحث عن منتج","discountPercentageLabel": "نسبة الخصم",
             "typeSlide": "شريحة عرض", "typeSideOffer": "عرض جانبي", "typeWeeklyOffer": "عرض أسبوعي",
             "orderLabel": "الترتيب (للعرض)", "startDate": "تاريخ البدء", "endDate": "تاريخ الانتهاء",
             "originalPrice": "السعر الأصلي", "discountedPrice": "السعر المخفض", "currency": "العملة",
@@ -412,12 +389,10 @@ const translations = {
             "linkToProduct": "ربط بمنتج",
             "noProductLinked": "— غير مربوط —",
             "linkPlaceholder": "مثال: /special-offers",
-            "typeOther": "آخر", "imageLabel": "صورة الإعلان",
-            "imageOptional": "صورة (اختياري لتغيير الحالية)",
+            "typeOther": "آخر",
             "selectedImage": "الصورة المختارة",
             "currentImage": "الصورة الحالية",
             "noNewImageSelected": "لم يتم اختيار صورة جديدة",
-            "selectedImage": "الصورة المختارة",
             "manageAdvertisementsTitle": "ادارة الإعلانات",
             "tableHeader": {
                 "image": "صورة",
@@ -447,24 +422,14 @@ const translations = {
             "fixedAmountType": "مبلغ ثابت", "updateSuccess": "تم تحديث الخصم بنجاح!",
             "updateError": "حدث خطأ أثناء تحديث الخصم.", "editDiscountTitle": "تعديل الخصم",
             "updatingButton": "جاري الحفظ...", "updateButton": "حفظ التغييرات",
-            "discountListTitle": "أكواد الخصم",
-            "addDiscountButton": "إضافة خصم",
             "addFirstDiscount": "يرجى اضافة على الاقل كود خصم.",
             "addDiscountTitle": "إضافة كود خصم جديد",
-            "editDiscountTitle": "تعديل كود الخصم", "validity": "الصلاحية",
+            "validity": "الصلاحية",
 
-            "codeLabel": "كود الخصم",
             "codePlaceholder": "مثال: SUMMER25",
-            "percentageLabel": "نسبة مئوية (%)",
-            "fixedAmountLabel": "مبلغ ثابت",
             "fixedAmountPlaceholder": "مثال: 50",
-            "minOrderAmountLabel": "أقل قيمة للطلب",
             "minOrderAmountPlaceholder": "مثال: 200",
-            "maxDiscountAmountLabel": "أقصى مبلغ للخصم (اختياري)",
             "maxDiscountAmountPlaceholder": "مثال: 100",
-            "startDateLabel": "تاريخ البدء",
-            "endDateLabel": "تاريخ الانتهاء",
-            "isActive": "فعّال",
 
             "tableHeader": {
                 "code": "الكود",
@@ -472,30 +437,17 @@ const translations = {
                 "value": "القيمة",
                 "minOrder": "أقل طلب",
                 "usageLimit": "حد الاستخدام",
-                "minOrder": "الحد الادنى للطلب",
-                "usageLimit": "حد الاستخدام",
                 "validity": "الصلاحية"
             },
             "validityTable": "الصلاحية",
             "usageLimitTable": "حد الاستخدام",
-            "percentageType": "نسبة مئوية",
-            "fixedAmountType": "مبلغ ثابت",
             "noLimit": "غير محدود",
             "starts": "يبدأ",
             "ends": "ينتهي",
-            "addSuccess": "تمت إضافة الخصم بنجاح!",
-            "updateSuccess": "تم تحديث الخصم بنجاح!",
-            "deleteSuccess": "تم حذف الخصم بنجاح!",
-            "addError": "خطأ في إضافة الخصم:",
-            "updateError": "خطأ في تحديث الخصم:",
+
             "errorDeletingDiscount": "خطأ في حذف الخصم:",
             "confirmDelete": "هل أنت متأكد من حذف الكود \"{{discountCode}}\"؟",
-            "codeRequired": "كود الخصم مطلوب.",
-            "amountRequired": "يجب توفير نسبة مئوية أو مبلغ ثابت.",
-            "amountExclusive": "لا يمكن توفير نسبة مئوية ومبلغ ثابت معاً.",
-            "datesRequired": "تاريخ البدء والانتهاء مطلوبان.",
             "endDateError": "تاريخ الانتهاء يجب أن يكون بعد تاريخ البدء.",
-            "noDiscounts": "لم يتم العثور على أكواد خصم."
         },
         "productAdmin": {
             "addNewProduct": "إضافة منتج جديد", "confirmDelete": "هل أنت متأكد من حذف المنتج \"{productName}\"؟",
@@ -592,16 +544,14 @@ const translations = {
             "categoryNameArLabel": "اسم الفئة (العربي)", "descriptionEnLabel": "وصف الفئة (الانجليزي)",
             "descriptionArLabel": "وصف الفئة (العربي)",
             "mainCategoryDetails": "تفاصيل الفئة الرئيسية",
-            "categoryImageLabel": "صورة الفئة", "addCategoryTitle": "اضافة فئة جديدة", "categoryNameEnLabel": "اسم الفئة (الانجليزي)",
-            "categoryNameArLabel": "اسم الفئة (العربي)", "descriptionEnLabel": "وصف الفئة (الانجليزي)",
-            "descriptionArLabel": "وصف الفئة (العربي)", "categoryImageLabel": "صورة الفئة", "subCategoriesTitle": "الفئات الفرعية",
+            "categoryImageLabel": "صورة الفئة",
+            "subCategoriesTitle": "الفئات الفرعية",
             "noSubcategoriesMessage": "لا توجد فئات فرعية", "addSubCategoryButton": "اضافة فئة فرعية", "removeImage": "حذف الصورة",
-            "subCategory": "فئة فرعية", "changeImage": "تغيير الصورة", "removeSubCategory": "حذف فئة فرعية",
+            "subCategory": "فئة فرعية", "removeSubCategory": "حذف فئة فرعية",
             "subCategoryNameEnPlaceholder": "اسم الفئة الفرعية (الانجليزي)", "subCategoryNameArPlaceholder": "اسم الفئة الفرعية (العربي)",
             "subCategoryDescriptionEnPlaceholder": "وصف الفئة الفرعية (الانجليزي)", "subCategoryDescriptionArPlaceholder": "وصف الفئة الفرعية (العربي)",
             "created": "تم الانشاء", "successMessage": "تم انشاء الفئة بنجاح!", "editCategoryTitle": "تعديل الفئة",
             "updated": "تم التحديث",
-
         },
         "adminProductsPage": {
             "productList": "اداره المنتاجات",
@@ -650,8 +600,40 @@ const translations = {
             "changeImage": "Change Image","change":"change",
             "tryAgain": "Try Again",
             "savedSuccess": "Saved Successfully!",
-
-
+        },
+        "dashboard": {
+            "title": "Dashboard",
+            "subtitle": "Here's a quick overview of your store's performance.",
+            "totalRevenue": "Total Revenue",
+            "totalOrders": "Total Orders",
+            "totalProducts": "Total Products",
+            "totalUsers": "Total Users",
+            "salesOverTime": "Sales Over Time",
+            "topSellingProducts": "Top Selling Products",
+            "categoryDistribution": "Products by Category",
+            "recentOrders": "Recent Orders",
+            "unnamedProduct": "Unnamed Product",
+            "errorFetchingStats": "Failed to fetch dashboard statistics. Please try again.",
+            "salesChart": {
+              "revenue": "Revenue",
+              "noData": "No sales data available for this period."
+            },
+            "topProductsChart": {
+              "sold": "Sold",
+              "noData": "No top selling products data available."
+            },
+            "categoryChart": {
+                "noData": "No category data available."
+            },
+            "orderTable": {
+              "customer": "Customer",
+              "date": "Date",
+              "total": "Total",
+              "actions": "Actions",
+              "deletedUser": "Deleted User",
+              "noOrders": "No recent orders found.",
+              "view": "View"
+            }
         },
         "topBar": {
             "language": "العربية", "home": "Home", "shop": "Shop", "aboutUs": "About Us", "contactUs": "Contact Us",
@@ -706,15 +688,13 @@ const translations = {
             "goToOffer": "Go To Offer", "typeSlide": "Main Carousel Offer", "typeSideOffer": "Side Offer",
             "typeWeeklyOffer": "Weekly Deal", "typeOther": "Special Offer", "priceDetails": "Price Details"
         },
-       
-  "aboutUsPage": {
-    "title": "About OUNO",
-    "commitment": "At OUNO, we're your number one destination for everything modern and innovative. We believe quality is the foundation of everything, which is why we meticulously curate a unique collection of the latest products, high-performance gear, and premium accessories that fuel your passion and exceed your expectations.",
-    "belief": "Your experience with us is more than just a purchase—it's a complete journey of comfort and confidence. We guarantee fast delivery to your doorstep, secure and diverse payment options, and an outstanding customer service team ready to assist you every step of the way.",
-    "explore": "Explore our collection now and stay ahead of the curve. At OUNO, your satisfaction isn't just a goal; it's our measure of success.",
-    "imageAlt": "An image representing the identity and vision of OUNO store"
-  }
-        ,
+        "aboutUsPage": {
+            "title": "About OUNO",
+            "commitment": "At OUNO, we're your number one destination for everything modern and innovative. We believe quality is the foundation of everything, which is why we meticulously curate a unique collection of the latest products, high-performance gear, and premium accessories that fuel your passion and exceed your expectations.",
+            "belief": "Your experience with us is more than just a purchase—it's a complete journey of comfort and confidence. We guarantee fast delivery to your doorstep, secure and diverse payment options, and an outstanding customer service team ready to assist you every step of the way.",
+            "explore": "Explore our collection now and stay ahead of the curve. At OUNO, your satisfaction isn't just a goal; it's our measure of success.",
+            "imageAlt": "An image representing the identity and vision of OUNO store"
+        },
         "contactUsPage": {
             "title": "Contact Us", "description": "Have any questions or need assistance? Feel free to reach out. Our team is available to help.",
             "yourName": "Your Name", "yourSubject": "Subject", "yourEmail": "Your Email", "yourPhone": "Your Phone",
@@ -826,9 +806,7 @@ const translations = {
             "orderPlacedSuccessMessage": "Your order has been placed successfully. You will receive an email with the order details.",
             "orderID": "Order ID",
             "continueShopping": "Continue Shopping",
-            "continueShopping": "Continue Shopping",
             "placingOrder": "Placing Order",
-            "discountCode": "Discount Code",
             "discount":"Discount",
             "remove":"Remove",
             "discountAppliedSuccessfully":"Discount applied successfully!",
@@ -903,52 +881,7 @@ const translations = {
             "orderStatuses": { "pending": "Pending", "processing": "Processing", "shipped": "Shipped", "delivered": "Delivered", "cancelled": "Cancelled" },
             "productManagement": "Product Management", "categoryManagement": "Category Management", "orderManagement": "Order Management",
             "userManagement": "User Management", "advertisementManagement": "Advertisement Mgmt", "discountManagement": "Discount Management",
-            "welcomeMessage": "Welcome to the Admin Dashboard", "orderStatuses": {
-                "pending": "Pending",
-                "processing": "Processing",
-                "shipped": "Shipped",
-                "delivered": "Delivered",
-                "cancelled": "Cancelled"
-            },
-            "dashboard": {
-    "title": "Dashboard",
-    "subtitle": "Here's a quick overview of your store's performance.",
-    "totalRevenue": "Total Revenue",
-    "totalOrders": "Total Orders",
-    "totalProducts": "Total Products",
-    "totalUsers": "Total Users",
-    "salesOverTime": "Sales Over Time",
-    "topSellingProducts": "Top Selling Products",
-    "recentOrders": "Recent Orders",
-    "unnamedProduct": "Unnamed Product",
-    "errorFetchingStats": "Failed to fetch dashboard statistics. Please try again.",
-    "salesChart": {
-      "revenue": "Revenue",
-      "noData": "No sales data available for this period."
-    },
-    "topProductsChart": {
-      "sold": "Sold",
-      "noData": "No top selling products data available."
-    },
-    "orderTable": {
-      "customer": "Customer",
-      "date": "Date",
-      "total": "Total",
-      "actions": "Actions",
-      "deletedUser": "Deleted User",
-      "noOrders": "No recent orders found.",
-      "view": "View"
-    }
-  },
-            "orderStatuses": {
-                "pending": "Pending",
-                "processing": "Processing",
-                "shipped": "Shipped",
-                "delivered": "Delivered",
-                "cancelled": "Cancelled",
-                "null": "Null",
-                "undefined": "Undefined"
-            },
+            "welcomeMessage": "Welcome to the Admin Dashboard",
             "productCountLabel":"Product Count",
         },
         "adminCategoryPage": {
@@ -990,8 +923,6 @@ const translations = {
             "searchProductPlaceholder": "Search product","discountPercentageLabel": "Discount Percentage",
             "getStartedByAdding": "Get started by adding your first advertisement.",
             "manageAdvertisementsTitle": "Manage Advertisements",
-
-
             "descriptionEn": "Description (English)", "descriptionAr": "Description (Arabic)",
             "linkLabel": "Link URL", "typeLabel": "Type",
             "typeSlide": "Slide", "typeSideOffer": "Side Offer", "typeWeeklyOffer": "Weekly Offer",
@@ -1018,12 +949,8 @@ const translations = {
             "linkPlaceholder": "e.g., /special-offers",
             "typeOther": "Other",
             "selectedImage": "Selected Image",
-            "imageLabel": "Advertisement Image",
-            "imageOptional": "Image (Optional to change current)",
-            "selectedImage": "Selected Image",
             "currentImage": "Current Image",
             "noNewImageSelected": "No new image selected",
-
             "tableHeader": {
                 "image": "Image",
                 "title": "Title",
@@ -1034,11 +961,9 @@ const translations = {
                 "active": "Active",
                 "minOrder": "Min. Order",
                 "usageLimit": "Usage Limit",
-
                 "order": "Order",
                 "discount":"Discount"
             },
-
         },
         "footer": {
             "description": "Your one-stop shop for the best products. Quality and trust delivered to your doorstep.",
@@ -1078,25 +1003,13 @@ const translations = {
             "fixedAmountType": "Fixed Amount", "updateSuccess": "Discount updated successfully!",
             "updateError": "An error occurred while updating the discount.", "editDiscountTitle": "Edit Discount",
             "updatingButton": "Saving...", "updateButton": "Save Changes",
-            "discountListTitle": "Discount Codes",
-            "addDiscountButton": "Add Discount",
             "addDiscountTitle": "Add New Discount Code",
-            "editDiscountTitle": "Edit Discount Code", "validity": "Validity",
+            "validity": "Validity",
             "addFirstDiscount": "Please add at least one discount code.",
-
-            "codeLabel": "Discount Code",
             "codePlaceholder": "e.g., SUMMER25",
-            "percentageLabel": "Percentage (%)",
-            "fixedAmountLabel": "Fixed Amount",
             "fixedAmountPlaceholder": "e.g., 50",
-            "minOrderAmountLabel": "Minimum Order Amount",
             "minOrderAmountPlaceholder": "e.g., 200",
-            "maxDiscountAmountLabel": "Maximum Discount (Optional)",
             "maxDiscountAmountPlaceholder": "e.g., 100",
-            "startDateLabel": "Start Date",
-            "endDateLabel": "End Date",
-            "isActive": "Active",
-
             "tableHeader": {
                 "code": "Code",
                 "type": "Type",
@@ -1105,7 +1018,6 @@ const translations = {
                 "usageLimit": "Usage Limit",
                 "validity": "Validity"
             },
-
             "percentageType": "Percentage",
             "fixedAmountType": "Fixed Amount",
             "noLimit": "No Limit",
@@ -1113,24 +1025,8 @@ const translations = {
             "ends": "Ends",
             "validityTable": "Validity",
             "usageLimitTable": "Usage Limit",
-
-            "addSuccess": "Discount added successfully!",
-            "updateSuccess": "Discount updated successfully!",
-            "deleteSuccess": "Discount deleted successfully!",
-            "addError": "Error adding discount:",
-            "updateError": "Error updating discount:",
-            "errorDeletingDiscount": "Error deleting discount:",
             "confirmDelete": "Are you sure you want to delete the code \"{{discountCode}}\"?",
-
-            "codeRequired": "Discount code is required.",
-            "amountRequired": "Either percentage or fixed amount must be provided.",
-            "amountExclusive": "Cannot provide both percentage and fixed amount.",
-            "datesRequired": "Start and End dates are required.",
             "endDateError": "End date must be after the start date.",
-
-            "noDiscounts": "No discount codes found.",
-            "manageDiscountsTitle": "Manage Discounts",
-
         },
         "productAdmin": {
             "addNewProduct": "Add New Product", "confirmDelete": "Are you sure you want to delete the product \"{productName}\"?",
@@ -1161,29 +1057,24 @@ const translations = {
             "title": "Shop by Category",
             "subtitle": "Explore our wide range of product categories.","noCategoriesFound":"No categories found",
             "subcategories":"Subcategories"
-
         },
         "forms": {
             "select": "select", "saveProduct": "save", "uploadImage": "upload Image", "dragOrClick": "drag Or Click",
             "cancel": "cancel", "changeImage": "change Image","upload":"uploadImage"
         },
-
         "categoryForm": {
             "addCategoryTitle": "Add Category", "categoryNameEnLabel": "Category Name (English)",
             "categoryNameArLabel": "Category Name (Arabic)", "descriptionEnLabel": "Description (English)",
-            "mainCategoryDetails": "Main Category Details", "categoryImageLabel": "Category Image", "addCategoryTitle": "Add Category",
+            "mainCategoryDetails": "Main Category Details", "categoryImageLabel": "Category Image",
             "descriptionArLabel": "Description (Arabic)",
-            "categoryImageLabel": "Category Image", "addCategoryTitle": "Add Category", "categoryNameEnLabel": "Category Name (English)",
-            "categoryNameArLabel": "Category Name (Arabic)", "descriptionEnLabel": "Description (English)",
-            "descriptionArLabel": "Description (Arabic)", "categoryImageLabel": "Category Image", "subCategoriesTitle": "Sub-Categories",
+            "subCategoriesTitle": "Sub-Categories",
             "noSubcategoriesMessage": "No sub-categories", "addSubCategoryButton": "Add Sub-Category", "removeImage": "remove Image",
-            "subCategory": "Sub-Category", "changeImage": "change Image", "removeSubCategory": "remove Sub-Category",
+            "subCategory": "Sub-Category", "removeSubCategory": "remove Sub-Category",
             "subCategoryNameEnPlaceholder": "Sub-Category Name (English)", "subCategoryNameArPlaceholder": "Sub-Category Name (Arabic)",
             "subCategoryDescriptionEnPlaceholder": "Sub-Category Description (English)", "subCategoryDescriptionArPlaceholder": "Sub-Category Description (Arabic)",
             "created": "created", "successMessage": "Category created successfully!", "editCategoryTitle": "Edit Category",
             "updated": "updated"
         },
-
         "adminProductsPage": {
             "productList": "product list",
             "manageProductsMessage": "  Welcome to product management page",
@@ -1249,7 +1140,7 @@ export const LanguageProvider = ({ children }) => {
         }, translation);
     };
     return (
-        <LanguageContext.Provider value={{ language, t, changeLanguage }}>
+        <LanguageContext.Provider value={{ language, t, changeLanguage, translations }}>
             {children}
         </LanguageContext.Provider>
     );
