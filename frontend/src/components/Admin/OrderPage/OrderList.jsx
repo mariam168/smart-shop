@@ -18,11 +18,6 @@ const OrderList = () => {
     const [isDeleting, setIsDeleting] = useState(false);
 
     const fetchOrders = useCallback(async () => {
-        if (!token) {
-            setLoading(false);
-            console.log("Fetch aborted: No token available.");
-            return;
-        }
         setLoading(true);
         setError(null);
         try {
@@ -39,8 +34,12 @@ const OrderList = () => {
     }, [token, t, showToast]);
 
     useEffect(() => {
-        fetchOrders();
-    }, [fetchOrders]);
+        if (token) {
+            fetchOrders();
+        } else {
+            setLoading(false);
+        }
+    }, [token, fetchOrders]);
 
     const handleDeleteClick = (order) => {
         setOrderToDelete(order);
