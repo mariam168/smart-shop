@@ -11,7 +11,7 @@ const API_BASE_URL = 'https://smart-shop-backend-ivory.vercel.app';
 
 export const AuthProvider = ({ children }) => {
     const [currentUser, setCurrentUser] = useState(null);
-    const [token, setToken] = useState(localStorage.getItem('token'));
+    const [token, setToken] = useState(null);
     const [loadingAuth, setLoadingAuth] = useState(true);
 
     const logout = React.useCallback(() => {
@@ -23,21 +23,26 @@ export const AuthProvider = ({ children }) => {
     }, []);
 
     useEffect(() => {
-        const storedUser = localStorage.getItem('user');
-        const storedToken = localStorage.getItem('token'); 
-        
-        if (storedToken && storedUser) {
-            try {
-                setCurrentUser(JSON.parse(storedUser)); 
-                axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
-                setToken(storedToken); 
-            } catch (e) {
-                console.error("AuthContext: Failed to parse stored user or set auth header:", e);
-                logout();
+        const initializeAuth = () => {
+            const storedUser = localStorage.getItem('user');
+            const storedToken = localStorage.getItem('token'); 
+            
+            if (storedToken && storedUser) {
+                try {
+                    setCurrentUser(JSON.parse(storedUser)); 
+                    axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
+                    setToken(storedToken); 
+                } catch (e) {
+                    console.error("AuthContext: Failed to parse stored user or set auth header:", e);
+                    logout();
+                }
+            } else {
+                delete axios.defaults.headers.common['Authorization'];
             }
-        } else {
-            delete axios.defaults.headers.common['Authorization'];
-        }
+            setLoadingAuth(false);
+        };
+
+        initializeAuth();
 
         const responseInterceptor = axios.interceptors.response.use(
             response => response,
@@ -49,12 +54,12 @@ export const AuthProvider = ({ children }) => {
                 return Promise.reject(error);
             }
         );
-        setLoadingAuth(false); 
 
         return () => {
             axios.interceptors.response.eject(responseInterceptor);
         };
     }, [logout]); 
+    
     const login = (userData, userToken) => {
         localStorage.setItem('token', userToken);
         localStorage.setItem('user', JSON.stringify(userData)); 
@@ -77,7 +82,7 @@ export const AuthProvider = ({ children }) => {
 
     return (
         <AuthContext.Provider value={value}>
-            {!loadingAuth && children}
+            {children}
         </AuthContext.Provider>
     );
 };
