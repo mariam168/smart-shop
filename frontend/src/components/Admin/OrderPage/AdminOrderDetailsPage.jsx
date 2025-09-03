@@ -4,11 +4,12 @@ import orderService from '../../../services/orderService';
 import { useAuth } from '../../../context/AuthContext';
 import { useLanguage } from '../../../context/LanguageContext';
 import { useToast } from '../../../context/ToastContext';
-import { Loader2, CheckCircle, XCircle, Truck, User, Package, Calendar, ChevronLeft, Info, ReceiptText, Phone } from 'lucide-react';
+import ConfirmationModal from '../../common/ConfirmationModal';
+import { Loader2, CheckCircle, XCircle, Truck, User, Package, ChevronLeft, Info, ReceiptText, Phone, Trash2, Edit, Save } from 'lucide-react';
 
 const AdminOrderDetailsPage = () => {
     const { id } = useParams();
-    const { t, language } = useLanguage();
+    const { t } = useLanguage();
     const navigate = useNavigate();
     const { token } = useAuth();
     const { showToast } = useToast();
@@ -16,13 +17,18 @@ const AdminOrderDetailsPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [updatingStatus, setUpdatingStatus] = useState(false);
-    
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [isEditingAddress, setIsEditingAddress] = useState(false);
+    const [shippingAddress, setShippingAddress] = useState({});
+
     const fetchOrderDetails = useCallback(async () => { 
         if (!token || !id) return;
         setLoading(true); 
         try { 
             const response = await orderService.getOrderById(id, token);
-            setOrder(response.data); 
+            setOrder(response.data);
+            setShippingAddress(response.data.shippingAddress);
         } catch (err) { 
             const errorMessage = t('adminOrdersPage.errorFetchingOrderDetails'); 
             setError(errorMessage); 
@@ -35,38 +41,63 @@ const AdminOrderDetailsPage = () => {
     useEffect(() => { 
         fetchOrderDetails(); 
     }, [fetchOrderDetails]);
+
+    const handleAddressChange = (e) => {
+        const { name, value } = e.target;
+        setShippingAddress(prev => ({ ...prev, [name]: value }));
+    };
+
+    const handleSaveAddress = async () => {
+        setUpdatingStatus(true);
+        try {
+            const response = await orderService.updateOrder(id, { shippingAddress }, token);
+            setOrder(response.data);
+            setShippingAddress(response.data.shippingAddress);
+            setIsEditingAddress(false);
+            showToast(t('adminOrdersPage.addressUpdateSuccess'), 'success');
+        } catch (err) {
+            showToast(t('adminOrdersPage.addressUpdateError'), 'error');
+        } finally {
+            setUpdatingStatus(false);
+        }
+    };
     
     const handleUpdateStatus = async (type) => { 
         setUpdatingStatus(true); 
         try { 
             let response; 
-            let successMessage = ''; 
             if (type === 'pay') { 
                 const paymentResult = { id: `ADMIN_PAID_${Date.now()}`, status: 'COMPLETED', email_address: order.user?.email }; 
                 response = await orderService.markAsPaid(id, paymentResult, token);
-                successMessage = t('adminOrdersPage.paidSuccess'); 
             } else if (type === 'deliver') { 
                 response = await orderService.markAsDelivered(id, token);
-                successMessage = t('adminOrdersPage.deliveredSuccess'); 
             } 
             setOrder(response.data); 
-            showToast(successMessage, 'success'); 
+            showToast(t(`adminOrdersPage.${type}Success`), 'success'); 
         } catch (err) { 
-            const errorMessageString = err.response?.data?.message || t('general.errorOccurred'); 
-            showToast(errorMessageString, 'error'); 
+            showToast(err.response?.data?.message || t('general.errorOccurred'), 'error'); 
         } finally { 
             setUpdatingStatus(false); 
         } 
     };
-    
-    const formatPrice = (price) => { 
-        return new Intl.NumberFormat(language === 'ar' ? 'ar-EG' : 'en-US', { style: 'currency', currency: t('general.currencyCode') }).format(Number(price || 0)); 
+
+    const handleDeleteOrder = async () => {
+        setIsDeleting(true);
+        try {
+            await orderService.deleteOrder(id, token);
+            showToast(t('adminOrdersPage.deleteSuccess'), 'success');
+            navigate('/admin/orders');
+        } catch (err) {
+            showToast(t('adminOrdersPage.deleteError'), 'error');
+        } finally {
+            setIsDeleting(false);
+            setIsDeleteModalOpen(false);
+        }
     };
     
-    const formatDateTime = (dateString) => { 
-        if (!dateString) return 'N/A'; 
-        const options = { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }; 
-        return new Date(dateString).toLocaleDateString(language === 'ar' ? 'ar-EG' : 'en-US', options); 
+    const { language } = useLanguage();
+    const formatPrice = (price) => { 
+        return new Intl.NumberFormat(language === 'ar' ? 'ar-EG' : 'en-US', { style: 'currency', currency: t('general.currencyCode') }).format(Number(price || 0)); 
     };
     
     const getDisplayName = useCallback((nameObject) => {
@@ -79,9 +110,33 @@ const AdminOrderDetailsPage = () => {
     if (error && !order) { return ( <div className="flex min-h-[80vh] w-full items-center justify-center p-4"> <div className="text-center p-8 bg-white dark:bg-zinc-900 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800"> <Info size={48} className="mx-auto mb-5 text-red-500" /> <h2 className="text-2xl font-bold text-zinc-900 dark:text-white mb-2">{t('adminOrdersPage.orderNotFound')}</h2> <p className="text-base text-red-600 dark:text-red-400">{error}</p> <Link to="/admin/orders" className="mt-6 inline-flex items-center justify-center gap-2 rounded-lg bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-primary dark:bg-white dark:text-black dark:hover:bg-primary-light"> <ChevronLeft size={16} />{t('general.backToOrders')} </Link> </div> </div> ); }
     if (!order) return null;
 
-    const DetailCard = ({ title, icon, children }) => ( <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800"> <h2 className="text-xl font-bold text-zinc-900 dark:text-white mb-4 flex items-center gap-3"> {React.cloneElement(icon, { className: "text-primary", size: 22 })} {title} </h2> <div className="space-y-4">{children}</div> </div> );
+    const DetailCard = ({ title, icon, children, onEdit, isEditing, onSave, isSaving }) => (
+        <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl shadow-sm border border-zinc-200 dark:border-zinc-800">
+            <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-bold text-zinc-900 dark:text-white flex items-center gap-3">
+                    {React.cloneElement(icon, { className: "text-primary", size: 22 })} {title}
+                </h2>
+                {onEdit && (
+                    isEditing ? (
+                        <button onClick={onSave} disabled={isSaving} className="p-2 text-green-600 rounded-full hover:bg-green-100 dark:hover:bg-green-900/30 disabled:opacity-50">
+                            {isSaving ? <Loader2 size={18} className="animate-spin"/> : <Save size={18} />}
+                        </button>
+                    ) : (
+                        <button onClick={onEdit} className="p-2 text-zinc-500 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800">
+                            <Edit size={18} />
+                        </button>
+                    )
+                )}
+            </div>
+            <div className="space-y-4">{children}</div>
+        </div>
+    );
+
     const StatusBadge = ({ isTrue, trueText, falseText, icon: Icon }) => ( <div className={`p-3 rounded-lg text-sm font-medium flex items-center gap-2 ${isTrue ? 'bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400' : 'bg-amber-100 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400'}`}> {isTrue ? <CheckCircle size={16} /> : <Icon size={16} />} <span>{isTrue ? trueText : falseText}</span> </div> );
     
+    const Input = (props) => ( <input {...props} className="w-full rounded-lg border-zinc-300 bg-white dark:border-zinc-700 dark:bg-zinc-800 p-2 text-sm dark:text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-light/50 focus:border-transparent transition" /> );
+    const Label = ({ children }) => ( <label className="block text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-1">{children}</label> );
+
     return (
         <div className="space-y-8">
             <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -89,9 +144,14 @@ const AdminOrderDetailsPage = () => {
                     <h1 className="text-3xl font-bold text-zinc-900 dark:text-white">{t('adminOrdersPage.orderDetails')}</h1>
                     <p className="mt-1 font-mono text-sm text-zinc-500 dark:text-zinc-500">#{order._id}</p>
                 </div>
-                <Link to="/admin/orders" className="inline-flex items-center justify-center gap-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-900 dark:text-white hover:bg-zinc-50 dark:hover:bg-zinc-700">
-                    <ChevronLeft size={16} />{t('general.backToOrders')}
-                </Link>
+                <div className="flex items-center gap-2">
+                    <Link to="/admin/orders" className="inline-flex items-center justify-center gap-2 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-2 text-sm font-medium text-zinc-900 dark:text-white hover:bg-zinc-50 dark:hover:bg-zinc-700">
+                        <ChevronLeft size={16} />{t('general.backToOrders')}
+                    </Link>
+                    <button onClick={() => setIsDeleteModalOpen(true)} className="inline-flex items-center justify-center gap-2 rounded-lg border border-red-200 dark:border-red-800/50 bg-red-50 dark:bg-red-900/20 px-4 py-2 text-sm font-medium text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/40">
+                        <Trash2 size={16} />
+                    </button>
+                </div>
             </header>
 
             <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 items-start">
@@ -108,17 +168,36 @@ const AdminOrderDetailsPage = () => {
                             </div>
                         ))}
                     </DetailCard>
-                    <DetailCard title={t('adminOrdersPage.customerInfo')} icon={<User />}>
-                        <p className="text-sm font-semibold text-zinc-800 dark:text-white">{order.user?.name || t('general.notAvailable')}</p>
-                        <p className="text-sm text-zinc-500 dark:text-zinc-400">{order.user?.email || t('general.notAvailable')}</p>
-                        <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
-                           <Phone size={14} />
-                           <span>{order.shippingAddress.phone || t('general.notAvailable')}</span>
-                        </div>
-                        <div className="text-sm text-zinc-600 dark:text-zinc-300 pt-3 border-t border-zinc-200 dark:border-zinc-800">
-                            <strong className="block text-zinc-800 dark:text-white mb-1">{t('adminOrdersPage.shippingAddress')}</strong>
-                            {order.shippingAddress.address}, {order.shippingAddress.city}, {order.shippingAddress.postalCode}, {order.shippingAddress.country}
-                        </div>
+                    <DetailCard 
+                        title={t('adminOrdersPage.customerInfo')} 
+                        icon={<User />}
+                        onEdit={() => setIsEditingAddress(true)}
+                        onSave={handleSaveAddress}
+                        isEditing={isEditingAddress}
+                        isSaving={updatingStatus}
+                    >
+                        {isEditingAddress ? (
+                            <div className="space-y-3">
+                                <div><Label>{t('checkoutPage.enterAddressPlaceholder')}</Label><Input name="address" value={shippingAddress.address} onChange={handleAddressChange} /></div>
+                                <div><Label>{t('checkoutPage.enterCityPlaceholder')}</Label><Input name="city" value={shippingAddress.city} onChange={handleAddressChange} /></div>
+                                <div><Label>{t('checkoutPage.enterPostalCodePlaceholder')}</Label><Input name="postalCode" value={shippingAddress.postalCode} onChange={handleAddressChange} /></div>
+                                <div><Label>{t('checkoutPage.enterCountryPlaceholder')}</Label><Input name="country" value={shippingAddress.country} onChange={handleAddressChange} /></div>
+                                <div><Label>{t('checkoutPage.phonePlaceholder')}</Label><Input name="phone" value={shippingAddress.phone} onChange={handleAddressChange} /></div>
+                            </div>
+                        ) : (
+                            <>
+                                <p className="text-sm font-semibold text-zinc-800 dark:text-white">{order.user?.name || t('general.notAvailable')}</p>
+                                <p className="text-sm text-zinc-500 dark:text-zinc-400">{order.user?.email || t('general.notAvailable')}</p>
+                                <div className="flex items-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
+                                   <Phone size={14} />
+                                   <span>{order.shippingAddress.phone || t('general.notAvailable')}</span>
+                                </div>
+                                <div className="text-sm text-zinc-600 dark:text-zinc-300 pt-3 border-t border-zinc-200 dark:border-zinc-800">
+                                    <strong className="block text-zinc-800 dark:text-white mb-1">{t('adminOrdersPage.shippingAddress')}</strong>
+                                    {order.shippingAddress.address}, {order.shippingAddress.city}, {order.shippingAddress.postalCode}, {order.shippingAddress.country}
+                                </div>
+                            </>
+                        )}
                     </DetailCard>
                 </div>
 
@@ -153,6 +232,14 @@ const AdminOrderDetailsPage = () => {
                     </DetailCard>
                 </div>
             </div>
+            <ConfirmationModal 
+                isOpen={isDeleteModalOpen} 
+                onClose={() => setIsDeleteModalOpen(false)} 
+                onConfirm={handleDeleteOrder} 
+                isConfirming={isDeleting} 
+                title={t('adminOrdersPage.deleteConfirmTitle')} 
+                message={t('adminOrdersPage.deleteConfirmMessage', { orderId: order?._id.slice(-6).toUpperCase() || '' })} 
+            />
         </div>
     );
 };

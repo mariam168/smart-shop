@@ -98,7 +98,7 @@ const getAllOrders = async (req, res, next) => {
 
 const getOrderById = async (req, res, next) => {
     try {
-        const order = await Order.findById(req.params.id).populate('user', 'name email').lean();
+        const order = await Order.findById(req.params.id).populate('user', 'name email');
 
         if (!order) return res.status(404).json({ message: 'Order not found' });
 
@@ -150,6 +150,28 @@ const updateOrderToDelivered = async (req, res, next) => {
     }
 };
 
+const updateOrder = async (req, res, next) => {
+    try {
+        const order = await Order.findById(req.params.id);
+        if (!order) {
+            return res.status(404).json({ message: 'Order not found' });
+        }
+
+        const { shippingAddress } = req.body;
+        if (shippingAddress) {
+            order.shippingAddress = {
+                ...order.shippingAddress,
+                ...shippingAddress,
+            };
+        }
+        
+        const updatedOrder = await order.save();
+        res.json(updatedOrder);
+    } catch (error) {
+        next(error);
+    }
+};
+
 const deleteOrder = async (req, res, next) => {
     try {
         const order = await Order.findById(req.params.id);
@@ -170,5 +192,6 @@ module.exports = {
     getOrderById,
     updateOrderToPaid,
     updateOrderToDelivered,
+    updateOrder,
     deleteOrder,
 };
