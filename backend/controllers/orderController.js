@@ -1,8 +1,9 @@
 const Order = require('../models/orderModel');
-const Cart = require('../models/cartModel');
-const Product = require('../models/productModel');
+const Cart = require('../models/cartModel'); 
+const Product = require('../models/productModel'); 
 
 const createOrder = async (req, res, next) => {
+    console.log('Order Controller: createOrder called'); 
     try {
         const { shippingAddress, paymentMethod, discount } = req.body;
         const cart = await Cart.findOne({ user: req.user.id });
@@ -73,30 +74,36 @@ const createOrder = async (req, res, next) => {
         
         res.status(201).json(createdOrder);
     } catch (error) {
+        console.error('Order Controller: Error in createOrder:', error); 
         next(error);
     }
 };
 
 const getMyOrders = async (req, res, next) => {
+    console.log('Order Controller: getMyOrders called for user:', req.user.id); 
     try {
         const orders = await Order.find({ user: req.user.id }).sort({ createdAt: -1 });
         res.json(orders);
     } catch (error) {
+        console.error("Order Controller: Error in getMyOrders:", error); 
         next(error);
     }
 };
 
 const getAllOrders = async (req, res, next) => {
+    console.log('Order Controller: getAllOrders called (admin access expected).'); 
     try {
         const orders = await Order.find({}).populate('user', 'id name').sort({ createdAt: -1 });
+        console.log(`Order Controller: Found ${orders.length} orders.`);
         res.status(200).json(orders);
     } catch (error) {
-        console.error("Error in getAllOrders:", error);
+        console.error("Order Controller: Error in getAllOrders:", error); 
         res.status(500).json({ message: "Failed to fetch orders due to a server error." });
     }
 };
 
 const getOrderById = async (req, res, next) => {
+    console.log('Order Controller: getOrderById called for ID:', req.params.id); 
     try {
         const order = await Order.findById(req.params.id).populate('user', 'name email');
 
@@ -108,11 +115,13 @@ const getOrderById = async (req, res, next) => {
         
         res.json(order);
     } catch (error) {
+        console.error("Order Controller: Error in getOrderById:", error);
         next(error);
     }
 };
 
 const updateOrderToPaid = async (req, res, next) => {
+    console.log('Order Controller: updateOrderToPaid called for ID:', req.params.id);
     try {
         const order = await Order.findById(req.params.id);
         if (order) {
@@ -130,11 +139,13 @@ const updateOrderToPaid = async (req, res, next) => {
             res.status(404).json({ message: 'Order not found' });
         }
     } catch (error) {
+        console.error("Order Controller: Error in updateOrderToPaid:", error); 
         next(error);
     }
 };
 
 const updateOrderToDelivered = async (req, res, next) => {
+    console.log('Order Controller: updateOrderToDelivered called for ID:', req.params.id); 
     try {
         const order = await Order.findById(req.params.id);
         if (order) {
@@ -146,11 +157,13 @@ const updateOrderToDelivered = async (req, res, next) => {
             res.status(404).json({ message: 'Order not found' });
         }
     } catch (error) {
+        console.error("Order Controller: Error in updateOrderToDelivered:", error); 
         next(error);
     }
 };
 
 const updateOrder = async (req, res, next) => {
+    console.log('Order Controller: updateOrder called for ID:', req.params.id);
     try {
         const order = await Order.findById(req.params.id);
         if (!order) {
@@ -168,19 +181,23 @@ const updateOrder = async (req, res, next) => {
         const updatedOrder = await order.save();
         res.json(updatedOrder);
     } catch (error) {
+        console.error("Order Controller: Error in updateOrder:", error); 
         next(error);
     }
 };
 
 const deleteOrder = async (req, res, next) => {
+    console.log('Order Controller: deleteOrder called for ID:', req.params.id); 
     try {
         const order = await Order.findById(req.params.id);
         if (!order) {
             return res.status(404).json({ message: 'Order not found' });
         }
         await order.deleteOne();
+        console.log('Order Controller: Order deleted successfully:', req.params.id); 
         res.json({ message: 'Order deleted successfully' });
     } catch (error) {
+        console.error("Order Controller: Error in deleteOrder:", error); 
         next(error);
     }
 };
