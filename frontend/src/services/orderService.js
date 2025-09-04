@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://smart-shop-backend-ivory.vercel.app/api/orders';
+const API_URL = `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000'}/api/orders`;
 
 const getAuthHeaders = (token) => {
     return {
@@ -8,10 +8,9 @@ const getAuthHeaders = (token) => {
         Authorization: `Bearer ${token}`
     };
 };
-const getAdminOrderList = (token) => {
-    const url = `${API_URL}/admin-list`;
-    console.log(`[orderService TEST] Calling getAdminOrderList at: ${url}`); 
-    return axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
+
+const getAllOrders = (token) => {
+    return axios.get(API_URL, { headers: getAuthHeaders(token) });
 };
 
 const getOrderById = (id, token) => {
@@ -26,21 +25,11 @@ const markAsDelivered = (id, token) => {
     return axios.put(`${API_URL}/${id}/deliver`, {}, { headers: getAuthHeaders(token) });
 };
 
-const updateOrder = (id, orderData, token) => {
-    return axios.put(`${API_URL}/${id}`, orderData, { headers: getAuthHeaders(token) });
-};
-
-const deleteOrder = (id, token) => {
-    return axios.delete(`${API_URL}/${id}`, { headers: getAuthHeaders(token) });
-};
-
 const orderService = {
-    getAdminOrderList,
+    getAllOrders,
     getOrderById,
     markAsPaid,
-    markAsDelivered,
-    updateOrder,
-    deleteOrder,
+    markAsDelivered
 };
 
 export default orderService;
