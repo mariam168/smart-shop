@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = `${process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000'}/api/orders`;
+const API_URL = 'https://smart-shop-backend-ivory.vercel.app/api/orders';
 
 const getAuthHeaders = (token) => {
     return {
@@ -8,10 +8,9 @@ const getAuthHeaders = (token) => {
         Authorization: `Bearer ${token}`
     };
 };
-
 const getAdminOrderList = (token) => {
     const url = `${API_URL}/admin-list`;
-    console.log(`[orderService] Calling getAdminOrderList at: ${url}`);
+    console.log(`[orderService TEST] Calling getAdminOrderList at: ${url}`); 
     return axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
 };
 
