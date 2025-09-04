@@ -26,12 +26,13 @@ const OrderList = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await orderService.getAllOrders(token);
+            const response = await orderService.getAdminOrderList(token);
             setOrders(response.data);
         } catch (err) {
             console.error("Error fetching orders:", err);
-            setError(t('adminOrdersPage.errorFetchingOrders'));
-            showToast(t('adminOrdersPage.errorFetchingOrders'), 'error');
+            const errorMessage = err.response?.data?.message || t('adminOrdersPage.errorFetchingOrders');
+            setError(errorMessage);
+            showToast(errorMessage, 'error');
         } finally {
             setLoading(false);
         }
@@ -56,7 +57,7 @@ const OrderList = () => {
             showToast(t('adminOrdersPage.deleteSuccess'), 'success');
             setIsDeleteModalOpen(false);
             setOrderToDelete(null);
-            fetchOrders(); // Re-fetch orders to update the list
+            fetchOrders();
         } catch (err) {
             showToast(err.response?.data?.message || t('adminOrdersPage.deleteError'), 'error');
         } finally {
