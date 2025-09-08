@@ -45,26 +45,43 @@ const ShopPage = () => {
 
     const getDisplayName = useCallback((item) => {
         if (!item?.name) return '';
-        return item.name;
-    }, []);
+        return item.name[language] || item.name.en;
+    }, [language]);
 
     const fetchInitialData = useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
-            const productsUrl = `${API_BASE_URL}/api/products`;
             const axiosConfig = { headers: { 'Accept-Language': language } };
             
-            const productsPromise = axios.get(productsUrl, axiosConfig);
+            // --- START: MODIFIED DATA FETCHING ---
+            const productsPromise = axios.get(`${API_BASE_URL}/api/products`, axiosConfig);
             const categoriesPromise = axios.get(`${API_BASE_URL}/api/categories`, axiosConfig);
+            const advertisementsPromise = axios.get(`${API_BASE_URL}/api/advertisements?isActive=true`, axiosConfig);
 
-            const [productsRes, categoriesRes] = await Promise.all([productsPromise, categoriesPromise]);
+            const [productsRes, categoriesRes, advertisementsRes] = await Promise.all([
+                productsPromise, 
+                categoriesPromise, 
+                advertisementsPromise
+            ]);
 
             const productsData = productsRes.data;
             const categoriesData = categoriesRes.data;
+            const advertisementsData = advertisementsRes.data;
 
-            setAllProducts(productsData);
-            const allCategories = [{ _id: 'All', name: t('shopPage.allCategories') }, ...categoriesData];
+            // Manually enrich products with their advertisements, just like in TrendingProducts
+            const enrichedProducts = productsData.map(product => {
+                const associatedAd = advertisementsData.find(ad => (ad.productRef?._id || ad.productRef) === product._id);
+                return {
+                    ...product,
+                    advertisement: associatedAd || null,
+                };
+            });
+
+            setAllProducts(enrichedProducts);
+            // --- END: MODIFIED DATA FETCHING ---
+
+            const allCategories = [{ _id: 'All', name: { en: t('shopPage.allCategories'), ar: t('shopPage.allCategories') } }, ...categoriesData];
             setCategories(allCategories);
 
             const categoryNameFromUrl = searchParams.get('category');
@@ -75,8 +92,8 @@ const ShopPage = () => {
                 }
             }
             
-            if (Array.isArray(productsData) && productsData.length > 0) {
-                 const prices = productsData.flatMap(p => {
+            if (Array.isArray(enrichedProducts) && enrichedProducts.length > 0) {
+                 const prices = enrichedProducts.flatMap(p => {
                     if (p.variations && p.variations.length > 0) {
                         return p.variations.flatMap(v => v.options.map(o => o.price));
                     }
@@ -112,11 +129,12 @@ const ShopPage = () => {
             if (p.variations && p.variations.length > 0 && p.variations[0].options && p.variations[0].options.length > 0) {
                 displayPrice = p.variations[0].options[0].price;
             }
-
+            
             if (adData && adData.discountPercentage > 0) {
                 displayPrice = displayPrice * (1 - (adData.discountPercentage / 100));
             }
-            return { ...p, displayPrice, localizedProductName: p.name };
+            const productName = p.name[language] || p.name.en;
+            return { ...p, displayPrice, localizedProductName: productName };
         });   
 
         if (searchTerm) {
@@ -140,7 +158,7 @@ const ShopPage = () => {
                 
                 return (b.numReviews || 0) - (a.numReviews || 0);
             });
-    }, [allProducts, selectedCategory, selectedSubCategory, currentPrice, sortBy, searchParams]);
+    }, [allProducts, selectedCategory, selectedSubCategory, currentPrice, sortBy, searchParams, language]);
 
     const resetFilters = useCallback(() => {
         setSelectedCategory('All');
