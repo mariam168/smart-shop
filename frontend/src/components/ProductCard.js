@@ -29,17 +29,16 @@ const ProductCard = ({ product }) => {
     if (!product || !product.name) {
         return null;
     }
-    const adData = product.advertisement;
 
     const handleCardClick = (e) => {
-        if (e.target.closest('button')) return; 
+        if (e.target.closest('button')) return;
         if (product?._id) {
             navigate(`/shop/${product._id}`);
         }
     };
 
     const handleToggleFavorite = (e) => {
-        e.stopPropagation(); 
+        e.stopPropagation();
         if (!isAuthenticated) {
             showToast(t('wishlist.loginRequired'), 'info');
             navigate('/login');
@@ -51,29 +50,15 @@ const ProductCard = ({ product }) => {
     };
 
     const handleViewDetails = (e) => {
-        e.stopPropagation(); 
+        e.stopPropagation();
         if (product?._id) {
             navigate(`/shop/${product._id}`);
         }
     };
-    const productName = product.name;
-    const productCategoryName = product.category?.name;
-
-    const productIsFavorite = product._id ? isFavorite(product._id) : false;
-    const imageUrl = product.mainImage || 'https://via.placeholder.com/400?text=No+Image';
-    const isAdvertised = !!adData && adData.discountPercentage > 0;
-    const discountPercentage = isAdvertised ? adData.discountPercentage : 0;
-
-    let displayPrice = product.basePrice;
-    let originalPrice = null;
-    if (isAdvertised && product.basePrice != null) {
-        originalPrice = product.basePrice;
-        displayPrice = originalPrice * (1 - (discountPercentage / 100));
-    }
 
     const formatPrice = (price) => {
         if (price == null) return t('general.notApplicable');
-        const currencyCode = 'EGP'; 
+        const currencyCode = 'EGP';
         const locale = language === 'ar' ? 'ar-EG' : 'en-US';
         try {
             return new Intl.NumberFormat(locale, {
@@ -86,6 +71,34 @@ const ProductCard = ({ product }) => {
             return `${price} ${currencyCode}`;
         }
     };
+
+    const adData = product.advertisement;
+    const isAdvertised = !!adData && adData.discountPercentage > 0;
+    const discountPercentage = isAdvertised ? adData.discountPercentage : 0;
+    
+    // --- START: LOGIC CORRECTION FOR PRICE CALCULATION ---
+    let originalPrice = null;
+    let finalPrice = null;
+
+    // Determine the base price for calculation, considering variations first.
+    let startingPrice = product.basePrice;
+    if (product.variations && product.variations.length > 0 && product.variations[0].options && product.variations[0].options.length > 0) {
+        startingPrice = product.variations[0].options[0].price;
+    }
+
+    // Apply discount if the product is advertised
+    if (isAdvertised) {
+        originalPrice = startingPrice;
+        finalPrice = startingPrice * (1 - (discountPercentage / 100));
+    } else {
+        finalPrice = startingPrice;
+    }
+    // --- END: LOGIC CORRECTION FOR PRICE CALCULATION ---
+
+    const productName = product.name;
+    const productCategoryName = product.category?.name;
+    const productIsFavorite = product._id ? isFavorite(product._id) : false;
+    const imageUrl = product.mainImage || 'https://via.placeholder.com/400?text=No+Image';
 
     return (
         <div
@@ -147,13 +160,13 @@ const ProductCard = ({ product }) => {
                 <div className="mt-4 pt-4 border-t border-zinc-200/80 dark:border-zinc-800">
                     <div className="flex items-end justify-between gap-4">
                         <div>
-                            {originalPrice && originalPrice > displayPrice && (
+                            {originalPrice && originalPrice > finalPrice && (
                                 <p className="text-sm font-medium text-zinc-400 line-through dark:text-zinc-500">
                                     {formatPrice(originalPrice)}
                                 </p>
                             )}
                             <p className={`text-2xl font-extrabold ${isAdvertised ? 'text-red-600 dark:text-red-400' : 'text-primary-dark dark:text-primary-light'}`}>
-                                {formatPrice(displayPrice)}
+                                {formatPrice(finalPrice)}
                             </p>
                         </div>
                         <div className="relative">
