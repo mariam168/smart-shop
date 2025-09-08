@@ -1,85 +1,131 @@
 const Cart = require('../models/cartModel');
 const Product = require('../models/productModel');
 const Advertisement = require('../models/advertisementModel');
-const mongoose = require('mongoose');
 
 const getCart = async (req, res, next) => {
     try {
         let userCart = await Cart.findOne({ user: req.user.id })
             .populate({
                 path: 'items.product',
-                select: 'name mainImage variations category',
-                populate: {
-                    path: 'category',
-                    select: 'name'
-                }
+                select: 'name mainImage variations'
             });
 
-        if (!userCart || !userCart.items) {
-            return res.status(200).json({ items: [] });
+        if (!userCart) {
+            return res.status(200).json({ cart: [] });
         }
-
         const validItems = userCart.items.filter(item => item.product);
         if (validItems.length < userCart.items.length) {
             userCart.items = validItems;
             await userCart.save();
         }
 
-        res.status(200).json(userCart);
+        res.status(200).json({ cart: validItems });
     } catch (error) {
         next(error);
     }
 };
 
-const syncCart = async (req, res, next) => {
+const addToCart = async (req, res, next) => {
     try {
-        const { items } = req.body;
-        const user = req.user.id;
+        const { productId, quantity = 1, selectedVariantId = null } = req.body;
+        const product = await Product.findById(productId);
+        if (!product) return res.status(404).json({ message: 'Product not found' });
+        
+        let userCart = await Cart.findOne({ user: req.user.id });
+        if (!userCart) userCart = new Cart({ user: req.user.id, items: [] });
+        
+        const existingItemIndex = userCart.items.findIndex(item => 
+            item.product.toString() === productId && 
+            String(item.selectedVariant || null) === String(selectedVariantId || null)
+        );
 
-        const productIds = items.map(item => new mongoose.Types.ObjectId(item.product));
-        const products = await Product.find({ '_id': { $in: productIds } });
-        const productsMap = new Map(products.map(p => [p._id.toString(), p]));
+        let priceForCalculation = product.basePrice;
+        let finalImage = product.mainImage;
+        let finalStock; 
+        let variantDetailsText = '';
 
-        const activeAds = await Advertisement.find({
-            productRef: { $in: productIds },
-            isActive: true,
+        if (selectedVariantId) {
+            const option = product.variations
+                .flatMap(v => v.options)
+                .find(o => o._id.equals(selectedVariantId));
+            
+            if (!option) return res.status(400).json({ message: 'Variant not found' });
+            
+            priceForCalculation = option.price; 
+            finalStock = option.stock;
+            if (option.image) finalImage = option.image;
+
+            const variationParent = product.variations.find(v => v.options.some(o => o._id.equals(selectedVariantId)));
+            const variationName = variationParent ? (variationParent.name_en || '') : '';
+            const optionName = option.name_en || '';
+            variantDetailsText = [variationName, optionName].filter(Boolean).join(': ');
+            
+        } else {
+             if (product.variations && product.variations.length > 0) {
+                return res.status(400).json({ message: 'Please select a product variant.' });
+            }
+            finalStock = product.stock;
+        }
+
+        const activeAd = await Advertisement.findOne({
+            productRef: productId, isActive: true,
             $and: [
                 { $or: [{ startDate: null }, { startDate: { $lte: new Date() } }] },
                 { $or: [{ endDate: null }, { endDate: { $gte: new Date() } }] }
             ]
         });
-        const adsMap = new Map(activeAds.map(ad => [ad.productRef.toString(), ad]));
-
-        const finalCartItems = items.map(item => {
-            const product = productsMap.get(item.product.toString());
-            if (!product) return null;
-
-            let priceForCalculation = item.price;
-            let finalStock = item.stock;
-
-            const activeAd = adsMap.get(item.product.toString());
-            let finalPrice = priceForCalculation;
-            if (activeAd && activeAd.discountPercentage > 0) {
-                finalPrice = priceForCalculation * (1 - (activeAd.discountPercentage / 100));
-            }
-            finalPrice = Math.round(finalPrice * 100) / 100;
-
-            return {
-                ...item,
-                name: product.name,
-                originalPrice: priceForCalculation,
-                finalPrice: finalPrice,
-                stock: finalStock,
-            };
-        }).filter(Boolean);
-
-        const cart = await Cart.findOneAndUpdate(
-            { user },
-            { items: finalCartItems },
-            { new: true, upsert: true }
-        );
         
-        res.status(200).json(cart);
+        let finalPrice = priceForCalculation;
+        if (activeAd && activeAd.discountPercentage > 0) {
+            finalPrice = priceForCalculation * (1 - (activeAd.discountPercentage / 100));
+        }
+        finalPrice = Math.round(finalPrice * 100) / 100;
+
+        if (existingItemIndex > -1) {
+            userCart.items[existingItemIndex].quantity += quantity;
+            userCart.items[existingItemIndex].price = finalPrice; 
+            userCart.items[existingItemIndex].stock = finalStock;
+        } else {
+            userCart.items.push({ 
+                product: productId, name: product.name, image: finalImage,
+                price: finalPrice, quantity, selectedVariant: selectedVariantId,
+                variantDetailsText: variantDetailsText, stock: finalStock
+            });
+        }
+
+        await userCart.save();
+        const populatedCart = await Cart.findOne({ user: req.user.id }).populate('items.product', 'name');
+        res.status(201).json({ cart: populatedCart.items });
+    } catch (error) {
+        next(error);
+    }
+};
+
+const updateCartItem = async (req, res, next) => {
+    try {
+        const { productId, quantity, selectedVariantId = null } = req.body;
+        const numQuantity = Number(quantity);
+        if (isNaN(numQuantity) || numQuantity < 0) return res.status(400).json({ message: 'Invalid quantity' });
+
+        const userCart = await Cart.findOne({ user: req.user.id });
+        if (!userCart) return res.status(404).json({ message: 'Cart not found' });
+
+        const itemIndex = userCart.items.findIndex(item => 
+            item.product.toString() === productId && 
+            String(item.selectedVariant || null) === String(selectedVariantId || null)
+        );
+
+        if (itemIndex === -1) return res.status(404).json({ message: 'Item not found in cart' });
+
+        if (numQuantity === 0) {
+            userCart.items.splice(itemIndex, 1);
+        } else {
+            userCart.items[itemIndex].quantity = numQuantity;
+        }
+
+        await userCart.save();
+        const populatedCart = await Cart.findOne({ user: req.user.id }).populate('items.product', 'name');
+        res.status(200).json({ cart: populatedCart.items });
     } catch (error) {
         next(error);
     }
@@ -94,4 +140,4 @@ const clearCart = async (req, res, next) => {
     }
 };
 
-module.exports = { getCart, syncCart, clearCart };
+module.exports = { getCart, addToCart, updateCartItem, clearCart };

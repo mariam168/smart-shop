@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-
 const cartItemSchema = mongoose.Schema({
     product: {
         type: mongoose.Schema.Types.ObjectId,
@@ -13,11 +12,7 @@ const cartItemSchema = mongoose.Schema({
     image: { 
         type: String 
     },
-    originalPrice: {
-        type: Number,
-        required: true
-    },
-    finalPrice: {
+    price: {
         type: Number,
         required: true
     },
