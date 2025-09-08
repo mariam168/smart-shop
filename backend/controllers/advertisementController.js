@@ -5,10 +5,13 @@ const { deleteFile } = require('../utils/fileHandler');
 
 const getAdvertisements = async (req, res, next) => {
     try {
-        const { type, isActive } = req.query;
+        const { type, isActive, productRef } = req.query;
         let queryFilter = {};
         if (type) queryFilter.type = type;
         if (isActive !== undefined) queryFilter.isActive = isActive === 'true';
+        if (productRef && mongoose.Types.ObjectId.isValid(productRef)) {
+            queryFilter.productRef = productRef;
+        }
 
         const advertisements = await Advertisement.find(queryFilter)
             .sort({ order: 1, createdAt: -1 })

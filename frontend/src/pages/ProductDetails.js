@@ -35,8 +35,19 @@ const ProductDetails = () => {
         setLoading(true);
         setError(null);
         try {
-            const res = await axios.get(`${API_BASE_URL}/api/products/${id}`, { headers: { 'accept-language': language } });
-            const productData = res.data;
+            const productRes = await axios.get(`${API_BASE_URL}/api/products/${id}`, { 
+                headers: { 'accept-language': language } 
+            });
+            let productData = productRes.data;
+
+            const adRes = await axios.get(`${API_BASE_URL}/api/advertisements?productRef=${id}&isActive=true`, {
+                headers: { 'accept-language': language }
+            });
+
+            if (adRes.data && adRes.data.length > 0) {
+                productData.advertisement = adRes.data[0];
+            }
+
             setProduct(productData);
             setMainDisplayImage(productData.mainImage || (productData.variations?.[0]?.options?.[0]?.image) || '');
             const descriptionExists = productData.description;
@@ -52,7 +63,7 @@ const ProductDetails = () => {
     useEffect(() => { setSelectedOptions({}); }, [id]);
 
     const advertisement = useMemo(() => product?.advertisement, [product]);
-    const isOfferProduct = useMemo(() => !!advertisement, [advertisement]);
+    const isOfferProduct = useMemo(() => !!advertisement && advertisement.discountPercentage > 0, [advertisement]);
     
     const selectedOption = useMemo(() => {
         if (!product || !product.variations || product.variations.length === 0) return null;
@@ -119,7 +130,7 @@ const ProductDetails = () => {
     const productIsFavorite = product ? isFavorite(product._id) : false;
     const allImages = useMemo(() => { if (!product) return []; const images = new Map(); if (product.mainImage) images.set(product.mainImage, product.mainImage); (product.variations || []).forEach(v => (v.options || []).forEach(o => o.image && !images.has(o.image) && images.set(o.image, o.image))); return Array.from(images.values()); }, [product]);
     const userHasReviewed = useMemo(() => !(!product || !currentUser || !Array.isArray(product.reviews)) && product.reviews.some(review => review.user?._id === currentUser._id || review.user === currentUser._id), [product, currentUser]);
-    const reviewBreakdown = useMemo(() => { if (!product || !product.reviews || product.reviews.length === 0) { return { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }; } return product.reviews.reduce((acc, review) => { acc[review.rating] = (acc[review.rating] || 0) + 1; return acc; }, { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }); }, [product]);
+    const reviewBreakdown = useMemo(() => { if (!product || !product.reviews || product.reviews.length === 0) { return { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }; } return product.reviews.reduce((acc, review) => { const rating = Math.round(review.rating); acc[rating] = (acc[rating] || 0) + 1; return acc; }, { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }); }, [product]);
     const handleAddToCart = useCallback(() => { if (!isAuthenticated) { showToast(t('cart.loginRequired'), 'info'); navigate('/login'); return; } if (isAddToCartDisabled) { showToast(t('productDetailsPage.selectAllOptions'), 'warning'); return; } addToCart(product, quantity, selectedOption?._id); }, [isAuthenticated, product, quantity, selectedOption, addToCart, navigate, t, showToast, isAddToCartDisabled]);
 
     if (loading) return <ProductSkeleton />;
