@@ -111,6 +111,7 @@ const translations = {
              "reviews": "تقييمات",
       "customerReviews": "تقييمات العملاء",
       "basedOnReviews": "بناءً على {{count}} تقييمات",
+      "youSave": "تخفيض",
       "reviewForm": {
         "title": "اكتب تقييمك",
         "ratingLabel": "تقييمك للمنتج",
@@ -1252,6 +1253,7 @@ const translations = {
         },
         "productDetailsPage": {
             "reviews": "Reviews",
+            "youSave": "Save",
       "customerReviews": "Customer Reviews",
       "basedOnReviews": "Based on {{count}} reviews",
       "reviewForm": {
