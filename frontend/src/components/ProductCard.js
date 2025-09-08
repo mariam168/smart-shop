@@ -27,7 +27,6 @@ const ProductCard = ({ product }) => {
     const { isAuthenticated } = useAuth();
 
     if (!product || !product.name) {
-        console.error("[ProductCard] Error: Received invalid product data", product);
         return null;
     }
     const adData = product.advertisement;
@@ -84,7 +83,6 @@ const ProductCard = ({ product }) => {
                 maximumFractionDigits: 0,
             }).format(Number(price));
         } catch (error) {
-            console.error("Error formatting price:", price, error);
             return `${price} ${currencyCode}`;
         }
     };
@@ -94,8 +92,8 @@ const ProductCard = ({ product }) => {
             onClick={handleCardClick}
             className={`group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border transition-all duration-300 ease-in-out dark:bg-zinc-900 
             ${isAdvertised
-                ? 'border-primary-light bg-gradient-to-br from-primary-light/10 to-primary/5 shadow-lg shadow-primary/20 hover:!border-primary hover:shadow-primary/30 dark:border-primary dark:from-primary-dark/20 dark:to-primary/10'
-                : 'border-zinc-200 bg-white hover:!border-primary hover:shadow-2xl hover:shadow-primary/10 dark:border-zinc-800 dark:hover:!border-primary-light'
+                ? 'border-2 border-primary bg-primary/5 shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 dark:border-primary-light dark:bg-primary-dark/10'
+                : 'border-zinc-200 bg-white hover:border-primary hover:shadow-2xl hover:shadow-primary/10 dark:border-zinc-800 dark:hover:border-primary-light'
             }`}
             dir={language === 'ar' ? 'rtl' : 'ltr'}
         >
@@ -110,7 +108,7 @@ const ProductCard = ({ product }) => {
                     />
                 </div>
                 {isAdvertised && (
-                    <div className={`absolute top-3 z-10 flex items-center gap-1.5 rounded-full bg-red-500 px-3 py-1 text-xs font-bold text-white shadow-md ${language === 'ar' ? 'right-3' : 'left-3'}`}>
+                    <div className={`absolute top-3 z-10 flex items-center gap-1.5 rounded-full bg-gradient-to-r from-red-500 to-orange-500 px-3 py-1.5 text-xs font-bold text-white shadow-lg ${language === 'ar' ? 'right-3' : 'left-3'}`}>
                         <Award size={14} />
                         <span>{Math.round(discountPercentage)}% {t('general.off')}</span>
                     </div>
@@ -154,7 +152,7 @@ const ProductCard = ({ product }) => {
                                     {formatPrice(originalPrice)}
                                 </p>
                             )}
-                            <p className={`text-xl font-extrabold ${isAdvertised ? 'text-red-600 dark:text-red-400' : 'text-primary-dark dark:text-primary-light'}`}>
+                            <p className={`text-2xl font-extrabold ${isAdvertised ? 'text-red-600 dark:text-red-400' : 'text-primary-dark dark:text-primary-light'}`}>
                                 {formatPrice(displayPrice)}
                             </p>
                         </div>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import ProductCard from '../components/ProductCard';
 import { useLanguage } from "../context/LanguageContext";
 import { useSearchParams, useNavigate } from 'react-router-dom';
@@ -92,7 +92,6 @@ const ShopPage = () => {
             }
 
         } catch (err) {
-            console.error("Error fetching initial data:", err);
             setError(t('shopPage.errorFetchingProducts'));
         } finally {
             setLoading(false);
