@@ -14,44 +14,14 @@ const AllOffersPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const getLocalizedText = (field) => {
-        if (!field) return '';
-        return field[language] || field.en;
-    };
-    
-    const translateProductData = (product) => {
-        if (!product) return null;
-        const translatedProduct = { ...product };
-        
-        if (product.name) {
-            translatedProduct.name = getLocalizedText(product.name);
-        }
-        if (product.category?.name) {
-            translatedProduct.category.name = getLocalizedText(product.category.name);
-        }
-        return translatedProduct;
-    };
-
     const fetchAllOffers = useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await axios.get(`${API_BASE_URL}/api/advertisements?isActive=true`, {
-                headers: { 'x-admin-request': 'true' }
-            });
+            const response = await axios.get(`${API_BASE_URL}/api/advertisements?isActive=true`);
             
             const offersWithProducts = response.data
                 .filter(offer => offer.productRef && offer.productRef._id)
-                .map(offer => {
-                    const translatedProductRef = translateProductData(offer.productRef);
-                    const translatedOffer = {
-                        ...offer,
-                        title: getLocalizedText(offer.title),
-                        description: getLocalizedText(offer.description),
-                        productRef: translatedProductRef
-                    };
-                    return translatedOffer;
-                })
                 .sort((a, b) => (a.order || 999) - (b.order || 999) || new Date(b.createdAt) - new Date(a.createdAt));
             
             setOffers(offersWithProducts);
@@ -61,7 +31,7 @@ const AllOffersPage = () => {
         } finally {
             setLoading(false);
         }
-    }, [API_BASE_URL, t, language]);
+    }, [API_BASE_URL, t]);
 
     useEffect(() => {
         fetchAllOffers();
