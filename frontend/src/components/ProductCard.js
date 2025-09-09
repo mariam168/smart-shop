@@ -1,5 +1,5 @@
 import React from "react";
-import { Heart, Award, Star, ArrowRight } from "lucide-react";
+import { Heart, Award, Star, ArrowRight, ShoppingCart } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import { useWishlist } from "../context/WishlistContext";
@@ -105,10 +105,10 @@ const ProductCard = ({ product }) => {
     return (
         <div
             onClick={handleCardClick}
-            className={`group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border transition-all duration-300 ease-in-out dark:bg-zinc-900 
+            className={`group relative flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border bg-white shadow-sm transition-all duration-300 ease-in-out hover:-translate-y-1 hover:shadow-lg dark:border-zinc-800 dark:bg-zinc-900 
             ${isAdvertised
-                ? 'border-2 border-primary bg-primary/5 shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-primary/30 dark:border-primary-light dark:bg-primary-dark/10'
-                : 'border-zinc-200 bg-white hover:border-primary hover:shadow-2xl hover:shadow-primary/10 dark:border-zinc-800 dark:hover:border-primary-light'
+                ? 'border-primary/50'
+                : 'border-zinc-200 dark:border-zinc-800'
             }`}
             dir={language === 'ar' ? 'rtl' : 'ltr'}
         >
@@ -123,7 +123,7 @@ const ProductCard = ({ product }) => {
                     />
                 </div>
                 {isAdvertised && (
-                    <div className={`absolute top-3 z-10 flex items-center gap-1.5 rounded-full bg-gradient-to-r from-red-500 to-orange-500 px-3 py-1.5 text-xs font-bold text-white shadow-lg ${language === 'ar' ? 'right-3' : 'left-3'}`}>
+                    <div className={`absolute top-3 z-10 flex items-center gap-1.5 rounded-full bg-red-500 px-3 py-1 text-xs font-bold text-white shadow-md ${language === 'ar' ? 'right-3' : 'left-3'}`}>
                         <Award size={14} />
                         <span>{Math.round(discountPercentage)}% {t('general.off')}</span>
                     </div>
@@ -172,12 +172,15 @@ const ProductCard = ({ product }) => {
                             </p>
                         </div>
                         <div className="relative">
-                            <button
-                                className="action-button h-10 w-10 shrink-0 flex items-center justify-center rounded-full bg-primary text-white transition-transform duration-300 ease-in-out group-hover:scale-110 dark:bg-primary-light dark:text-primary-dark"
+                             <button
+                                className="action-button group/button flex h-11 items-center justify-center rounded-full bg-primary px-3 text-white transition-all duration-300 ease-in-out hover:w-32 dark:bg-primary-light dark:text-primary-dark"
                                 onClick={handleViewDetails}
                                 aria-label={t('productCard.viewDetails')}
                             >
-                                <ArrowRight size={18} />
+                                <ShoppingCart size={18} />
+                                <span className="max-w-0 overflow-hidden whitespace-nowrap text-sm font-semibold transition-all duration-300 ease-in-out group-hover/button:ml-2 group-hover/button:max-w-xs">
+                                    {t('productCard.viewDetails')}
+                                </span>
                             </button>
                         </div>
                     </div>
