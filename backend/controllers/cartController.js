@@ -11,7 +11,7 @@ const getCart = async (req, res, next) => {
             });
 
         if (!userCart) {
-            return res.status(200).json({ cart: [] });
+            return res.status(200).json({ items: [] });
         }
         const validItems = userCart.items.filter(item => item.product);
         if (validItems.length < userCart.items.length) {
@@ -19,7 +19,7 @@ const getCart = async (req, res, next) => {
             await userCart.save();
         }
 
-        res.status(200).json({ cart: validItems });
+        res.status(200).json(userCart);
     } catch (error) {
         next(error);
     }
@@ -64,7 +64,6 @@ const addToCart = async (req, res, next) => {
              if (product.variations && product.variations.length > 0) {
                 return res.status(400).json({ message: 'Please select a product variant.' });
             }
-            finalStock = product.stock;
         }
 
         const activeAd = await Advertisement.findOne({
@@ -83,19 +82,23 @@ const addToCart = async (req, res, next) => {
 
         if (existingItemIndex > -1) {
             userCart.items[existingItemIndex].quantity += quantity;
-            userCart.items[existingItemIndex].price = finalPrice; 
-            userCart.items[existingItemIndex].stock = finalStock;
         } else {
             userCart.items.push({ 
-                product: productId, name: product.name, image: finalImage,
-                price: finalPrice, quantity, selectedVariant: selectedVariantId,
-                variantDetailsText: variantDetailsText, stock: finalStock
+                product: productId, 
+                name: product.name, 
+                image: finalImage,
+                originalPrice: priceForCalculation,
+                finalPrice: finalPrice, 
+                quantity, 
+                selectedVariant: selectedVariantId,
+                variantDetailsText: variantDetailsText, 
+                stock: finalStock
             });
         }
 
         await userCart.save();
-        const populatedCart = await Cart.findOne({ user: req.user.id }).populate('items.product', 'name');
-        res.status(201).json({ cart: populatedCart.items });
+        const populatedCart = await Cart.findOne({ user: req.user.id }).populate('items.product', 'name mainImage variations');
+        res.status(201).json(populatedCart);
     } catch (error) {
         next(error);
     }
@@ -124,8 +127,8 @@ const updateCartItem = async (req, res, next) => {
         }
 
         await userCart.save();
-        const populatedCart = await Cart.findOne({ user: req.user.id }).populate('items.product', 'name');
-        res.status(200).json({ cart: populatedCart.items });
+        const populatedCart = await Cart.findOne({ user: req.user.id }).populate('items.product', 'name mainImage variations');
+        res.status(200).json(populatedCart);
     } catch (error) {
         next(error);
     }

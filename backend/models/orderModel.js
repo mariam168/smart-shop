@@ -11,9 +11,10 @@ const orderItemSchema = mongoose.Schema({
         ar: { type: String, required: true }
     },
     image: { type: String },
-    price: { type: Number, required: true },
+    originalPrice: { type: Number, required: true },
+    finalPrice: { type: Number, required: true },
     quantity: { type: Number, required: true },
-    selectedVariantId: { type: mongoose.Schema.Types.ObjectId, default: null },
+    selectedVariant: { type: mongoose.Schema.Types.ObjectId, default: null },
     variantDetailsText: { type: String, default: '' },
 }, { _id: false });
 
