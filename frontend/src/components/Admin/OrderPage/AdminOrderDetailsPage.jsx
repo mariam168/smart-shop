@@ -9,7 +9,6 @@ import { Loader2, CheckCircle, XCircle, Truck, User, Package, Calendar, ChevronL
 const AdminOrderDetailsPage = () => {
     const { id } = useParams();
     const { t, language } = useLanguage();
-    const navigate = useNavigate();
     const { token } = useAuth();
     const { showToast } = useToast();
     const [order, setOrder] = useState(null);
