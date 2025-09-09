@@ -18,8 +18,9 @@ const getCart = async (req, res, next) => {
             userCart.items = validItems;
             await userCart.save();
         }
-
-        res.status(200).json(userCart);
+        
+        const cartToSend = { items: validItems };
+        res.status(200).json(cartToSend);
     } catch (error) {
         next(error);
     }
@@ -61,7 +62,7 @@ const addToCart = async (req, res, next) => {
             variantDetailsText = [variationName, optionName].filter(Boolean).join(': ');
             
         } else {
-             if (product.variations && product.variations.length > 0) {
+             if (product.variations && product.variations.length > 0 && product.variations.some(v => v.options.length > 0)) {
                 return res.status(400).json({ message: 'Please select a product variant.' });
             }
         }
@@ -74,21 +75,24 @@ const addToCart = async (req, res, next) => {
             ]
         });
         
-        let finalPrice = priceForCalculation;
+        let finalPriceValue = priceForCalculation;
         if (activeAd && activeAd.discountPercentage > 0) {
-            finalPrice = priceForCalculation * (1 - (activeAd.discountPercentage / 100));
+            finalPriceValue = priceForCalculation * (1 - (activeAd.discountPercentage / 100));
         }
-        finalPrice = Math.round(finalPrice * 100) / 100;
+        finalPriceValue = Math.round(finalPriceValue * 100) / 100;
 
         if (existingItemIndex > -1) {
             userCart.items[existingItemIndex].quantity += quantity;
+            userCart.items[existingItemIndex].originalPrice = priceForCalculation;
+            userCart.items[existingItemIndex].finalPrice = finalPriceValue; 
+            userCart.items[existingItemIndex].stock = finalStock;
         } else {
             userCart.items.push({ 
                 product: productId, 
                 name: product.name, 
                 image: finalImage,
                 originalPrice: priceForCalculation,
-                finalPrice: finalPrice, 
+                finalPrice: finalPriceValue, 
                 quantity, 
                 selectedVariant: selectedVariantId,
                 variantDetailsText: variantDetailsText, 
