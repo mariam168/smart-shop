@@ -1,5 +1,5 @@
 import React from "react";
-import { Heart, Award, Star, ArrowRight, ShoppingCart } from "lucide-react";
+import { Heart, Award, Star, ShoppingCart } from "lucide-react";
 import { useLanguage } from "../context/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import { useWishlist } from "../context/WishlistContext";
@@ -11,7 +11,7 @@ const StarRating = ({ rating }) => (
         {[...Array(5)].map((_, i) => (
             <Star
                 key={i}
-                size={14}
+                size={12} // حجم أصغر للنجوم
                 className={i < Math.round(rating) ? 'text-yellow-400' : 'text-zinc-300 dark:text-zinc-600'}
                 fill="currentColor"
             />
@@ -131,21 +131,21 @@ const ProductCard = ({ product }) => {
 
                 <button
                     aria-label={productIsFavorite ? t('productCard.removeFromFavorites') : t('productCard.addToFavorites')}
-                    className={`action-button absolute top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white/70 text-zinc-700 shadow-md backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-white dark:bg-zinc-900/60 dark:text-white dark:hover:bg-zinc-800 ${language === 'ar' ? 'left-3' : 'right-3'}`}
+                    className={`action-button absolute top-3 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-white/70 text-zinc-700 shadow-md backdrop-blur-sm transition-all duration-200 hover:scale-110 hover:bg-white dark:bg-zinc-900/60 dark:text-white dark:hover:bg-zinc-800 ${language === 'ar' ? 'left-3' : 'right-3'}`}
                     onClick={handleToggleFavorite}
                 >
-                    <Heart size={18} fill={productIsFavorite ? "currentColor" : "none"} className={productIsFavorite ? 'text-red-500' : 'text-zinc-600 dark:text-zinc-300'}/>
+                    <Heart size={16} fill={productIsFavorite ? "currentColor" : "none"} className={productIsFavorite ? 'text-red-500' : 'text-zinc-600 dark:text-zinc-300'}/>
                 </button>
             </div>
 
-            <div className="flex flex-1 flex-col justify-between p-4">
+            <div className="flex flex-1 flex-col justify-between p-3">
                 <div>
-                    <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-primary dark:text-primary-light">
+                    <p className="mb-1 text-[10px] font-semibold uppercase tracking-wider text-primary dark:text-primary-light">
                         {productCategoryName}
                     </p>
 
                     <h3
-                        className="mb-3 text-lg font-bold text-zinc-900 line-clamp-2 leading-tight dark:text-white"
+                        className="mb-2 text-sm font-bold text-zinc-800 line-clamp-2 leading-tight dark:text-white"
                         title={productName}
                     >
                         {productName}
@@ -154,31 +154,31 @@ const ProductCard = ({ product }) => {
                     {product.numReviews > 0 && (
                         <div className="flex items-center gap-1.5">
                             <StarRating rating={product.averageRating} />
-                            <span className="text-xs text-zinc-500 dark:text-zinc-400">({product.numReviews})</span>
+                            <span className="text-[11px] text-zinc-500 dark:text-zinc-400">({product.numReviews})</span>
                         </div>
                     )}
                 </div>
 
-                <div className="mt-4 pt-4 border-t border-zinc-200/80 dark:border-zinc-800">
-                    <div className="flex items-end justify-between gap-4">
+                <div className="mt-3 pt-3 border-t border-zinc-200/80 dark:border-zinc-800">
+                    <div className="flex items-end justify-between gap-2">
                         <div>
                             {originalPrice && originalPrice > finalPrice && (
-                                <p className="text-sm font-medium text-zinc-400 line-through dark:text-zinc-500">
+                                <p className="text-xs font-medium text-zinc-400 line-through dark:text-zinc-500">
                                     {formatPrice(originalPrice)}
                                 </p>
                             )}
-                            <p className={`text-2xl font-extrabold ${isAdvertised ? 'text-red-600 dark:text-red-400' : 'text-primary-dark dark:text-primary-light'}`}>
+                            <p className={`text-xl font-extrabold ${isAdvertised ? 'text-red-600 dark:text-red-400' : 'text-zinc-900 dark:text-white'}`}>
                                 {formatPrice(finalPrice)}
                             </p>
                         </div>
                         <div className="relative">
                              <button
-                                className="action-button group/button flex h-11 items-center justify-center rounded-full bg-primary px-3 text-white transition-all duration-300 ease-in-out hover:w-32 dark:bg-primary-light dark:text-primary-dark"
+                                className="action-button group/button flex h-9 w-9 items-center justify-center rounded-full bg-zinc-200 text-zinc-700 transition-all duration-300 ease-in-out hover:w-32 hover:bg-primary hover:text-white dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-primary-light dark:hover:text-primary-dark"
                                 onClick={handleViewDetails}
                                 aria-label={t('productCard.viewDetails')}
                             >
-                                <ShoppingCart size={18} />
-                                <span className="max-w-0 overflow-hidden whitespace-nowrap text-sm font-semibold transition-all duration-300 ease-in-out group-hover/button:ml-2 group-hover/button:max-w-xs">
+                                <ShoppingCart size={16} />
+                                <span className="max-w-0 overflow-hidden whitespace-nowrap text-xs font-semibold transition-all duration-300 ease-in-out group-hover/button:ml-2 group-hover/button:max-w-xs">
                                     {t('productCard.viewDetails')}
                                 </span>
                             </button>
