@@ -34,6 +34,7 @@ import DiscountList from './pages/Admin/AdminDiscountsPage';
 import AdminUsersPage from './pages/Admin/AdminUsersPage';
 import ProfilePage from './pages/ProfilePage';
 import OrderDetailsPage from './pages/OrderDetailsPage';
+import MyOrdersPage from './pages/MyOrdersPage';
 
 const MainLayout = () => (
   <div className="bg-white dark:bg-black text-black dark:text-white min-h-screen flex flex-col">
@@ -70,6 +71,8 @@ function App() {
                     <Route path="/checkout" element={<CheckoutPage />} />
                     <Route path="/all-offers" element={<AllOffersPage />} />
                     <Route path="/profile" element={<ProfilePage />} />
+                    <Route path="/order/:id" element={<OrderDetailsPage />} /> 
+                    <Route path="/profile/orders" element={<MyOrdersPage />} /> 
                     <Route path="/order/:id" element={<OrderDetailsPage />} /> 
                   </Route>
 
