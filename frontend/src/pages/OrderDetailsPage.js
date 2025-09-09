@@ -35,13 +35,14 @@ const DetailBlock = ({ icon: Icon, title, children, padding = "p-6" }) => (
     </div>
 );
 
-const OrderItemCard = ({ item, language, serverUrl, formatPrice }) => {
+const OrderItemCard = ({ item, language, formatPrice }) => {
     const getDisplayName = (nameObj) => language === 'ar' ? nameObj.ar : nameObj.en;
-    
+    const hasDiscount = item.originalPrice && item.finalPrice < item.originalPrice;
+
     return (
         <div className="flex items-center gap-4 p-4">
             <img
-                src={item.image ? `${serverUrl}${item.image}` : 'https://via.placeholder.com/200'}
+                src={item.image}
                 alt={getDisplayName(item.name)}
                 className="w-16 h-16 rounded-md object-cover bg-zinc-100 dark:bg-zinc-800 flex-shrink-0"
             />
@@ -54,12 +55,14 @@ const OrderItemCard = ({ item, language, serverUrl, formatPrice }) => {
                 }
             </div>
             <div className='text-right'>
-                <p className="font-bold text-sm text-zinc-800 dark:text-white">
-                    {formatPrice(item.quantity * item.price)}
+                <p className={`font-bold text-sm ${hasDiscount ? 'text-red-600' : 'text-zinc-800 dark:text-white'}`}>
+                    {formatPrice(item.quantity * item.finalPrice)}
                 </p>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                    {item.quantity} x {formatPrice(item.price)}
-                </p>
+                {hasDiscount && (
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1 line-through">
+                        {formatPrice(item.quantity * item.originalPrice)}
+                    </p>
+                )}
             </div>
         </div>
     );
@@ -76,11 +79,9 @@ const OrderActionButton = ({ onPrint, t }) => (
     </div>
 );
 
-
 const OrderDetailsPage = () => {
     const { id: orderId } = useParams();
     const { token, API_BASE_URL } = useAuth();
-    const SERVER_ROOT_URL = API_BASE_URL.replace('/api', '');
     const { t, language, isRTL } = useLanguage();
     const { showToast } = useToast();
 
@@ -117,6 +118,7 @@ const OrderDetailsPage = () => {
     if (!order) return <div className="flex items-center justify-center min-h-screen bg-zinc-50 dark:bg-black"><AlertCircle className="w-16 h-16 text-red-500" /></div>;
 
     const { shippingAddress, paymentMethod, orderItems, totalPrice, itemsPrice, discount, isPaid, isDelivered, user: orderUser, createdAt } = order;
+    const productDiscountsTotal = orderItems.reduce((acc, item) => acc + (item.originalPrice - item.finalPrice) * item.quantity, 0);
 
     const StatusInfo = () => (
         <div className={`p-4 rounded-lg text-sm font-semibold flex items-center gap-3 ${
@@ -136,7 +138,7 @@ const OrderDetailsPage = () => {
                     <header>
                         <MotionDiv delay={0.1}>
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
-                                <Link to="/profile" className="inline-flex items-center gap-2 text-zinc-500 dark:text-zinc-400 hover:text-primary dark:hover:text-primary-light transition-colors">
+                                <Link to="/profile/orders" className="inline-flex items-center gap-2 text-zinc-500 dark:text-zinc-400 hover:text-primary dark:hover:text-primary-light transition-colors">
                                     <ArrowLeft style={{ transform: isRTL ? 'scaleX(-1)' : 'scaleX(1)' }} size={18} />
                                     <span>{t('orderDetails.backToOrders')}</span>
                                 </Link>
@@ -164,7 +166,7 @@ const OrderDetailsPage = () => {
                                     <DetailBlock icon={ShoppingCart} title={`${t('orderDetails.orderItems')} (${orderItems.length})`} padding="p-0">
                                         <div className="divide-y divide-zinc-200 dark:divide-zinc-700">
                                             {orderItems.map((item, index) => (
-                                                <OrderItemCard key={index} item={item} language={language} serverUrl={SERVER_ROOT_URL} formatPrice={formatPrice} />
+                                                <OrderItemCard key={index} item={item} language={language} formatPrice={formatPrice} />
                                             ))}
                                         </div>
                                     </DetailBlock>
@@ -179,6 +181,12 @@ const OrderDetailsPage = () => {
                                                 <span>{t('general.subtotal')}</span>
                                                 <span className='font-medium text-zinc-800 dark:text-zinc-100'>{formatPrice(itemsPrice)}</span>
                                             </div>
+                                             {productDiscountsTotal > 0 && (
+                                                <div className="flex justify-between text-green-600">
+                                                    <span>{t('checkoutPage.productDiscounts')}</span>
+                                                    <span>-{formatPrice(productDiscountsTotal)}</span>
+                                                </div>
+                                            )}
                                             {discount && discount.amount > 0 && (
                                                 <div className="flex justify-between text-green-600">
                                                     <span className='flex items-center gap-1.5'><Tag size={14}/>{t('checkoutPage.discount')} ({discount.code})</span>
@@ -203,7 +211,8 @@ const OrderDetailsPage = () => {
                                             <p className="font-semibold text-zinc-800 dark:text-white">{orderUser.name}</p>
                                             <address className="not-italic space-y-1 mt-2">
                                                 <p>{shippingAddress.address}</p>
-                                                <p>{shippingAddress.city}, {shippingAddress.postalCode}, {shippingAddress.country}</p>
+                                                <p>{shippingAddress.city}, {shippingAddress.postalCode}</p>
+                                                <p>{shippingAddress.phone}</p>
                                             </address>
                                         </div>
                                     </DetailBlock>
