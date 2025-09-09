@@ -54,9 +54,10 @@ const ShopPage = () => {
         try {
             const axiosConfig = { headers: { 'Accept-Language': language } };
             
-            // --- START: MODIFIED DATA FETCHING ---
             const productsPromise = axios.get(`${API_BASE_URL}/api/products`, axiosConfig);
-            const categoriesPromise = axios.get(`${API_BASE_URL}/api/categories`, axiosConfig);
+            const categoriesPromise = axios.get(`${API_BASE_URL}/api/categories`, { 
+                headers: { ...axiosConfig.headers, 'x-admin-request': 'true' } 
+            });
             const advertisementsPromise = axios.get(`${API_BASE_URL}/api/advertisements?isActive=true`, axiosConfig);
 
             const [productsRes, categoriesRes, advertisementsRes] = await Promise.all([
@@ -69,7 +70,6 @@ const ShopPage = () => {
             const categoriesData = categoriesRes.data;
             const advertisementsData = advertisementsRes.data;
 
-            // Manually enrich products with their advertisements, just like in TrendingProducts
             const enrichedProducts = productsData.map(product => {
                 const associatedAd = advertisementsData.find(ad => (ad.productRef?._id || ad.productRef) === product._id);
                 return {
@@ -79,14 +79,13 @@ const ShopPage = () => {
             });
 
             setAllProducts(enrichedProducts);
-            // --- END: MODIFIED DATA FETCHING ---
 
             const allCategories = [{ _id: 'All', name: { en: t('shopPage.allCategories'), ar: t('shopPage.allCategories') } }, ...categoriesData];
             setCategories(allCategories);
 
             const categoryNameFromUrl = searchParams.get('category');
             if (categoryNameFromUrl) {
-                const targetCategory = categoriesData.find(cat => getDisplayName(cat) === categoryNameFromUrl);
+                const targetCategory = categoriesData.find(cat => (cat.name.en === categoryNameFromUrl || cat.name.ar === categoryNameFromUrl));
                 if (targetCategory) {
                     setSelectedCategory(targetCategory._id);
                 }
@@ -113,7 +112,7 @@ const ShopPage = () => {
         } finally {
             setLoading(false);
         }
-    }, [t, language, getDisplayName, searchParams]); 
+    }, [t, language, searchParams]); 
 
     useEffect(() => {
         fetchInitialData();
@@ -125,16 +124,18 @@ const ShopPage = () => {
         let processedProducts = allProducts.map((p) => {
             const adData = p.advertisement;
             let displayPrice = p.basePrice;
+            let originalPrice = null;
 
             if (p.variations && p.variations.length > 0 && p.variations[0].options && p.variations[0].options.length > 0) {
                 displayPrice = p.variations[0].options[0].price;
             }
             
             if (adData && adData.discountPercentage > 0) {
+                originalPrice = displayPrice;
                 displayPrice = displayPrice * (1 - (adData.discountPercentage / 100));
             }
             const productName = p.name[language] || p.name.en;
-            return { ...p, displayPrice, localizedProductName: productName };
+            return { ...p, displayPrice, originalPrice, localizedProductName: productName };
         });   
 
         if (searchTerm) {
@@ -142,11 +143,18 @@ const ShopPage = () => {
                 p.localizedProductName.toLowerCase().includes(searchTerm)
             );
         }
+        
+        const priceFilteredProducts = processedProducts.filter((p) => {
+            let priceToTest = p.basePrice;
+            if (p.variations && p.variations.length > 0 && p.variations[0].options && p.variations[0].options.length > 0) {
+                 priceToTest = p.variations[0].options[0].price;
+            }
+            return (priceToTest || 0) <= currentPrice;
+        });
 
-        return processedProducts
+        return priceFilteredProducts
             .filter((p) => selectedCategory === 'All' || p.category?._id === selectedCategory)
-            .filter((p) => selectedSubCategory === 'All' || p.subCategory === selectedSubCategory)
-            .filter((p) => (p.displayPrice || 0) <= currentPrice)
+            .filter((p) => selectedSubCategory === 'All' || p.subCategory?._id === selectedSubCategory)
             .sort((a, b) => {
                 if (sortBy === 'price-asc') return (a.displayPrice || 0) - (b.displayPrice || 0);
                 if (sortBy === 'price-desc') return (b.displayPrice || 0) - (a.displayPrice || 0);
@@ -308,7 +316,7 @@ const ShopPage = () => {
                         </div>
 
                         {displayedProducts.length > 0 ? (
-                            <div className="grid grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-2 xl:grid-cols-3">
+                            <div className="grid grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-2 xl:grid-cols-3">
                                 {displayedProducts.map((product) => (
                                     <ProductCard
                                         key={product._id}
