@@ -255,7 +255,8 @@ const translations = {
             "orderID": "رقم الطلب",
             "continueShopping": "متابعة التسوق",
             "cartEmpty": "سلة التسوق فارغة.",
-            "cartEmptyDesc": "لا يوجد منتجات في سلة التسوق."
+            "cartEmptyDesc": "لا يوجد منتجات في سلة التسوق.",
+            "discounts": "الخصومات",
         },
         "checkoutPage": {
             "title": "إتمام الطلب", "billingDetails": "تفاصيل الفاتورة", "shippingAddress": "عنوان الشحن",
@@ -898,6 +899,7 @@ const translations = {
             "continueShopping": "Continue Shopping",
             "cartEmpty": "Your cart is empty.",
             "cartEmptyDesc": "Add items to your cart to start shopping.",
+            "discounts": "Discounts",
         },
         "checkoutPage": {
             "title": "Checkout", "billingDetails": "Billing Details", "shippingAddress": "Shipping Address",
