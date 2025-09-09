@@ -2,10 +2,14 @@ const Advertisement = require('../models/advertisementModel');
 const Product = require('../models/productModel');
 const mongoose = require('mongoose');
 const { deleteFile } = require('../utils/fileHandler');
+const { translateDoc } = require('../utils/translator');
 
 const getAdvertisements = async (req, res, next) => {
     try {
         const { type, isActive, productRef } = req.query;
+        const isAdminRequest = req.headers['x-admin-request'] === 'true';
+        const lang = req.language || 'en';
+
         let queryFilter = {};
         if (type) queryFilter.type = type;
         if (isActive !== undefined) queryFilter.isActive = isActive === 'true';
@@ -13,10 +17,23 @@ const getAdvertisements = async (req, res, next) => {
             queryFilter.productRef = productRef;
         }
 
-        const advertisements = await Advertisement.find(queryFilter)
+        let advertisements = await Advertisement.find(queryFilter)
             .sort({ order: 1, createdAt: -1 })
-            .populate({ path: 'productRef', select: 'name mainImage' })
+            .populate({ 
+                path: 'productRef',
+                populate: { path: 'category', select: 'name' } 
+            })
             .lean();
+        
+        if (!isAdminRequest) {
+            advertisements = advertisements.map(ad => {
+                let translatedAd = { ...ad };
+                if (ad.productRef) {
+                    translatedAd.productRef = translateDoc(ad.productRef, lang, ['name', 'description', 'category.name']);
+                }
+                return translateDoc(translatedAd, lang, ['title', 'description']);
+            });
+        }
         
         res.json(advertisements);
     } catch (err) {

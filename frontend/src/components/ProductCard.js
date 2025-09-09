@@ -30,6 +30,12 @@ const ProductCard = ({ product }) => {
         return null;
     }
 
+    const getLocalizedText = (field) => {
+        if (!field) return '';
+        if (typeof field === 'string') return field;
+        return field[language] || field.en;
+    };
+
     const handleCardClick = (e) => {
         if (e.target.closest('button')) return;
         if (product?._id) {
@@ -76,27 +82,23 @@ const ProductCard = ({ product }) => {
     const isAdvertised = !!adData && adData.discountPercentage > 0;
     const discountPercentage = isAdvertised ? adData.discountPercentage : 0;
     
-    // --- START: LOGIC CORRECTION FOR PRICE CALCULATION ---
     let originalPrice = null;
     let finalPrice = null;
 
-    // Determine the base price for calculation, considering variations first.
     let startingPrice = product.basePrice;
     if (product.variations && product.variations.length > 0 && product.variations[0].options && product.variations[0].options.length > 0) {
         startingPrice = product.variations[0].options[0].price;
     }
 
-    // Apply discount if the product is advertised
     if (isAdvertised) {
         originalPrice = startingPrice;
         finalPrice = startingPrice * (1 - (discountPercentage / 100));
     } else {
         finalPrice = startingPrice;
     }
-    // --- END: LOGIC CORRECTION FOR PRICE CALCULATION ---
 
-    const productName = product.name;
-    const productCategoryName = product.category?.name;
+    const productName = getLocalizedText(product.name);
+    const productCategoryName = getLocalizedText(product.category?.name);
     const productIsFavorite = product._id ? isFavorite(product._id) : false;
     const imageUrl = product.mainImage || 'https://via.placeholder.com/400?text=No+Image';
 
