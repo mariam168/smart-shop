@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import orderService from '../../../services/orderService';
-import { useAuth } from '../../../context/AuthContext';
-import { useLanguage } from '../../../context/LanguageContext';
-import { useToast } from '../../../context/ToastContext';
+import orderService from '../../services/orderService';
+import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
+import { useToast } from '../../context/ToastContext';
 import { Loader2, CheckCircle, XCircle, Truck, User, Package, Calendar, ChevronLeft, Info, ReceiptText, Phone, Tag } from 'lucide-react';
 
 const AdminOrderDetailsPage = () => {
