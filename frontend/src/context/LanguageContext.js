@@ -49,6 +49,7 @@ const translations = {
             "savedSuccess":"تم الحفظ بنجاح",
             "manageItemsMessage":"يمكنك اداراه مناجاتك.",
             "discounts":"الخصومات",
+            "inStock":"{{count}} منتجات في المخزن",
         },
          "userManagement": {
             "pageTitle": "إدارة المستخدمين",
@@ -691,6 +692,7 @@ const translations = {
             "savedSuccess": "Saved Successfully!",
             "manageItemsMessage": "You can manage your items from the Items page.",
             "discounts":"Discounts",
+            "inStock": "{{count}} items in stock",
         },
         "dashboard": {
             "title": "Dashboard",
