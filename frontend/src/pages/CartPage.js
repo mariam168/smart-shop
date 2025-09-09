@@ -1,7 +1,7 @@
 import React, { useCallback, useMemo } from 'react';
 import { useCart } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
-import { Trash2, Plus, Minus, ShoppingCart, Loader2, ImageOff, ArrowRight } from 'lucide-react';
+import { Trash2, Plus, Minus, ShoppingCart, Loader2, ImageOff, ArrowRight, CheckCircle, AlertTriangle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from '../context/ToastContext';
 
@@ -85,6 +85,7 @@ const CartPage = () => {
                         <div className="space-y-4">
                             {validCartItems.map(item => {
                                 const hasDiscount = item.originalPrice && item.finalPrice < item.originalPrice;
+                                const categoryName = item.product.category ? getLocalizedText(item.product.category.name) : t('general.uncategorized');
                                 return (
                                 <div key={item.uniqueId || `${item.product._id}-${item.selectedVariant}`} className="flex flex-col sm:flex-row items-start gap-5 rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
                                     <Link to={`/shop/${item.product._id}`} className="flex-shrink-0">
@@ -92,12 +93,19 @@ const CartPage = () => {
                                             {item.image ? <img src={item.image} alt={getLocalizedText(item.name)} className="h-full w-full object-cover"/> : <div className="flex h-full w-full items-center justify-center"><ImageOff className="text-zinc-400"/></div>}
                                         </div>
                                     </Link>
-                                    <div className="flex flex-1 flex-col justify-between self-stretch gap-4">
+                                    <div className="flex flex-1 flex-col justify-between self-stretch gap-2">
                                         <div>
-                                            <Link to={`/shop/${item.product._id}`} className="text-base font-bold text-zinc-800 hover:text-primary dark:text-white dark:hover:text-primary-light line-clamp-2">{getLocalizedText(item.name)}</Link>
+                                            <p className="text-xs font-semibold uppercase tracking-wider text-primary dark:text-primary-light">{categoryName}</p>
+                                            <Link to={`/shop/${item.product._id}`} className="text-base font-bold text-zinc-800 hover:text-primary dark:text-white dark:hover:text-primary-light line-clamp-2 leading-tight mt-1">{getLocalizedText(item.name)}</Link>
                                             {item.variantDetailsText && <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">{item.variantDetailsText}</p>}
+                                            {item.stock !== undefined && (
+                                                <div className={`mt-2 flex items-center gap-1.5 text-xs font-semibold ${item.stock > 5 ? 'text-green-600' : (item.stock > 0 ? 'text-orange-500' : 'text-red-600')}`}>
+                                                    {item.stock > 0 ? <CheckCircle size={14} /> : <AlertTriangle size={14} />}
+                                                    <span>{item.stock > 5 ? t('general.inStock') : (item.stock > 0 ? t('general.lowStock', { count: item.stock }) : t('general.outOfStock'))}</span>
+                                                </div>
+                                            )}
                                         </div>
-                                        <div className="flex items-center justify-between">
+                                        <div className="flex items-center justify-between mt-2">
                                             <div className="flex items-center rounded-lg border border-zinc-200 dark:border-zinc-700">
                                                 <button onClick={() => handleQuantityChange(item, item.quantity - 1)} className="p-2.5 text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800 rounded-l-md disabled:opacity-50" disabled={item.quantity <= 1 || loadingCart}><Minus size={16}/></button>
                                                 <input type="number" value={item.quantity} onChange={(e) => handleQuantityChange(item, e.target.value)} disabled={loadingCart} className="w-12 border-x border-zinc-200 bg-transparent text-center text-sm font-bold text-zinc-800 dark:border-zinc-700 dark:text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />

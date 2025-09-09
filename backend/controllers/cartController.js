@@ -84,7 +84,18 @@ const syncCart = async (req, res, next) => {
         const cart = await Cart.findOneAndUpdate(
             { user },
             { items: finalCartItems },
-            { new: true, upsert: true, populate: { path: 'items.product', select: 'name mainImage variations' } }
+            { 
+                new: true, 
+                upsert: true, 
+                populate: { 
+                    path: 'items.product', 
+                    select: 'name mainImage variations category',
+                    populate: {
+                        path: 'category',
+                        select: 'name'
+                    }
+                } 
+            }
         );
         
         res.status(200).json(cart);
