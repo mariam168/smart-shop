@@ -14,15 +14,44 @@ const AllOffersPage = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const getLocalizedText = (field) => {
+        if (!field) return '';
+        return field[language] || field.en;
+    };
+    
+    const translateProductData = (product) => {
+        if (!product) return null;
+        const translatedProduct = { ...product };
+        
+        if (product.name) {
+            translatedProduct.name = getLocalizedText(product.name);
+        }
+        if (product.category?.name) {
+            translatedProduct.category.name = getLocalizedText(product.category.name);
+        }
+        return translatedProduct;
+    };
+
     const fetchAllOffers = useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
             const response = await axios.get(`${API_BASE_URL}/api/advertisements?isActive=true`, {
-                headers: { 'Accept-Language': language }
+                headers: { 'x-admin-request': 'true' }
             });
+            
             const offersWithProducts = response.data
                 .filter(offer => offer.productRef && offer.productRef._id)
+                .map(offer => {
+                    const translatedProductRef = translateProductData(offer.productRef);
+                    const translatedOffer = {
+                        ...offer,
+                        title: getLocalizedText(offer.title),
+                        description: getLocalizedText(offer.description),
+                        productRef: translatedProductRef
+                    };
+                    return translatedOffer;
+                })
                 .sort((a, b) => (a.order || 999) - (b.order || 999) || new Date(b.createdAt) - new Date(a.createdAt));
             
             setOffers(offersWithProducts);
@@ -41,7 +70,7 @@ const AllOffersPage = () => {
     if (loading) {
         return (
             <div className="flex min-h-[80vh] w-full items-center justify-center bg-gray-100 dark:bg-black">
-                <Loader2 size={48} className="animate-spin text-indigo-500" />
+                <Loader2 size={48} className="animate-spin text-primary" />
             </div>
         );
     }
@@ -69,8 +98,8 @@ const AllOffersPage = () => {
 
                 {offers.length === 0 ? (
                     <div className="flex flex-col items-center justify-center min-h-[40vh] bg-white dark:bg-zinc-900 rounded-2xl p-8 border border-gray-200 dark:border-zinc-800 shadow-sm">
-                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-500/10 mb-6">
-                            <ShoppingBag className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
+                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary-light/10 dark:bg-primary/10 mb-6">
+                            <ShoppingBag className="h-8 w-8 text-primary dark:text-primary-light" />
                         </div>
                         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                             {t('allOffersPage.noOffersTitle')}
@@ -80,7 +109,7 @@ const AllOffersPage = () => {
                         </p>
                         <Link 
                             to="/shop" 
-                            className="inline-flex items-center justify-center gap-2 rounded-lg bg-gray-900 px-6 py-3 text-sm font-semibold text-white transition-colors duration-300 hover:bg-indigo-600 dark:bg-white dark:text-black dark:hover:bg-indigo-500 dark:hover:text-white"
+                            className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-white transition-colors duration-300 hover:bg-primary-dark"
                         >
                             {t('cartPage.continueShopping')}
                         </Link>
