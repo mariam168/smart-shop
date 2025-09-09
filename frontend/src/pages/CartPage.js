@@ -99,9 +99,9 @@ const CartPage = () => {
                                         </div>
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center rounded-lg border border-zinc-200 dark:border-zinc-700">
-                                                <button onClick={() => handleQuantityChange(item, item.quantity - 1)} className="p-2.5 text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800 rounded-l-md disabled:opacity-50" disabled={item.quantity <= 1}><Minus size={16}/></button>
-                                                <input type="number" value={item.quantity} onChange={(e) => handleQuantityChange(item, e.target.value)} className="w-12 border-x border-zinc-200 bg-transparent text-center text-sm font-bold text-zinc-800 dark:border-zinc-700 dark:text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
-                                                <button onClick={() => handleQuantityChange(item, item.quantity + 1)} className="p-2.5 text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800 rounded-r-md disabled:opacity-50" disabled={item.stock !== undefined && item.quantity >= item.stock}><Plus size={16}/></button>
+                                                <button onClick={() => handleQuantityChange(item, item.quantity - 1)} className="p-2.5 text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800 rounded-l-md disabled:opacity-50" disabled={item.quantity <= 1 || loadingCart}><Minus size={16}/></button>
+                                                <input type="number" value={item.quantity} onChange={(e) => handleQuantityChange(item, e.target.value)} disabled={loadingCart} className="w-12 border-x border-zinc-200 bg-transparent text-center text-sm font-bold text-zinc-800 dark:border-zinc-700 dark:text-white [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" />
+                                                <button onClick={() => handleQuantityChange(item, item.quantity + 1)} className="p-2.5 text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800 rounded-r-md disabled:opacity-50" disabled={(item.stock !== undefined && item.quantity >= item.stock) || loadingCart}><Plus size={16}/></button>
                                             </div>
                                              <div className="text-right">
                                                 <p className={`text-lg font-bold ${hasDiscount ? 'text-red-600' : 'text-zinc-900 dark:text-white'}`}>{formatPrice(item.finalPrice * item.quantity)}</p>
@@ -109,7 +109,7 @@ const CartPage = () => {
                                             </div>
                                         </div>
                                     </div>
-                                    <button onClick={() => handleRemoveItem(item)} className="p-2 text-zinc-500 hover:text-red-500 dark:text-zinc-400 dark:hover:text-red-400 self-start sm:self-center"><Trash2 size={18} /></button>
+                                    <button onClick={() => handleRemoveItem(item)} disabled={loadingCart} className="p-2 text-zinc-500 hover:text-red-500 dark:text-zinc-400 dark:hover:text-red-400 self-start sm:self-center"><Trash2 size={18} /></button>
                                 </div>
                                 );
                             })}

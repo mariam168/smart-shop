@@ -18,7 +18,7 @@ export const CartProvider = ({ children }) => {
 
     const fetchCart = useCallback(async () => {
         if (!isAuthenticated || !token) {
-            setCartItems(JSON.parse(localStorage.getItem('cart')) || []);
+            setCartItems([]);
             setLoadingCart(false);
             return;
         }
@@ -37,36 +37,42 @@ export const CartProvider = ({ children }) => {
     }, [isAuthenticated, API_BASE_URL, token]);
 
     useEffect(() => {
-        fetchCart();
-    }, [fetchCart]);
-    
-    const syncCart = useCallback(async (updatedCart) => {
-        setCartItems(updatedCart);
         if (isAuthenticated) {
-            try {
-                const itemsToSync = updatedCart.map(item => ({
-                    product: item.product._id,
-                    quantity: item.quantity,
-                    price: item.originalPrice,
-                    stock: item.stock,
-                    selectedVariant: item.selectedVariant,
-                    image: item.image,
-                    variantDetailsText: item.variantDetailsText,
-                    uniqueId: item.uniqueId
-                }));
-                const { data } = await axios.post(`${API_BASE_URL}/api/cart/sync`, 
-                    { items: itemsToSync }, 
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
-                setCartItems(data.items);
-            } catch (error) {
-                console.error('Failed to sync cart with DB:', error);
-                showToast(t('cart.syncError'), 'error');
-            }
+            fetchCart();
         } else {
-            localStorage.setItem('cart', JSON.stringify(updatedCart));
+            setCartItems([]);
+            setLoadingCart(false);
         }
-    }, [isAuthenticated, token, API_BASE_URL, showToast, t]);
+    }, [isAuthenticated, fetchCart]);
+    
+    const modifyCart = useCallback(async (items) => {
+        if (!isAuthenticated) return;
+        setLoadingCart(true);
+        try {
+            const itemsToSync = items.map(item => ({
+                product: item.product._id,
+                quantity: item.quantity,
+                price: item.originalPrice,
+                stock: item.stock,
+                selectedVariant: item.selectedVariant,
+                image: item.image,
+                variantDetailsText: item.variantDetailsText,
+                uniqueId: item.uniqueId
+            }));
+
+            const { data } = await axios.post(`${API_BASE_URL}/api/cart/sync`, 
+                { items: itemsToSync }, 
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            setCartItems(data.items || []);
+        } catch (error) {
+            console.error('Failed to sync cart with DB:', error);
+            showToast(t('cart.syncError'), 'error');
+            await fetchCart();
+        } finally {
+            setLoadingCart(false);
+        }
+    }, [isAuthenticated, token, API_BASE_URL, showToast, t, fetchCart]);
 
     const addToCart = async (product, quantity = 1, selectedOptionId = null) => {
         if (!isAuthenticated) { 
@@ -78,57 +84,46 @@ export const CartProvider = ({ children }) => {
             showToast(t('cart.productDataIncomplete'), 'error');
             return;
         }
-        setLoadingCart(true);
-        try {
-            const variant = selectedOptionId && product.variations
-                ? product.variations.flatMap(v => v.options).find(o => o._id === selectedOptionId)
-                : null;
 
-            const originalPrice = variant?.price ?? product.basePrice;
-            const finalImage = variant?.image || product.mainImage;
-            const finalStock = variant?.stock;
-            const uniqueId = `${product._id}-${selectedOptionId || 'default'}`;
+        const variant = selectedOptionId && product.variations
+            ? product.variations.flatMap(v => v.options).find(o => o._id === selectedOptionId)
+            : null;
 
-            const updatedCart = [...cartItems];
-            const existingItemIndex = updatedCart.findIndex(item => item.uniqueId === uniqueId);
-            
-            if (existingItemIndex > -1) {
-                updatedCart[existingItemIndex].quantity += quantity;
-            } else {
-                 const variantDetailsText = variant 
-                    ? product.variations.map(v => {
-                        const opt = v.options.find(o => o._id === selectedOptionId);
-                        return opt ? `${v.name_en}: ${opt.name_en}` : null;
-                    }).filter(Boolean).join(', ')
-                    : '';
-                updatedCart.push({
-                    product: product,
-                    name: product.name,
-                    originalPrice: originalPrice,
-                    finalPrice: originalPrice,
-                    quantity,
-                    image: finalImage,
-                    stock: finalStock,
-                    selectedVariant: selectedOptionId,
-                    uniqueId,
-                    variantDetailsText
-                });
-            }
-            await syncCart(updatedCart);
-            showToast(t('cart.productAddedSuccess'), 'success');
-        } catch (error) {
-            showToast(error.response?.data?.message || t('cart.addError'), 'error');
-        } finally {
-            setLoadingCart(false);
+        const uniqueId = `${product._id}-${selectedOptionId || 'default'}`;
+        const updatedCart = [...cartItems];
+        const existingItemIndex = updatedCart.findIndex(item => (item.uniqueId || `${item.product._id}-${item.selectedVariant || 'default'}`) === uniqueId);
+        
+        if (existingItemIndex > -1) {
+            updatedCart[existingItemIndex].quantity += quantity;
+        } else {
+             const variantDetailsText = variant 
+                ? product.variations.map(v => {
+                    const opt = v.options.find(o => o._id === selectedOptionId);
+                    return opt ? `${v.name_en}: ${opt.name_en}` : null;
+                }).filter(Boolean).join(', ')
+                : '';
+
+            updatedCart.push({
+                product: product,
+                originalPrice: variant?.price ?? product.basePrice,
+                quantity,
+                stock: variant?.stock,
+                selectedVariant: selectedOptionId,
+                image: variant?.image || product.mainImage,
+                variantDetailsText,
+                uniqueId,
+            });
         }
+        await modifyCart(updatedCart);
+        showToast(t('cart.productAddedSuccess'), 'success');
     };
     
     const updateCartItemQuantity = async (productId, quantity, selectedVariantId = null) => {
         const uniqueId = `${productId}-${selectedVariantId || 'default'}`;
         const updatedCart = cartItems.map(item =>
-            item.uniqueId === uniqueId ? { ...item, quantity: Math.max(0, quantity) } : item
+            (item.uniqueId || `${item.product._id}-${item.selectedVariant || 'default'}`) === uniqueId ? { ...item, quantity: Math.max(0, quantity) } : item
         ).filter(item => item.quantity > 0);
-        await syncCart(updatedCart);
+        await modifyCart(updatedCart);
     };
     
     const removeFromCart = async (productId, selectedVariantId = null) => {
