@@ -279,6 +279,7 @@ const translations = {
             "discount":"خصم",
             "discountAppliedSuccessfully":"تم تطبيق الخصم بنجاح",
             "remove":"حذف",
+            "productDiscounts":"خصومات المنتجات",
         },
         "wishlistPage": {
             "wishlistTitle": "قائمة أمنياتي",
@@ -925,6 +926,7 @@ const translations = {
             "discount":"Discount",
             "remove":"Remove",
             "discountAppliedSuccessfully":"Discount applied successfully!",
+            "productDiscounts":"Product Discounts",
         },
         "wishlistPage": {
             "wishlistTitle": "My Wishlist",
