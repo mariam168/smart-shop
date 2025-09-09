@@ -202,7 +202,8 @@ const translations = {
             "loginRequired": "يرجى تسجيل الدخول لإضافة المنتجات إلى السلة.", "productAddedSuccess": "تمت اضافة المنتج لسلتك بنجاح.",
             "addError": "خطأ في إضافة المنتج للسلة.", "updateSuccess": "تم تحديث سلة التسوق.", "updateError": "خطأ في تحديث السلة.",
             "productRemovedSuccess": "تمت ازالة المنتج من سلتك.", "removeError": "خطأ في إزالة المنتج.",
-            "clearSuccess": "تم مسح سلة التسوق بنجاح.", "clearError": "خطاء في مسح السلة."
+            "clearSuccess": "تم مسح سلة التسوق بنجاح.", "clearError": "خطاء في مسح السلة.",
+            "itemRemoved": "تمت ازالة المنتج من السلة."
         },
         "allOffersPage": {
             "title": "جميع العروض المتاحة", "noOffers": "لا توجد عروض متاحة في الوقت الحالي.", "noOffersTitle": "لا توجد عروض!",
@@ -766,6 +767,7 @@ const translations = {
             "addError": "Error adding product to cart.", "updateSuccess": "Cart updated successfully.", "updateError": "Error updating cart.",
             "productRemovedSuccess": "Product removed from cart.", "removeError": "Error removing item.",
             "clearSuccess": "Cart cleared successfully.", "clearError": "Error clearing cart.",
+            "itemRemoved": "Item removed from cart."
         },
         "allOffersPage": {
             "title": "All Available Offers", "noOffers": "No offers are available at the moment.", "noOffersTitle": "No Offers Available!",
