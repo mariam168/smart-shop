@@ -7,6 +7,10 @@ const translations = {
         "general": {
             "loading": "جاري التحميل...", "error": "خطأ", "notApplicable": "لا ينطبق", "unnamedItem": "عنصر غير مسمى", "priceNotAvailable": "السعر غير متاح",
             "or": "او",
+            "advertisements": "الاعلانات",
+            
+            "orders": "الطلبات",
+            "noVariants": "لا توجد متاحات",
             "shopNow": "تسوق الآن", "currencySymbol": "ر.س", "off": "خصم", "noImage": "لا توجد صورة", "errorFetchingData": "فشل جلب البيانات. يرجى المحاولة لاحقاً.",
             "unnamedProduct": "منتج غير مسمى", "imageFailedToLoad": "فشل تحميل الصورة", "noImageAvailable": "لا توجد صورة متاحة",
             "currencyCode": "EGP", "description": "الوصف", "close": "إغلاق", "copyId": "نسخ المعرف",
@@ -50,6 +54,10 @@ const translations = {
             "manageItemsMessage":"يمكنك اداراه مناجاتك.",
             "discounts":"الخصومات",
             "inStock":"{{count}} منتجات في المخزن",
+        },
+        "myOrdersPage": {
+            "pageTitle": "طلباتي",
+            "description": "قائمة الطلبات الخاصة بك.",
         },
          "userManagement": {
             "pageTitle": "إدارة المستخدمين",
@@ -267,6 +275,7 @@ const translations = {
             "discountCode": "كود الخصم",
             "phoneRequired": "مطلوب رقم هاتف",
             "phonePlaceholder": "ادخل رقم هاتفك",
+            "viewMyOrders": "اظهار الطلبات",
             
             "enterDiscountCodePlaceholder": "أدخل كود الخصم",
             "apply": "تطبيق",
@@ -452,8 +461,11 @@ const translations = {
             "addSuccess": "تمت إضافة الإعلان بنجاح!", "addError": "خطأ في إضافة الإعلان: ",
             "titleEn": "العنوان (إنجليزي)", "titleAr": "العنوان (عربي)",
             "descriptionEn": "الوصف (إنجليزي)", "descriptionAr": "الوصف (عربي)",
+            "basicInfo": "معلومات الاساسية", "image": "صورة الإعلان",
             "searchProductPlaceholder": "ابحث عن منتج","discountPercentageLabel": "نسبة الخصم",
             "getStartedByAdding": "ابدا بالإضافة الإعلان الأول.",
+            "linkingAndOffers":"الاتصال والعروض",
+            "settings":"الاعدادات",
             "linkLabel": "رابط URL", "typeLabel": "النوع",
             "titlePlaceholderEn": "ادخل العنوان باللغة الانجليزية", "titlePlaceholderAr": "ادخل العنوان باللغة العربية",
             "typeSlide": "شريحة عرض", "typeSideOffer": "عرض جانبي", "typeWeeklyOffer": "عرض أسبوعي",
@@ -616,6 +628,7 @@ const translations = {
       "paymentDetails": "تفاصيل الدفع",
       "paymentMethod": "طريقة الدفع",
       "itemsPrice": "سعر المنتجات",
+      "orderedOn": "تاريخ الطلب",
       "shipping": "رسوم الشحن",
       "tax": "الضرائب",
       "total": "المجموع الإجمالي",
@@ -652,6 +665,9 @@ const translations = {
     en: {
         "general": {
             "notAvailable":"not Available",
+            "advertisements": "Advertisements",
+            "orders": "Orders",
+            "noVariants": "No Variants",
             "or":"or",
             "loading": "Loading...", "error": "Error", "notApplicable": "N/A", "unnamedItem": "Unnamed Item", "priceNotAvailable": "Price N/A",
             "shopNow": "Shop Now", "currencySymbol": "$", "off": "OFF", "noImage": "No Image", "errorFetchingData": "Failed to fetch data.",
@@ -857,8 +873,13 @@ const translations = {
       "pageTitle": "My Profile",
       "pageSubtitle": "Manage your profile and order history."
     },
+    "myOrdersPage": {
+        "title":"My Orders",
+        "description":"View and manage your orders.",
+    },
     "orderDetails": {
       "title": "Order Details",
+      "orderedOn": "Ordered on",
       "orderPlacedOn": "Order placed on",
       "orderStatus": "Order Status",
       "statusPlaced": "Order Placed",
@@ -912,6 +933,7 @@ const translations = {
             "checkoutTitle": "Checkout",
             "discountCode": "Discount Code",
             "enterDiscountCodePlaceholder": "Enter discount code",
+            "viewMyOrders": "View My Orders",
             "apply": "Apply",
             "phonePlaceholder": "Enter your phone number",
             "phoneRequired": "Phone number is required",
@@ -1096,9 +1118,11 @@ const translations = {
             "titlePlaceholderEn": "Enter title in English", "titlePlaceholderAr": "Enter title in Arabic",
             "searchProductPlaceholder": "Search product","discountPercentageLabel": "Discount Percentage",
             "getStartedByAdding": "Get started by adding your first advertisement.",
+            "basicInfo": "Basic Information","linkingAndOffers":"Linking and Offers",
             "manageAdvertisementsTitle": "Manage Advertisements",
             "descriptionEn": "Description (English)", "descriptionAr": "Description (Arabic)",
             "linkLabel": "Link URL", "typeLabel": "Type",
+            "settings":"Settings",
             "typeSlide": "Slide", "typeSideOffer": "Side Offer", "typeWeeklyOffer": "Weekly Offer",
             "orderLabel": "Order (for display)", "startDate": "Start Date", "endDate": "End Date",
             "originalPrice": "Original Price", "discountedPrice": "Discounted Price", "currency": "Currency",
