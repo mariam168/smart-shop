@@ -7,9 +7,8 @@ const apiService = axios.create({
     }
 });
 
-// Optional: Add a request interceptor to include the auth token
 apiService.interceptors.request.use(config => {
-    const token = localStorage.getItem('token'); // or wherever you store your token
+    const token = localStorage.getItem('token');
     if (token) {
         config.headers.Authorization = `Bearer ${token}`;
     }

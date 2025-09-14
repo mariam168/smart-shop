@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
-import { Mail, Lock, Loader2, CheckCircle, XCircle } from 'lucide-react';
+import { Mail, Lock, Loader2, XCircle } from 'lucide-react';
 
 const LoginPage = () => {
     const { t, language } = useLanguage();
@@ -29,8 +29,11 @@ const LoginPage = () => {
             login(res.data.user, res.data.token);
             navigate('/');
         } catch (err) {
-            const apiMessage = err.response?.data?.message || err.response?.data?.msg;
-            if (apiMessage) {
+            const apiErrors = err.response?.data?.errors;
+            const apiMessage = err.response?.data?.message;
+            if (apiErrors && Array.isArray(apiErrors)) {
+                setError(apiErrors.map(er => er.msg).join(', '));
+            } else if (apiMessage) {
                 setError(apiMessage);
             } else {
                 setError(t('auth.loginError'));
@@ -88,12 +91,6 @@ const LoginPage = () => {
                                 className="w-full rounded-lg border-gray-200 bg-gray-50 p-3 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
                                 style={{ paddingLeft: language === 'ar' ? '14px' : '40px', paddingRight: language === 'ar' ? '40px' : '14px' }}
                             />
-                        </div>
-                        
-                        <div className="text-right">
-                            <Link to="/forgotpassword" className="text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400">
-                                {t('auth.forgotPassword')}
-                            </Link>
                         </div>
                         
                         <button

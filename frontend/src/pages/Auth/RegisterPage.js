@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { useLanguage } from '../../context/LanguageContext';
-import { User, Mail, Lock, Loader2, CheckCircle, XCircle } from 'lucide-react';
+import { User, Mail, Lock, Loader2, XCircle } from 'lucide-react';
 
 const RegisterPage = () => {
     const { t, language } = useLanguage();
@@ -11,11 +11,10 @@ const RegisterPage = () => {
         name: '', email: '', password: '', password2: '',
     });
     const [error, setError] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
     const [loading, setLoading] = useState(false);
-    const [showActivationModal, setShowActivationModal] = useState(false);
+    const navigate = useNavigate();
 
-    const { API_BASE_URL } = useAuth();
+    const { login, API_BASE_URL } = useAuth();
     const { name, email, password, password2 } = formData;
 
     const onChange = useCallback(e => {
@@ -25,9 +24,7 @@ const RegisterPage = () => {
 
     const onSubmit = useCallback(async e => {
         e.preventDefault();
-        setSuccessMessage('');
         setError('');
-        setShowActivationModal(false);
 
         if (password !== password2) {
             setError(t('auth.passwordMismatch'));
@@ -37,9 +34,8 @@ const RegisterPage = () => {
         setLoading(true);
         try {
             const res = await axios.post(`${API_BASE_URL}/api/auth/register`, { name, email, password });
-            setSuccessMessage(t('auth.registerSuccessEmailSent') || res.data.message);
-            setFormData({ name: '', email: '', password: '', password2: '' });
-            setShowActivationModal(true);
+            login(res.data.user, res.data.token);
+            navigate('/');
         } catch (err) {
             const apiErrors = err.response?.data?.errors;
             const apiMessage = err.response?.data?.message;
@@ -53,7 +49,7 @@ const RegisterPage = () => {
         } finally {
             setLoading(false);
         }
-    }, [name, email, password, password2, API_BASE_URL, t]);
+    }, [name, email, password, password2, API_BASE_URL, t, login, navigate]);
     
     const MessageCard = ({ text, type }) => (
         <div className={`flex items-center gap-3 p-3 rounded-lg text-sm font-medium ${
@@ -61,29 +57,11 @@ const RegisterPage = () => {
             ? "bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-400" 
             : "bg-red-100 dark:bg-red-500/10 text-red-700 dark:text-red-400"
         }`}>
-            {type === 'success' ? <CheckCircle size={18} /> : <XCircle size={18} />}
+            <XCircle size={18} />
             <span>{text}</span>
         </div>
     );
-
-    if (showActivationModal) {
-        return (
-            <section className="flex min-h-[100vh] w-full items-center justify-center bg-gray-100 dark:bg-black p-4">
-                 <div className="w-full max-w-lg text-center bg-white dark:bg-zinc-900 p-8 sm:p-12 rounded-2xl shadow-sm border border-gray-200 dark:border-zinc-800">
-                    <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-green-100 dark:bg-green-500/10 mb-6">
-                        <CheckCircle className="h-8 w-8 text-green-600 dark:text-green-400" />
-                    </div>
-                    <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                        {t('auth.registrationCompleteTitle')}
-                    </h1>
-                    <p className="mt-2 text-base text-gray-600 dark:text-zinc-400">
-                        {successMessage}
-                    </p>
-                </div>
-            </section>
-        );
-    }
-
+    
     return (
         <section className="flex min-h-[100vh] w-full items-center justify-center bg-gray-100 dark:bg-black p-4">
             <div className="w-full max-w-md" dir={language === 'ar' ? 'rtl' : 'ltr'}>

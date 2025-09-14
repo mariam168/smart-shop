@@ -142,16 +142,16 @@ const CheckoutPage = () => {
                                     <Home className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400" />
                                     <input type="text" placeholder={t('checkoutPage.enterAddressPlaceholder')} value={shippingAddress.address} onChange={(e) => setShippingAddress(prev => ({...prev, address: e.target.value}))} required className="w-full rounded-lg border-zinc-200 bg-zinc-50 p-3 pl-10 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" />
                                 </div>
-                                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                               
                                     <div className="relative">
                                         <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400" />
                                         <input type="text" placeholder={t('checkoutPage.enterCityPlaceholder')} value={shippingAddress.city} onChange={(e) => setShippingAddress(prev => ({...prev, city: e.target.value}))} required className="w-full rounded-lg border-zinc-200 bg-zinc-50 p-3 pl-10 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" />
                                     </div>
-                                    <div className="relative">
+                                    {/* <div className="relative">
                                         <Key className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400" />
                                         <input type="text" placeholder={t('checkoutPage.enterPostalCodePlaceholder')} value={shippingAddress.postalCode} onChange={(e) => setShippingAddress(prev => ({...prev, postalCode: e.target.value}))} className="w-full rounded-lg border-zinc-200 bg-zinc-50 p-3 pl-10 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" />
-                                    </div>
-                                </div>
+                                    </div> */}
+                              
                                  <div className="relative">
                                     <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-zinc-400" />
                                     <input type="tel" placeholder={t('checkoutPage.phonePlaceholder')} value={shippingAddress.phone} onChange={(e) => setShippingAddress(prev => ({...prev, phone: e.target.value}))} required className="w-full rounded-lg border-zinc-200 bg-zinc-50 p-3 pl-10 text-sm dark:border-zinc-700 dark:bg-zinc-800 dark:text-white" />

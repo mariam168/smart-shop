@@ -3,9 +3,11 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const User = require('../models/userModel');
 const sendEmail = require('../utils/sendEmail');
+
 const generateToken = (id, role) => {
     return jwt.sign({ user: { id, role } }, process.env.JWT_SECRET, { expiresIn: '30d' });
 };
+
 const registerUser = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
@@ -15,7 +17,10 @@ const registerUser = async (req, res, next) => {
         let user = await User.findOne({ email });
         if (user) return res.status(400).json({ errors: [{ msg: 'User already exists with this email' }] });
 
-        user = new User({ name, email, password, role: role || 'user', isActivated: false });
+        user = new User({ name, email, password, role: role || 'user' });
+        await user.save();
+        
+        /*
         const activationToken = user.getActivationToken();
         await user.save();
 
@@ -25,11 +30,21 @@ const registerUser = async (req, res, next) => {
         await sendEmail({ email: user.email, subject: `Account Activation for ${process.env.FROM_NAME}`, message });
 
         res.status(201).json({ success: true, message: 'Registration successful! Please check your email for activation link.' });
+        */
+        
+        res.status(201).json({
+            token: generateToken(user._id, user.role),
+            user: { id: user._id, name: user.name, email: user.email, role: user.role, isActivated: user.isActivated }
+        });
+
     } catch (err) {
         next(err);
     }
 };
+
 const activateAccount = async (req, res, next) => {
+    return res.status(404).json({ message: 'Feature not available.' });
+    /*
     const activationToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
     try {
         const user = await User.findOne({ activationToken, activationTokenExpire: { $gt: Date.now() } });
@@ -44,7 +59,9 @@ const activateAccount = async (req, res, next) => {
     } catch (err) {
         next(err);
     }
+    */
 };
+
 const loginUser = async (req, res, next) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
@@ -53,11 +70,13 @@ const loginUser = async (req, res, next) => {
     try {
         const user = await User.findOne({ email }).select('+password');
         if (!user || !(await user.matchPassword(password))) {
-            return res.status(401).json({ errors: [{ msg: 'Invalid credentials' }] });
+            return res.status(401).json({ message: 'Invalid credentials' });
         }
+        /*
         if (!user.isActivated) {
             return res.status(401).json({ errors: [{ msg: 'Account not activated. Please check your email.' }] });
         }
+        */
         res.json({
             token: generateToken(user._id, user.role),
             user: { id: user._id, name: user.name, email: user.email, role: user.role, isActivated: user.isActivated }
@@ -66,7 +85,10 @@ const loginUser = async (req, res, next) => {
         next(err);
     }
 };
+
 const forgotPassword = async (req, res, next) => {
+    return res.status(404).json({ message: 'Feature not available.' });
+    /*
     const { email } = req.body;
     try {
         const user = await User.findOne({ email });
@@ -84,8 +106,12 @@ const forgotPassword = async (req, res, next) => {
         console.error("Forgot password email error:", err);
         next(err);
     }
+    */
 };
+
 const validateResetToken = async (req, res, next) => {
+    return res.status(404).json({ message: 'Feature not available.' });
+    /*
     const resetPasswordToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
     try {
         const user = await User.findOne({ resetPasswordToken, resetPasswordExpire: { $gt: Date.now() } });
@@ -94,8 +120,12 @@ const validateResetToken = async (req, res, next) => {
     } catch (err) {
         next(err);
     }
+    */
 };
+
 const resetPassword = async (req, res, next) => {
+    return res.status(404).json({ message: 'Feature not available.' });
+    /*
     const resetPasswordToken = crypto.createHash('sha256').update(req.params.token).digest('hex');
     try {
         const user = await User.findOne({ resetPasswordToken, resetPasswordExpire: { $gt: Date.now() } });
@@ -110,7 +140,9 @@ const resetPassword = async (req, res, next) => {
     } catch (err) {
         next(err);
     }
+    */
 };
+
 const updateUserProfile = async (req, res, next) => {
     try {
         const user = await User.findById(req.user.id);
@@ -127,6 +159,7 @@ const updateUserProfile = async (req, res, next) => {
         next(error);
     }
 };
+
 const updateUserPassword = async (req, res, next) => {
     const { currentPassword, newPassword } = req.body;
     if (!currentPassword || !newPassword || newPassword.length < 6) {

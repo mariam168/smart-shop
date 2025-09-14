@@ -2,14 +2,14 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import { LanguageProvider } from './context/LanguageContext';
 import { AuthProvider } from './context/AuthContext';
-import { WishlistProvider } from './context/WishlistContext'; 
+import { WishlistProvider } from './context/WishlistContext';
 import { CartProvider } from './context/CartContext';
 import { ToastProvider } from './context/ToastContext';
 import TopBar from './components/Header/TopBar';
 import MainHeader from './components/Header/MainHeader';
 import Footer from './components/Footer';
 import DashboardLayout from './components/layouts/DashboardLayout';
-import AdminRoute from './components/Routing/AdminRoute'; 
+import AdminRoute from './components/Routing/AdminRoute';
 import Home from './pages/Home';
 import About from './pages/About';
 import ContactUs from './pages/ContactUs';
@@ -21,10 +21,10 @@ import CheckoutPage from './pages/CheckoutPage';
 import AllOffersPage from './pages/AllOffersPage';
 import LoginPage from './pages/Auth/LoginPage';
 import RegisterPage from './pages/Auth/RegisterPage';
-import ActivationPage from './pages/Auth/ActivationPage';
-import ForgotPasswordPage from './pages/Auth/ForgotPasswordPage';
-import ResetPasswordPage from './pages/Auth/ResetPasswordPage';
-import AdminDashboardPage from './pages/Admin/AdminDashboardPage'; 
+// import ActivationPage from './pages/Auth/ActivationPage';
+// import ForgotPasswordPage from './pages/Auth/ForgotPasswordPage';
+// import ResetPasswordPage from './pages/Auth/ResetPasswordPage';
+import AdminDashboardPage from './pages/Admin/AdminDashboardPage';
 import AdminProductsPage from './pages/Admin/AdminProductsPage';
 import AdminCategoriesPage from './pages/Admin/AdminCategoriesPage';
 import AdminOrdersPage from './pages/Admin/AdminOrdersPage';
@@ -35,6 +35,8 @@ import AdminUsersPage from './pages/Admin/AdminUsersPage';
 import ProfilePage from './pages/ProfilePage';
 import OrderDetailsPage from './pages/OrderDetailsPage';
 import MyOrdersPage from './pages/MyOrdersPage';
+import NotFoundPage from './pages/NotFoundPage';
+import ScrollToTop from './components/common/ScrollToTop';
 
 const MainLayout = () => (
   <div className="bg-white dark:bg-black text-black dark:text-white min-h-screen flex flex-col">
@@ -54,6 +56,7 @@ const AuthLayout = () => (
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <LanguageProvider>
         <AuthProvider>
           <ToastProvider>
@@ -66,34 +69,37 @@ function App() {
                     <Route path="/contact" element={<ContactUs />} />
                     <Route path="/shop" element={<Shop />} />
                     <Route path="/shop/:id" element={<ProductDetails />} />
-                    <Route path="/wishlist" element={<WishlistPage />} /> 
+                    <Route path="/wishlist" element={<WishlistPage />} />
                     <Route path="/cart" element={<CartPage />} />
                     <Route path="/checkout" element={<CheckoutPage />} />
                     <Route path="/all-offers" element={<AllOffersPage />} />
                     <Route path="/profile" element={<ProfilePage />} />
-                    <Route path="/order/:id" element={<OrderDetailsPage />} /> 
-                    <Route path="/profile/orders" element={<MyOrdersPage />} /> 
-                    <Route path="/order/:id" element={<OrderDetailsPage />} /> 
+                    <Route path="/order/:id" element={<OrderDetailsPage />} />
+                    <Route path="/profile/orders" element={<MyOrdersPage />} />
+                    <Route path="*" element={<NotFoundPage />} />
                   </Route>
 
                   <Route element={<AuthLayout />}>
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
+                    {/*
                     <Route path="/activate/:token" element={<ActivationPage />} />
                     <Route path="/forgotpassword" element={<ForgotPasswordPage />} />
                     <Route path="/resetpassword/:token" element={<ResetPasswordPage />} />
+                    */}
                   </Route>
+                  
                   <Route element={<AdminRoute />}>
-                    <Route path="/admin" element={<DashboardLayout />}> 
+                    <Route path="/admin" element={<DashboardLayout />}>
                       <Route index element={<Navigate to="dashboard" replace />} />
                       <Route path="dashboard" element={<AdminDashboardPage />} />
-                      <Route path="products" element={<AdminProductsPage />} />    
-                      <Route path="categories" element={<AdminCategoriesPage />} />   
-                      <Route path="orders" element={<AdminOrdersPage />} />         
+                      <Route path="products" element={<AdminProductsPage />} />
+                      <Route path="categories" element={<AdminCategoriesPage />} />
+                      <Route path="orders" element={<AdminOrdersPage />} />
                       <Route path="orders/:id" element={<AdminOrderDetailsPage />} />
-                      <Route path="advertisements" element={<AdvertisementList />} /> 
+                      <Route path="advertisements" element={<AdvertisementList />} />
                       <Route path="discounts" element={<DiscountList />} />
-                      <Route path="users" element={<AdminUsersPage />} /> 
+                      <Route path="users" element={<AdminUsersPage />} />
                     </Route>
                   </Route>
                 </Routes>

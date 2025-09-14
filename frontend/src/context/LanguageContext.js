@@ -8,6 +8,9 @@ const translations = {
             "loading": "جاري التحميل...", "error": "خطأ", "notApplicable": "لا ينطبق", "unnamedItem": "عنصر غير مسمى", "priceNotAvailable": "السعر غير متاح",
             "or": "او",
             "advertisements": "الاعلانات",
+            "pageNotFound": "الصفحة غير موجودة",
+            "pageNotFoundDesc": "نأسف، لا يمكننا العثور على الصفحة التي تبحث عنها.",
+            "backToHome": "العودة للرئيسية",
             
             "orders": "الطلبات",
             "noVariants": "لا توجد متاحات",
@@ -291,6 +294,10 @@ const translations = {
             "discountAppliedSuccessfully":"تم تطبيق الخصم بنجاح",
             "remove":"حذف",
             "productDiscounts":"خصومات المنتجات",
+            "addressFieldsRequired":"يرجى تعبئة جميع الحقول اللازمة للشحن",
+            "orderPlacedSuccessTitle": "تم تقديم الطلب بنجاح!",
+            "orderPlacedSuccessMessage": "تم تقديم الطلب بنجاح. سوف تتلقى بريد الكتروني مع تفاصيل الطلب.",
+            "orderID": "رقم الطلب",
         },
         "wishlistPage": {
             "wishlistTitle": "قائمة أمنياتي",
@@ -668,6 +675,10 @@ const translations = {
         "general": {
             "notAvailable":"not Available",
             "advertisements": "Advertisements",
+           
+            "pageNotFound": "Page Not Found",
+            "pageNotFoundDesc": "Sorry, we couldn't find the page you're looking for.",
+            "backToHome": "Go Back Home",
             "orders": "Orders",
             "noVariants": "No Variants",
             "or":"or",
@@ -954,6 +965,7 @@ const translations = {
             "remove":"Remove",
             "discountAppliedSuccessfully":"Discount applied successfully!",
             "productDiscounts":"Product Discounts",
+            "addressFieldsRequired":"All fields are required."
         },
         "wishlistPage": {
             "wishlistTitle": "My Wishlist",

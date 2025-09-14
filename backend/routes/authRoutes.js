@@ -10,16 +10,16 @@ router.post('/register', [
     check('password', 'Password must be 6 or more characters').isLength({ min: 6 }),
 ], registerUser);
 
-router.get('/activate/:token', activateAccount);
+// router.get('/activate/:token', activateAccount);
 
 router.post('/login', [
     check('email', 'Please include a valid email').isEmail(),
     check('password', 'Password is required').exists(),
 ], loginUser);
 
-router.post('/forgotpassword', forgotPassword);
-router.get('/validate-reset-token/:token', validateResetToken);
-router.put('/resetpassword/:token', resetPassword);
+// router.post('/forgotpassword', forgotPassword);
+// router.get('/validate-reset-token/:token', validateResetToken);
+// router.put('/resetpassword/:token', resetPassword);
 
 router.put('/profile', protect, updateUserProfile);
 router.put('/profile/password', protect, updateUserPassword);
