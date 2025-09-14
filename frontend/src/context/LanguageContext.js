@@ -304,6 +304,10 @@ const translations = {
             "wishlistSubtitle": "  كل منتجاتك المفضلة هنا",
             "emptyWishlist": "قائمة المفضلات فارغة.",
             "emptyWishlistDesc": "لا يوجد منتجات في قائمة المفضلات.",
+            "emptyWishlistTitle": "قائمة المفضلات فارغة.",
+            "emptyWishlistDesc": "يرجى اضافة منتجات في قائمة المفضلات لبدء التسوق.",
+            "emptyWishlist": "قائمة المفضلات فارغة.",
+           
         },
         "auth": {
             "login": "تسجيل الدخول", "register": "انشاء حساب",

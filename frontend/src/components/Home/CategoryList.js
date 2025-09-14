@@ -2,7 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useLanguage } from '../../context/LanguageContext';
 import { Link } from 'react-router-dom';
-import { AlertCircle, Info } from 'lucide-react';
+import { Info } from 'lucide-react';
+import DataHandler from '../common/DataHandler';
 
 const CategoryList = () => {
     const { t, language } = useLanguage();
@@ -12,8 +13,9 @@ const CategoryList = () => {
     const SERVER_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
 
     const fetchCategories = useCallback(async () => {
+        setLoading(true);
+        setError(null);
         try {
-            setLoading(true);
             const response = await axios.get(`${SERVER_URL}/api/categories`, {
                 headers: { 'Accept-Language': language }
             });
@@ -21,10 +23,8 @@ const CategoryList = () => {
                 cat.imageUrl && cat.name
             );
             setCategories(filteredCategories);
-            setError(null);
         } catch (err) {
-            console.error('Error fetching categories:', err);
-            setError(t('categoryList.fetchError') || 'Failed to fetch categories.');
+            setError(t('categoryList.fetchError'));
         } finally {
             setLoading(false);
         }
@@ -33,38 +33,6 @@ const CategoryList = () => {
     useEffect(() => {
         fetchCategories();
     }, [fetchCategories]);
-
-    if (loading) {
-        return (
-            <section className="min-h-screen flex flex-col items-center justify-center py-16 bg-gray-50 dark:bg-zinc-950">
-                <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                    <div className="h-10 w-1/2 bg-gray-200 dark:bg-zinc-800 rounded-lg mx-auto mb-16 animate-pulse"></div>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 justify-center">
-                        {Array.from({ length: 6 }).map((_, index) => (
-                            <div key={index} className="flex flex-col items-center animate-pulse">
-                                <div className="w-28 h-28 sm:w-32 sm:h-32 bg-gray-200 dark:bg-zinc-800 rounded-3xl mb-4"></div>
-                                <div className="h-5 w-24 bg-gray-200 dark:bg-zinc-800 rounded-md"></div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            </section>
-        );
-    }
-
-    if (error) {
-        return (
-            <section className="min-h-screen flex flex-col items-center justify-center py-16 bg-gray-50 dark:bg-zinc-950">
-                <div className="w-full max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center text-red-700 dark:text-red-400 p-8 bg-red-50 dark:bg-red-900/20 rounded-2xl border border-red-200 dark:border-red-500/30 flex flex-col items-center gap-4">
-                        <AlertCircle size={40} />
-                        <p className="font-semibold text-xl">{t('general.error')}</p>
-                        <p className="text-base">{error}</p>
-                    </div>
-                </div>
-            </section>
-        );
-    }
 
     return (
         <section className="min-h-screen flex flex-col items-center justify-center py-16 bg-gray-50 dark:bg-zinc-950">
@@ -77,13 +45,14 @@ const CategoryList = () => {
                         {t('categoryList.subtitle')}
                     </p>
                 </div>
-
-                {categories.length === 0 ? (
-                    <div className="text-center p-10 bg-white dark:bg-zinc-900 rounded-2xl border border-gray-200 dark:border-zinc-800">
-                        <Info size={48} className="mx-auto mb-4 text-primary" />
-                        <p className="font-semibold text-xl text-gray-800 dark:text-white">{t('categoryList.noCategoriesFound')}</p>
-                    </div>
-                ) : (
+                
+                <DataHandler
+                    loading={loading}
+                    error={error}
+                    data={categories}
+                    onRetry={fetchCategories}
+                    emptyMessage={t('categoryList.noCategoriesFound')}
+                >
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-x-6 gap-y-10 justify-center">
                         {categories.map((category) => (
                             <Link
@@ -106,7 +75,7 @@ const CategoryList = () => {
                             </Link>
                         ))}
                     </div>
-                )}
+                </DataHandler>
             </div>
         </section>
     );
