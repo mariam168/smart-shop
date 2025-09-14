@@ -1321,7 +1321,17 @@ const translations = {
 };
 
 export const LanguageProvider = ({ children }) => {
-    const [language, setLanguage] = useState(() => localStorage.getItem('language') || 'ar');
+    const [language, setLanguage] = useState(() => {
+    const LANG_VERSION_KEY = 'lang_version';
+    const CURRENT_LANG_VERSION = '1.0';
+    const storedVersion = localStorage.getItem(LANG_VERSION_KEY);
+    if (storedVersion !== CURRENT_LANG_VERSION) {
+    
+        localStorage.removeItem('language');
+        localStorage.setItem(LANG_VERSION_KEY, CURRENT_LANG_VERSION);
+    }
+    return localStorage.getItem('language') || 'ar';
+});
 
     useEffect(() => {
         localStorage.setItem('language', language);
