@@ -205,6 +205,7 @@ const translations = {
         "trendingProducts": {
             "title": "المنتجات الأكثر رواجًا",
             "subtitle": "اطلع على المنتجات الأكثر شهرة الآن.","noProductsFound": "لم يتم العثور على منتجات.",
+            "fetchError": "خطاء في استرجاع المنتجات."
         },
         "wishlist": { "loginRequired": "يرجى تسجيل الدخول للإضافة إلى المفضلة." },
         "cart": {
@@ -579,7 +580,8 @@ const translations = {
             "title": "تسوق حسب الفئة",
             "subtitle": "استكشف مجموعتنا الواسعة من فئات المنتجات.",
             "noCategoriesFound": "لا توجد فئات لعرضها.",
-            "subcategories":"الفئات الفرعية"
+            "subcategories":"الفئات الفرعية",
+            "fetchError": "حدث خطاء في استرجاع الفئات."
         },
          "profile": {
       "profileDetails": "تفاصيل الملف الشخصي",
@@ -779,6 +781,7 @@ const translations = {
         "trendingProducts": {
             "title": "Trending Products",
             "subtitle": "Check out what's popular right now.","noProductsFound": "No products found.",
+            "fetchError": "Failed to fetch trending products.",
         },
         "wishlist": { "loginRequired": "Please log in to manage your wishlist." },
         "cart": {
@@ -1255,7 +1258,8 @@ const translations = {
             "tryDifferentSearch": "Try different search", "noSearchResults": "No search results found.",
             "title": "Shop by Category",
             "subtitle": "Explore our wide range of product categories.","noCategoriesFound":"No categories found",
-            "subcategories":"Subcategories"
+            "subcategories":"Subcategories",
+            "fetchError": "An error occurred while fetching categories."
         },
         "forms": {
             "select": "select", "saveProduct": "save", "uploadImage": "upload Image", "dragOrClick": "drag Or Click",

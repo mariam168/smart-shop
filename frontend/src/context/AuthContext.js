@@ -7,7 +7,8 @@ export const useAuth = () => {
     return useContext(AuthContext);
 };
 
-const API_BASE_URL = 'https://smart-shop-backend-ivory.vercel.app';
+
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5000';
 
 export const AuthProvider = ({ children }) => {
     const [currentUser, setCurrentUser] = useState(null);
