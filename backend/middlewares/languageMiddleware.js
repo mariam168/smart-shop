@@ -2,7 +2,7 @@ const selectLanguage = (doc, lang) => { if (!doc || typeof doc !== 'object') { r
 const languageMiddleware = (req, res, next) => {
     if (req.headers['x-admin-request'] === 'true') { return next(); }
     const originalJson = res.json;
-    const lang = req.headers['accept-language']?.split(',')[0] || 'en';
+ const lang = req.headers['accept-language']?.split(',')[0] || 'ar';
     req.language = lang; 
     res.json = function(data) {
         if (data && typeof data === 'object') {

@@ -1321,7 +1321,7 @@ const translations = {
 };
 
 export const LanguageProvider = ({ children }) => {
-    const [language, setLanguage] = useState(() => localStorage.getItem('language') || 'en');
+    const [language, setLanguage] = useState(() => localStorage.getItem('language') || 'ar');
 
     useEffect(() => {
         localStorage.setItem('language', language);
