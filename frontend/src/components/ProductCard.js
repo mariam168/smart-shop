@@ -1,5 +1,5 @@
 import React from "react";
-import { Heart, Award, Star, ShoppingCart } from "lucide-react";
+import { Heart, Award, Star, ShoppingCart, MessageCircle } from "lucide-react"; 
 import { useLanguage } from "../context/LanguageContext";
 import { useNavigate } from "react-router-dom";
 import { useWishlist } from "../context/WishlistContext";
@@ -11,7 +11,7 @@ const StarRating = ({ rating }) => (
         {[...Array(5)].map((_, i) => (
             <Star
                 key={i}
-                size={12} // حجم أصغر للنجوم
+                size={12} 
                 className={i < Math.round(rating) ? 'text-yellow-400' : 'text-zinc-300 dark:text-zinc-600'}
                 fill="currentColor"
             />
@@ -60,6 +60,22 @@ const ProductCard = ({ product }) => {
         if (product?._id) {
             navigate(`/shop/${product._id}`);
         }
+    };
+
+  
+    const handleWhatsAppClick = (e) => {
+        e.stopPropagation();
+        const phoneNumber = "201500553457";
+        const productName = getLocalizedText(product.name);
+        const productUrl = `${window.location.origin}/shop/${product._id}`;
+        
+    
+        const message = language === 'ar' 
+            ? `أهلاً، أنا مهتم بمنتج: ${productName}\nرابط المنتج: ${productUrl}`
+            : `Hello, I am interested in: ${productName}\nProduct Link: ${productUrl}`;
+            
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
     };
 
     const formatPrice = (price) => {
@@ -171,7 +187,16 @@ const ProductCard = ({ product }) => {
                                 {formatPrice(finalPrice)}
                             </p>
                         </div>
-                        <div className="relative">
+                        <div className="flex items-center gap-2">
+                             {/* زر الواتساب الجديد */}
+                             <button
+                                className="action-button flex h-9 w-9 items-center justify-center rounded-full bg-green-100 text-green-600 transition-all duration-300 hover:bg-green-500 hover:text-white dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-500"
+                                onClick={handleWhatsAppClick}
+                                title="Contact on WhatsApp"
+                            >
+                                <MessageCircle size={18} />
+                            </button>
+
                              <button
                                 className="action-button group/button flex h-9 w-9 items-center justify-center rounded-full bg-zinc-200 text-zinc-700 transition-all duration-300 ease-in-out hover:w-32 hover:bg-primary hover:text-white dark:bg-zinc-700 dark:text-zinc-200 dark:hover:bg-primary-light dark:hover:text-primary-dark"
                                 onClick={handleViewDetails}
