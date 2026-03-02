@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import { useLanguage } from '../context/LanguageContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { Loader2, Info, ShoppingBag } from 'lucide-react';
-import ProductCard from '../components/ProductCard';
-import { useAuth } from '../context/AuthContext';
+import ProductCard from '../../components/ProductCard';
+import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 
 const AllOffersPage = () => {

@@ -1,9 +1,9 @@
 import React, { useCallback, useMemo } from 'react';
-import { useCart } from '../context/CartContext';
-import { useLanguage } from '../context/LanguageContext';
+import { useCart } from '../../context/CartContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { Trash2, Plus, Minus, ShoppingCart, Loader2, ImageOff, ArrowRight, CheckCircle, AlertTriangle } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useToast } from '../context/ToastContext';
+import { useToast } from '../../context/ToastContext';
 
 const CartPage = () => {
     const { t, language } = useLanguage();

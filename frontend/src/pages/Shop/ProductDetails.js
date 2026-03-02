@@ -2,11 +2,11 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Plus, Minus, ShoppingCart, Heart, Loader2, Award, Star, Clock, Send, User as UserIcon, Check, Info, ChevronRight, ShieldCheck, Truck, MessageSquareQuote, BadgePercent } from 'lucide-react';
-import { useCart } from '../context/CartContext';
-import { useAuth } from '../context/AuthContext';
-import { useLanguage } from '../context/LanguageContext';
-import { useWishlist } from '../context/WishlistContext';
-import { useToast } from '../context/ToastContext';
+import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from '../../context/LanguageContext';
+import { useWishlist } from '../../context/WishlistContext';
+import { useToast } from '../../context/ToastContext';
 
 const colorMap = { 'black': '#111827', 'white': '#FFFFFF', 'red': '#EF4444', 'blue': '#3B82F6', 'green': '#22C55E', 'silver': '#D1D5DB', 'gold': '#FBBF24', 'rose gold': '#F472B6', 'navy blue': '#1E3A8A', 'charcoal gray': '#374151', 'washed black': '#222222', 'cream': '#FFFDD0', 'pine green': '#01796F', 'stone': '#877F7D', 'space gray': '#5f5f5f' };
 const StarRating = ({ rating, size = 16, interactive = false, onRate, onHover, hoverRating = 0 }) => ( <div className="flex items-center" onMouseLeave={interactive ? () => onHover(0) : undefined}> {[...Array(5)].map((_, i) => ( <Star key={i} size={size} className={`cursor-${interactive ? 'pointer' : 'default'} transition-colors ${i < (hoverRating || rating) ? 'text-yellow-400' : 'text-gray-300 dark:text-zinc-600'}`} onMouseEnter={interactive ? () => onHover(i + 1) : undefined} onClick={interactive ? () => onRate(i + 1) : undefined} fill={i < (hoverRating || rating) ? 'currentColor' : 'none'}/> ))} </div> );

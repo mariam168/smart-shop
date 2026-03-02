@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import ProductCard from '../components/ProductCard';
-import { useLanguage } from "../context/LanguageContext";
+import ProductCard from '../../components/ProductCard';
+import { useLanguage } from "../../context/LanguageContext";
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Info, ChevronDown, Filter, X, RefreshCcw } from 'lucide-react';
 import axios from 'axios';
-import DataHandler from '../components/common/DataHandler';
+import DataHandler from '../../components/common/DataHandler';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000';
 

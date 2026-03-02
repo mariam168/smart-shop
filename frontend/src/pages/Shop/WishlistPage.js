@@ -1,9 +1,9 @@
 import React from 'react';
-import { useWishlist } from '../context/WishlistContext';
-import ProductCard from '../components/ProductCard';
+import { useWishlist } from '../../context/WishlistContext';
+import ProductCard from '../../components/ProductCard';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { useLanguage } from "../context/LanguageContext";
+import { useAuth } from '../../context/AuthContext';
+import { useLanguage } from "../../context/LanguageContext";
 import { HeartCrack, UserCheck, Loader2, Heart, ArrowRight } from 'lucide-react';
 
 const WishlistPage = () => {

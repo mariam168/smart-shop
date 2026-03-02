@@ -70,7 +70,7 @@ const MainHeader = () => {
 
     return (
         <>
-            <header className="sticky top-12 z-40 w-full bg-white/80 dark:bg-zinc-900/80 backdrop-blur-lg border-b border-gray-200 dark:border-zinc-800">
+            <header className="sticky top-12 z-40 w-full bg-red-50  dark:bg-zinc-900/80 backdrop-blur-lg border-b border-gray-200 dark:border-zinc-800">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex items-center justify-between h-20">
                         <Link to="/" className="flex items-center gap-2.5 text-xl font-bold text-gray-800 dark:text-white">

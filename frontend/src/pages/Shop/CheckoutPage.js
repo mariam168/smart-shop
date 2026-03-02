@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { useLanguage } from '../context/LanguageContext';
+import { useLanguage } from '../../context/LanguageContext';
 import { ShoppingCart, Loader2, CheckCircle, Package, CreditCard, MapPin, ImageOff, ArrowRight, Tag, User, Home, Mail, Key, Phone, ListOrdered } from 'lucide-react';
-import { useCart } from '../context/CartContext';
-import { useToast } from '../context/ToastContext';
+import { useCart } from '../../context/CartContext';
+import { useToast } from '../../context/ToastContext';
 
 const CheckoutPage = () => {
     const { t, language } = useLanguage();

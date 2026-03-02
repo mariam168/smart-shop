@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../context/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { useToast } from '../context/ToastContext';
-import { useLanguage } from '../context/LanguageContext';
+import { useToast } from '../../context/ToastContext';
+import { useLanguage } from '../../context/LanguageContext';
 import axios from 'axios';
 import { User, ShoppingBag, LogOut, Loader2, Save, KeyRound, Eye, EyeOff, Mail, Package, ChevronRight } from 'lucide-react';
 
