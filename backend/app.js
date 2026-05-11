@@ -10,12 +10,13 @@ const rateLimit = require('express-rate-limit');
 
 const languageMiddleware = require('./middlewares/languageMiddleware');
 const { errorHandler, notFound } = require('./middlewares/errorMiddleware');
+
 const productRoutes = require('./routes/productRoutes');
 const categoryRoutes = require('./routes/categoryRoutes');
 const advertisementRoutes = require('./routes/advertisementRoutes');
 const discountRoutes = require('./routes/discountRoutes');
 const authRoutes = require('./routes/authRoutes');
-const userRoutes = require('./routes/userRoutes'); 
+const userRoutes = require('./routes/userRoutes');
 const wishlistRoutes = require('./routes/wishlistRoutes');
 const cartRoutes = require('./routes/cartRoutes');
 const orderRoutes = require('./routes/orderRoutes');
@@ -24,60 +25,180 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 
 const app = express();
 
-mongoose.connect(process.env.MONGO_URI)
-    .then(() => console.log('✅ MongoDB connected successfully.'))
-    .catch((error) => {
-        console.error('❌ MongoDB connection error:', error.message);
-        process.exit(1); 
-    });
-
+/* =========================
+   CORS (Fixed)
+========================= */
 app.use(cors({
   origin: 'https://smart-shop-khaki.vercel.app',
-    credentials: true,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
-console.log("CLIENT_URL =", process.env.CLIENT_URL);
+
+/* =========================
+   Security Middlewares
+========================= */
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(mongoSanitize({
-    replaceWith: '_',
+  replaceWith: '_',
 }));
+
 app.use(xss());
 app.use(compression());
 
+/* =========================
+   Rate Limiting
+========================= */
 const limiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 200,
-    standardHeaders: true,
-    legacyHeaders: false,
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 app.use('/api', limiter);
 
+/* =========================
+   Language Middleware
+========================= */
 app.use('/api', languageMiddleware);
 
+/* =========================
+   Routes
+========================= */
 app.use('/api/products', productRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/advertisements', advertisementRoutes);
 app.use('/api/discounts', discountRoutes);
 app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes); 
+app.use('/api/users', userRoutes);
 app.use('/api/wishlist', wishlistRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 
+/* =========================
+   Health Check
+========================= */
 app.get('/', (req, res) => {
-    res.send('Smart Shop Backend API is running!');
+  res.send('Smart Shop Backend API is running!');
 });
 
+/* =========================
+   Error Handling
+========================= */
 app.use(notFound);
 app.use(errorHandler);
 
-module.exports = app;
-const PORT = process.env.PORT || 5000;
+/* =========================
+   MongoDB Connection
+   (IMPORTANT for Vercel)
+========================= */
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => {
+    console.log('✅ MongoDB connected successfully');
+  })
+  .catch((error) => {
+    console.error('❌ MongoDB connection error:', error);
+  });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server is running on port ${PORT}`);
-});
+/* =========================
+   IMPORTANT FOR VERCEL
+   ❌ NO app.listen()
+========================= */
+
+module.exports = app;
+
+
+
+
+
+
+
+
+// require('dotenv').config();
+// const express = require('express');
+// const mongoose = require('mongoose');
+// const cors = require('cors');
+// const helmet = require('helmet');
+// const mongoSanitize = require('express-mongo-sanitize');
+// const xss = require('xss-clean');
+// const compression = require('compression');
+// const rateLimit = require('express-rate-limit');
+
+// const languageMiddleware = require('./middlewares/languageMiddleware');
+// const { errorHandler, notFound } = require('./middlewares/errorMiddleware');
+// const productRoutes = require('./routes/productRoutes');
+// const categoryRoutes = require('./routes/categoryRoutes');
+// const advertisementRoutes = require('./routes/advertisementRoutes');
+// const discountRoutes = require('./routes/discountRoutes');
+// const authRoutes = require('./routes/authRoutes');
+// const userRoutes = require('./routes/userRoutes'); 
+// const wishlistRoutes = require('./routes/wishlistRoutes');
+// const cartRoutes = require('./routes/cartRoutes');
+// const orderRoutes = require('./routes/orderRoutes');
+// const contactRoutes = require('./routes/contactRoutes');
+// const dashboardRoutes = require('./routes/dashboardRoutes');
+
+// const app = express();
+
+// mongoose.connect(process.env.MONGO_URI)
+//     .then(() => console.log('✅ MongoDB connected successfully.'))
+//     .catch((error) => {
+//         console.error('❌ MongoDB connection error:', error.message);
+//         process.exit(1); 
+//     });
+
+// app.use(cors({
+//   origin: 'https://smart-shop-khaki.vercel.app',
+//     credentials: true,
+// }));
+// console.log("CLIENT_URL =", process.env.CLIENT_URL);
+// app.use(helmet());
+// app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
+
+// app.use(mongoSanitize({
+//     replaceWith: '_',
+// }));
+// app.use(xss());
+// app.use(compression());
+
+// const limiter = rateLimit({
+//     windowMs: 15 * 60 * 1000,
+//     max: 200,
+//     standardHeaders: true,
+//     legacyHeaders: false,
+// });
+// app.use('/api', limiter);
+
+// app.use('/api', languageMiddleware);
+
+// app.use('/api/products', productRoutes);
+// app.use('/api/categories', categoryRoutes);
+// app.use('/api/advertisements', advertisementRoutes);
+// app.use('/api/discounts', discountRoutes);
+// app.use('/api/auth', authRoutes);
+// app.use('/api/users', userRoutes); 
+// app.use('/api/wishlist', wishlistRoutes);
+// app.use('/api/cart', cartRoutes);
+// app.use('/api/orders', orderRoutes);
+// app.use('/api/contact', contactRoutes);
+// app.use('/api/dashboard', dashboardRoutes);
+
+// app.get('/', (req, res) => {
+//     res.send('Smart Shop Backend API is running!');
+// });
+
+// app.use(notFound);
+// app.use(errorHandler);
+
+// module.exports = app;
+// const PORT = process.env.PORT || 5000;
+
+// app.listen(PORT, () => {
+//   console.log(`🚀 Server is running on port ${PORT}`);
+// });
