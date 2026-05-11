@@ -32,10 +32,10 @@ mongoose.connect(process.env.MONGO_URI)
     });
 
 app.use(cors({
-    origin: process.env.CLIENT_URL,
+  origin: 'https://smart-shop-khaki.vercel.app',
     credentials: true,
 }));
-
+console.log("CLIENT_URL =", process.env.CLIENT_URL);
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
