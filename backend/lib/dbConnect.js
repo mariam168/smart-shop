@@ -26,5 +26,6 @@ async function dbConnect() {
   cached.conn = await cached.promise;
   return cached.conn;
 }
+console.log("MONGO_URI =", process.env.MONGO_URI);
 
 module.exports = dbConnect;
