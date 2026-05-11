@@ -1,12 +1,13 @@
 require('dotenv').config();
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const compression = require('compression');
 const rateLimit = require('express-rate-limit');
+
+const dbConnect = require('./lib/dbConnect'); // ✅ الجديد
 
 const languageMiddleware = require('./middlewares/languageMiddleware');
 const { errorHandler, notFound } = require('./middlewares/errorMiddleware');
@@ -26,7 +27,7 @@ const dashboardRoutes = require('./routes/dashboardRoutes');
 const app = express();
 
 /* =========================
-   CORS (Fixed)
+   CORS
 ========================= */
 app.use(cors({
   origin: 'https://smart-shop-khaki.vercel.app',
@@ -42,10 +43,7 @@ app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(mongoSanitize({
-  replaceWith: '_',
-}));
-
+app.use(mongoSanitize({ replaceWith: '_' }));
 app.use(xss());
 app.use(compression());
 
@@ -59,6 +57,20 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 app.use('/api', limiter);
+
+/* =========================
+   DB CONNECTION (IMPORTANT FIX)
+   👉 Serverless Safe
+========================= */
+app.use(async (req, res, next) => {
+  try {
+    await dbConnect(); // ✅ cached connection
+    next();
+  } catch (err) {
+    console.error('❌ DB Connection Error:', err);
+    res.status(500).json({ message: 'Database connection failed' });
+  }
+});
 
 /* =========================
    Language Middleware
@@ -94,29 +106,11 @@ app.use(notFound);
 app.use(errorHandler);
 
 /* =========================
-   MongoDB Connection
-   (IMPORTANT for Vercel)
-========================= */
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log('✅ MongoDB connected successfully');
-  })
-  .catch((error) => {
-    console.error('❌ MongoDB connection error:', error);
-  });
-
-/* =========================
-   IMPORTANT FOR VERCEL
+   VERCEL EXPORT ONLY
    ❌ NO app.listen()
 ========================= */
 
 module.exports = app;
-
-
-
-
-
-
 
 
 // require('dotenv').config();
